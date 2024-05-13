@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "317369759483",
+    "project_id": "chatapp-4e975",
+    "storage_bucket": "chatapp-4e975.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317369759483:android:7c56dde62f2beebe6ce25e",
+        "android_client_info": {
+          "package_name": "com.example.chatapp_dacs3"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGRYzIXxYvS_9HWCUvgJCx5ulnxVsL3pg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317369759483:android:f340333655acfc886ce25e",
+        "android_client_info": {
+          "package_name": "com.example.livechatclone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGRYzIXxYvS_9HWCUvgJCx5ulnxVsL3pg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,36 @@
+R_DEF: Internal format may change without notice
+local
+color black
+color purple_200
+color purple_500
+color purple_700
+color teal_200
+color teal_700
+color white
+drawable avatar_garena_2
+drawable avatar_girl_garena
+drawable call
+drawable camera
+drawable chat_bubble
+drawable contacts
+drawable file
+drawable ic_launcher_background
+drawable ic_launcher_foreground
+drawable info
+drawable logo
+drawable mic
+drawable newuser
+drawable rangdong
+drawable settings
+mipmap ic_launcher
+mipmap ic_launcher_round
+string app_name
+string gcm_defaultSenderId
+string google_api_key
+string google_app_id
+string google_crash_reporting_api_key
+string google_storage_bucket
+string project_id
+style Theme.ChatApp_DACS3
+xml backup_rules
+xml data_extraction_rules
