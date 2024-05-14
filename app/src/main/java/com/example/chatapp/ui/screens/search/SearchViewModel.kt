@@ -1,12 +1,12 @@
-package com.example.chatapp.ui.screens.search
+package com.example.chatapp_dacs3.ui.screens.search
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.chatapp_dacs3.R
-import com.example.chatapp.model.YourRecentSearch
-import com.example.chatapp.model.YourRecommendSearch
+import com.example.chatapp_dacs3.model.YourRecentSearch
+import com.example.chatapp_dacs3.model.YourRecommendSearch
 
 class SearchViewModel: ViewModel() {
     var recentSearch by mutableStateOf<List<YourRecentSearch>?>(null)

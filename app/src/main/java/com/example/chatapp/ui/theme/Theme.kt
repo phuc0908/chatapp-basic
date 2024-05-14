@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.theme
+package com.example.chatapp_dacs3.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -14,13 +14,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import com.example.chatapp_dacs3.ui.theme.Pink40
-import com.example.chatapp_dacs3.ui.theme.Pink80
-import com.example.chatapp_dacs3.ui.theme.Purple40
-import com.example.chatapp_dacs3.ui.theme.Purple80
-import com.example.chatapp_dacs3.ui.theme.PurpleGrey40
-import com.example.chatapp_dacs3.ui.theme.PurpleGrey80
-import com.example.chatapp_dacs3.ui.theme.Typography
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,

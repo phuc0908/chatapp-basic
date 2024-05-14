@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.components
+package com.example.chatapp_dacs3.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -15,6 +15,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.example.chatapp_dacs3.ui.theme.Green1
 
 @Composable
@@ -23,7 +25,6 @@ fun RoundIconButton(
     imageVector: ImageVector?,
     modifier: Modifier,
     onClick: () -> Unit,
-
     ) {
     Box(modifier = Modifier.clip(CircleShape)){
         IconButton(
@@ -37,12 +38,12 @@ fun RoundIconButton(
                         .clip(shape = CircleShape),
                     contentAlignment = Alignment.Center,
                     content = {
+
                         if(imageResId != null){
 
                             Image(
                                 painter = painterResource(id = imageResId),
                                 contentScale = ContentScale.Crop,
-
                                 contentDescription = "",
                                 modifier = modifier
                             )
@@ -55,7 +56,8 @@ fun RoundIconButton(
                                 modifier = modifier
                             )
                         }
-                    },)
+                    },
+                    )
             }
         )
     }

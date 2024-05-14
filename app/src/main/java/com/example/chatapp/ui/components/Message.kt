@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.components
+package com.example.chatapp_dacs3.ui.components
 
 import android.util.Log
 import androidx.compose.foundation.background

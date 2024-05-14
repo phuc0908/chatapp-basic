@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.screens.message
+package com.example.chatapp_dacs3.ui.screens.message
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -29,7 +29,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,13 +45,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chatapp_dacs3.R
-import com.example.chatapp.model.Message
-import com.example.chatapp.ui.components.ImageMessage
-import com.example.chatapp.ui.components.Message
-import com.example.chatapp.ui.components.RoundIconButton
-import com.example.chatapp.ui.components.TextChat
-import com.example.chatapp.ui.components.CustomTextField
-import com.example.chatapp.ui.components.TextNameUser
+import com.example.chatapp_dacs3.model.Message
+import com.example.chatapp_dacs3.ui.components.ImageMessage
+import com.example.chatapp_dacs3.ui.components.Message
+import com.example.chatapp_dacs3.ui.components.RoundIconButton
+import com.example.chatapp_dacs3.ui.components.TextChat
+import com.example.chatapp_dacs3.ui.components.CustomTextField
+import com.example.chatapp_dacs3.ui.components.TextNameUser
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,7 +85,6 @@ fun MessageScreen(
                         modifier = Modifier
                             .fillMaxHeight(),
                         onClick = popBackStack,
-
                     )
                 }
             )
@@ -158,6 +156,7 @@ fun MessageListWithAFriend(
 
 @Composable
 fun TopBarMes(
+
 ) {
     Row (modifier = Modifier
         .fillMaxWidth()
@@ -264,6 +263,8 @@ fun BottomBarMes(
         }
     }
 }
+
+
 
 
 

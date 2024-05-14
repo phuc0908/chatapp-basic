@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.animations
+package com.example.chatapp_dacs3.ui.animations
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState

@@ -1,5 +1,6 @@
-package com.example.chatapp.ui.screens.signUp
+package com.example.chatapp_dacs3.ui.screens.signUp
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions

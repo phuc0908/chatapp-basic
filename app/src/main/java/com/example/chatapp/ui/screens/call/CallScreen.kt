@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.screens.call
+package com.example.chatapp_dacs3.ui.screens.call
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,13 +23,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.chatapp.ui.components.BottomNavigation
-import com.example.chatapp.ui.components.RoundIconButton
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.chatapp_dacs3.ui.components.BottomNavigation
+import com.example.chatapp_dacs3.ui.components.RoundIconButton
+import com.example.chatapp_dacs3.ui.components.RowACall
 import com.example.chatapp_dacs3.ui.theme.Green1
 
 
@@ -37,6 +41,7 @@ import com.example.chatapp_dacs3.ui.theme.Green1
 @Composable
 fun CallScreen(
     viewModel: CallViewModel,
+    navController: NavController,
     openSearch:() -> Unit,
 ) {
     Scaffold(
@@ -51,9 +56,7 @@ fun CallScreen(
                     .height(70.dp),
 
                 title = {
-                    TopBar(
-                        openSearch = openSearch,
-                    )
+                    TopBar()
                 },
                 navigationIcon = {
                     RoundIconButton(
@@ -84,26 +87,31 @@ fun CallScreen(
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface,
             ) {
-                BottomNavigation(1)
+
+                BottomNavigation(0,navController)
             }
         },
 
     ) { innerPadding ->
+        LaunchedEffect(true) {
+            viewModel.fetchMyCall()
+        }
         Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
         ) {
-
+            viewModel.calls?.forEach{ call ->
+                RowACall(call)
+            }
         }
     }
 }
 
 
 @Composable
-fun TopBar(
-    openSearch: () -> Unit,
-) {
+fun TopBar() {
     Row (
         modifier = Modifier
             .fillMaxSize(),
@@ -118,8 +126,10 @@ fun TopBar(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun CallPreview() {
+
     CallScreen (
         viewModel = viewModel(),
+        rememberNavController(),
         openSearch = {},
     )
 }

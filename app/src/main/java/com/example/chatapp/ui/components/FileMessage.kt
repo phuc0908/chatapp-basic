@@ -1,2 +1,2 @@
-package com.example.chatapp.ui.components
+package com.example.chatapp_dacs3.ui.components
 

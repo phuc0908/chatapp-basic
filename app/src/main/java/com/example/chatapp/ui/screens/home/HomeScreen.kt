@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.screens.home
+package com.example.chatapp_dacs3.ui.screens.home
 
 import androidx.compose.foundation.clickable
 import com.example.chatapp_dacs3.ui.theme.Green1
@@ -32,19 +32,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.chatapp.ui.components.BottomNavigation
-import com.example.chatapp.ui.components.TextChat
-import com.example.chatapp.ui.components.TextNameUser
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.chatapp_dacs3.R
-import com.example.chatapp.model.User
-import com.example.chatapp.ui.components.RoundIconButton
+import com.example.chatapp_dacs3.model.User
+import com.example.chatapp_dacs3.ui.components.RoundIconButton
+import com.example.chatapp_dacs3.ui.components.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
+    navController: NavController,
     openFriendChat:() -> Unit,
     openSearch:() -> Unit,
     openMyinfo:() -> Unit,
@@ -73,7 +74,7 @@ fun HomeScreen(
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface,
             ) {
-                BottomNavigation(0)
+                BottomNavigation(0, navController)
             }
         },
     ) { innerPadding ->
@@ -86,6 +87,7 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState()),
         ) {
+
             viewModel.statusFriend?.let {
                 ListOfStatusFriend(it)
             }
@@ -102,7 +104,6 @@ fun TopBar(
     openSearch: () -> Unit,
     openMyinfo: () -> Unit,
     ) {
-
     Row (
         modifier = Modifier
             .fillMaxSize()
@@ -176,6 +177,7 @@ fun OneChatFriend(
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
+
             ){
                 TextNameUser(name)
                 TimeAgoChat(lastTimeMessage)
@@ -231,7 +233,6 @@ fun ListMyChat(
 fun StatusFriend(
     friends: List<User>
 ) {
-
     friends.forEach {friend->
         Column (modifier = Modifier
             .height(100.dp)
@@ -258,7 +259,6 @@ fun StatusFriend(
 @Composable
 fun ListOfStatusFriend(
     friends: List<User>
-
 ) {
     Row(modifier = Modifier
         .fillMaxWidth()
@@ -275,10 +275,10 @@ fun ListOfStatusFriend(
 fun Preview() {
     HomeScreen (
         viewModel = viewModel(),
+        rememberNavController(),
         openFriendChat = {},
         openSearch = {},
-        openMyinfo = {}
+        openMyinfo = {},
     )
-
 }
 

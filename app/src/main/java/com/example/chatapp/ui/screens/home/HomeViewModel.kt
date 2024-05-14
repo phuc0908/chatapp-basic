@@ -1,11 +1,11 @@
-package com.example.chatapp.ui.screens.home
+package com.example.chatapp_dacs3.ui.screens.home
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.chatapp_dacs3.R
-import com.example.chatapp.model.User
+import com.example.chatapp_dacs3.model.User
 
 
 class HomeViewModel : ViewModel() {
@@ -47,7 +47,6 @@ class HomeViewModel : ViewModel() {
         lastFriend = friends
     }
 }
-
 
 
 

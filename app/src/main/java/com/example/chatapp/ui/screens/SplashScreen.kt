@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.screens
+package com.example.chatapp_dacs3.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

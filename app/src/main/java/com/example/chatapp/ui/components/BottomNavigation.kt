@@ -1,5 +1,6 @@
-package com.example.chatapp.ui.components
+package com.example.chatapp_dacs3.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,12 +17,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.chatapp_dacs3.Destination
 import com.example.chatapp_dacs3.R
 import com.example.chatapp_dacs3.ui.theme.Green1
 
 @Composable
 fun BottomNavigation(
-    buttonIsClicked: Int
+    buttonIsClicked: Int,
+    navController: NavController
 ) {
     Row(
         modifier = Modifier
@@ -38,7 +42,16 @@ fun BottomNavigation(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxHeight(),
+                    .fillMaxHeight()
+                    .clickable (onClick ={
+                        when(i){
+                            0 -> navController.navigate(Destination.Home.route)
+                            1 -> navController.navigate(Destination.Call.route)
+                            2 -> navController.navigate(Destination.Contact.route)
+                            3 -> navController.navigate(Destination.Setting.route)
+
+                        }
+                    }),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
