@@ -1,11 +1,11 @@
-package com.example.chatapp_dacs3.ui.screens.call
+package com.example.chatapp.ui.screens.call
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.example.chatapp.model.Call
 import com.example.chatapp_dacs3.R
-import com.example.chatapp_dacs3.model.Call
 
 class CallViewModel: ViewModel() {
     var calls by mutableStateOf<List<Call>?>(null)

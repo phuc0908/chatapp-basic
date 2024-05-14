@@ -1,4 +1,4 @@
-package com.example.chatapp_dacs3.ui.screens.settings
+package com.example.chatapp.ui.screens.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,7 +17,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,11 +27,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.chatapp_dacs3.ui.components.BottomNavigation
-import com.example.chatapp_dacs3.ui.components.RoundIconButton
+import com.example.chatapp.ui.components.BottomNavigation
+import com.example.chatapp.ui.components.RoundIconButton
+import com.fatherofapps.jnav.annotations.JNav
 
 
 @OptIn(ExperimentalMaterial3Api::class)
+
+@JNav(
+    name = "SettingScreenNavigation",
+    baseRoute = "setting_route",
+    destination = "setting_destination",
+)
 @Composable
 fun SettingScreen(
     popBackStack: () -> Unit,

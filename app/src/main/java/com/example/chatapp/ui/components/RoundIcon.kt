@@ -1,4 +1,4 @@
-package com.example.chatapp_dacs3.ui.components
+package com.example.chatapp.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -15,9 +15,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
-import com.example.chatapp_dacs3.ui.theme.Green1
+import com.example.chatapp.ui.theme.Green1
 
 @Composable
 fun RoundIconButton(

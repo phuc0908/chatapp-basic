@@ -1,7 +1,14 @@
-package com.example.chatapp_dacs3.ui.screens.info
+package com.example.chatapp.ui.screens.info
 
 import androidx.compose.runtime.Composable
+import com.fatherofapps.jnav.annotations.JNav
 
+
+@JNav(
+    name = "InfoScreenNavigation",
+    baseRoute = "info_route",
+    destination = "info_destination",
+)
 @Composable
 fun InfoScreen(
     viewModel: InfoViewModel,

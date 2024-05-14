@@ -1,4 +1,4 @@
-package com.example.chatapp_dacs3
+package com.example.chatapp
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -20,13 +20,17 @@ import com.example.chatapp.ui.theme.ChatApp_DACS3Theme
 import com.example.chatapp.ui.animations.EnterAnimation
 import com.example.chatapp.ui.components.ErrorDialog
 import com.example.chatapp.ui.screens.SplashScreen
+import com.example.chatapp.ui.screens.call.CallScreen
+import com.example.chatapp.ui.screens.call.CallViewModel
 import com.example.chatapp.ui.screens.home.HomeScreen
 import com.example.chatapp.ui.screens.home.HomeViewModel
 import com.example.chatapp.ui.screens.info.InfoScreen
 import com.example.chatapp.ui.screens.info.InfoViewModel
 import com.example.chatapp.ui.screens.message.MessageScreen
+import com.example.chatapp.ui.screens.message.MessageScreenNavigation
 import com.example.chatapp.ui.screens.message.MessageViewModel
 import com.example.chatapp.ui.screens.search.SearchScreen
+import com.example.chatapp.ui.screens.search.SearchScreenNavigation
 import com.example.chatapp.ui.screens.search.SearchViewModel
 import com.example.chatapp.ui.screens.signIn.SignInScreen
 import com.example.chatapp.ui.screens.signUp.SignUpScreen
@@ -52,7 +56,9 @@ fun Main() {
         ) {
             NavHost(navController = navController, startDestination = Destination.Splash.route ){
 
-                composable(Destination.Splash.route) {
+                composable(
+                    route = Destination.Splash.route
+                ) {
                     EnterAnimation {
                         SplashScreen(navController)
                     }
@@ -84,12 +90,12 @@ fun Main() {
                         }
                     }
                 }
-
                 composable(Destination.Home.route){
                     val viewModel: HomeViewModel = remember { HomeViewModel() }
                     EnterAnimation {
                         HomeScreen(
                             viewModel = viewModel,
+                            navController,
                             openFriendChat = {
                                 navController.navigate(Destination.Message.route)
                             },
@@ -104,7 +110,24 @@ fun Main() {
                     }
                 }
 
-                composable(Destination.Message.route){
+                composable(Destination.Call.route){
+                    val viewModel: CallViewModel = remember { CallViewModel() }
+                    EnterAnimation {
+                        CallScreen(
+                            viewModel = viewModel,
+                            navController,
+                            openSearch = {
+                                navController.navigate(Destination.Search.route)
+                            },
+
+                        )
+                    }
+                }
+
+                composable(
+                    route = Destination.Message.route,
+                    arguments = MessageScreenNavigation.arguments()
+                    ){
                     val viewModel: MessageViewModel = remember { MessageViewModel() }
                     EnterAnimation {
                         MessageScreen(
@@ -116,7 +139,10 @@ fun Main() {
                     }
                 }
 
-                composable(Destination.Search.route){
+                composable(
+                    route = Destination.Search.route,
+                    arguments = SearchScreenNavigation.arguments()
+                ){
                     val viewModel: SearchViewModel = remember { SearchViewModel() }
                     EnterAnimation {
                         SearchScreen(

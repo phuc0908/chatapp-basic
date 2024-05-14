@@ -1,4 +1,4 @@
-package com.example.chatapp_dacs3.ui.screens.search
+package com.example.chatapp.ui.screens.search
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -43,12 +43,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.chatapp_dacs3.model.YourRecentSearch
-import com.example.chatapp_dacs3.model.YourRecommendSearch
-import com.example.chatapp_dacs3.ui.components.CustomTextField
-import com.example.chatapp_dacs3.ui.components.RoundIconButton
+import com.example.chatapp.model.YourRecentSearch
+import com.example.chatapp.model.YourRecommendSearch
+import com.example.chatapp.ui.components.CustomTextField
+import com.example.chatapp.ui.components.RoundIconButton
+import com.fatherofapps.jnav.annotations.JNav
+import com.fatherofapps.jnav.annotations.JNavArg
 
 @OptIn(ExperimentalMaterial3Api::class)
+
+@JNav(
+    name = "SearchScreenNavigation",
+    baseRoute = "search_route",
+    destination = "search_destination",
+    arguments = [
+        JNavArg(name = "userName", type = String::class)
+    ]
+)
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel,

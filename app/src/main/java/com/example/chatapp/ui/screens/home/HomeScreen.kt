@@ -1,7 +1,7 @@
-package com.example.chatapp_dacs3.ui.screens.home
+package com.example.chatapp.ui.screens.home
 
 import androidx.compose.foundation.clickable
-import com.example.chatapp_dacs3.ui.theme.Green1
+import com.example.chatapp.ui.theme.Green1
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,13 +35,23 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.chatapp.ui.components.BottomNavigation
 import com.example.chatapp_dacs3.R
-import com.example.chatapp_dacs3.model.User
-import com.example.chatapp_dacs3.ui.components.RoundIconButton
-import com.example.chatapp_dacs3.ui.components.*
+import com.example.chatapp.model.User
+import com.example.chatapp.ui.components.RoundIconButton
+import com.example.chatapp.ui.components.TextChat
+import com.example.chatapp.ui.components.TextNameUser
+import com.fatherofapps.jnav.annotations.JNav
+import com.fatherofapps.jnav.annotations.JNavArg
+
+
+@JNav(
+    name = "HomeScreenNavigation",
+    baseRoute = "home_route",
+    destination = "home_destination",
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
-
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,

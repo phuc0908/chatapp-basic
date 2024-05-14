@@ -1,22 +1,18 @@
-package com.example.chatapp_dacs3.ui.components
+package com.example.chatapp.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Call
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.chatapp.model.Call
 import com.example.chatapp_dacs3.R
-import com.example.chatapp_dacs3.model.Call
 
 @Composable
 fun RowACall(
@@ -50,9 +46,7 @@ fun RowACall(
             }
         }
 //        right row
-        Row(
-
-        ){
+        Row{
             RoundIconButton(
                 imageResId = R.drawable.call,
                 imageVector = null,

@@ -1,4 +1,4 @@
-package com.example.chatapp_dacs3.ui.screens.message
+package com.example.chatapp.ui.screens.message
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -45,15 +45,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chatapp_dacs3.R
-import com.example.chatapp_dacs3.model.Message
-import com.example.chatapp_dacs3.ui.components.ImageMessage
-import com.example.chatapp_dacs3.ui.components.Message
-import com.example.chatapp_dacs3.ui.components.RoundIconButton
-import com.example.chatapp_dacs3.ui.components.TextChat
-import com.example.chatapp_dacs3.ui.components.CustomTextField
-import com.example.chatapp_dacs3.ui.components.TextNameUser
+import com.example.chatapp.model.Message
+import com.example.chatapp.ui.components.ImageMessage
+import com.example.chatapp.ui.components.Message
+import com.example.chatapp.ui.components.RoundIconButton
+import com.example.chatapp.ui.components.TextChat
+import com.example.chatapp.ui.components.CustomTextField
+import com.example.chatapp.ui.components.TextNameUser
+import com.fatherofapps.jnav.annotations.JNav
+import com.fatherofapps.jnav.annotations.JNavArg
 
 @OptIn(ExperimentalMaterial3Api::class)
+
+@JNav(
+    name = "MessageScreenNavigation",
+    baseRoute = "message_route",
+    destination = "message_destination",
+    arguments = [
+        JNavArg(name = "userName", type = String::class)
+    ]
+)
 @Composable
 fun MessageScreen(
     viewModel: MessageViewModel,

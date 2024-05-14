@@ -1,4 +1,4 @@
-package com.example.chatapp_dacs3.ui.screens.signIn
+package com.example.chatapp.ui.screens.signIn
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -21,11 +21,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.chatapp_dacs3.ui.components.ErrorDialog
-import com.example.chatapp_dacs3.ui.theme.Green1
+import com.example.chatapp.ui.components.ErrorDialog
+import com.example.chatapp.ui.theme.Green1
+import com.fatherofapps.jnav.annotations.JNav
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@JNav(
+    name = "SignInScreenNavigation",
+    baseRoute = "sign_in_route",
+    destination = "sign_in_destination",
+)
 @Composable
 fun SignInScreen(
     navController: NavController,

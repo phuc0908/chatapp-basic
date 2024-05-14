@@ -1,20 +1,15 @@
-package com.example.chatapp_dacs3.ui.screens.message
+package com.example.chatapp.ui.screens.message
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.chatapp_dacs3.R
-import com.example.chatapp_dacs3.model.Message
-import com.google.firebase.database.ktx.database
+import com.example.chatapp.model.Message
 import com.google.firebase.ktx.Firebase
 
 class MessageViewModel : ViewModel(){
     var message by mutableStateOf<List<Message>?>(null)
-        private set
-    var database = Firebase.database
-        private set
-    var myRef = database.getReference("message")
         private set
 
     fun fetchMessage() {
@@ -31,7 +26,4 @@ class MessageViewModel : ViewModel(){
     }
 
 
-    fun insertMes(message: Message){
-        myRef.setValue("Hello, World!")
-    }
 }

@@ -1,4 +1,4 @@
-package com.example.chatapp_dacs3.ui.theme
+package com.example.chatapp.ui.theme
 
 import android.graphics.Color.rgb
 import androidx.compose.ui.graphics.Color

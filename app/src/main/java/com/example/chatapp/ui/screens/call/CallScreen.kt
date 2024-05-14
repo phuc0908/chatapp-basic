@@ -1,4 +1,4 @@
-package com.example.chatapp_dacs3.ui.screens.call
+package com.example.chatapp.ui.screens.call
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,10 +31,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.chatapp_dacs3.ui.components.BottomNavigation
-import com.example.chatapp_dacs3.ui.components.RoundIconButton
-import com.example.chatapp_dacs3.ui.components.RowACall
-import com.example.chatapp_dacs3.ui.theme.Green1
+import com.example.chatapp.ui.components.BottomNavigation
+import com.example.chatapp.ui.components.RoundIconButton
+import com.example.chatapp.ui.components.RowACall
+import com.example.chatapp.ui.theme.Green1
 
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,4 +1,4 @@
-package com.example.chatapp_dacs3.ui.screens
+package com.example.chatapp.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,10 +15,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.chatapp_dacs3.Destination
+import com.example.chatapp.Destination
 import com.example.chatapp_dacs3.R
+import com.fatherofapps.jnav.annotations.JNav
 import kotlinx.coroutines.delay
 
+
+@JNav(
+    name = "SplashScreenNavigation",
+    baseRoute = "splash_route",
+    destination = "splash_destination",
+)
 @Composable
 fun SplashScreen(
     navController: NavController

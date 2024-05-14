@@ -1,4 +1,4 @@
-package com.example.chatapp_dacs3.ui.components
+package com.example.chatapp.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,9 +18,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.chatapp_dacs3.Destination
+import com.example.chatapp.Destination
 import com.example.chatapp_dacs3.R
-import com.example.chatapp_dacs3.ui.theme.Green1
+import com.example.chatapp.ui.theme.Green1
 
 @Composable
 fun BottomNavigation(

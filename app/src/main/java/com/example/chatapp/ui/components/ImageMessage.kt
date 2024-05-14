@@ -1,4 +1,4 @@
-package com.example.chatapp_dacs3.ui.components
+package com.example.chatapp.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,7 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.chatapp_dacs3.ui.theme.LightGreen1
+import com.example.chatapp.ui.theme.LightGreen1
 
 @Composable
 fun ImageMessage(
