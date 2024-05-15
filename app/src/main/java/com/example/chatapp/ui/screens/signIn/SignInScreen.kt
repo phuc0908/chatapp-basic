@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.ui.components.ErrorDialog
+import com.example.chatapp.ui.components.GoogleButton
 import com.example.chatapp.ui.theme.Green1
 import com.fatherofapps.jnav.annotations.JNav
 import kotlinx.coroutines.delay
@@ -35,7 +36,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun SignInScreen(
     navController: NavController,
-    onLoginClicked: (String, String) -> Unit
+    onLoginClicked: (String, String) -> Unit,
+    onLoginGoogle: () -> Unit
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -127,6 +129,7 @@ fun SignInScreen(
                     }
                     .padding(top = 8.dp)
             )
+            GoogleButton(onLoginGoogle)
 
         }
         if (showDialog) {
@@ -148,10 +151,11 @@ fun validateInput(username: String, password: String): Boolean {
 
 @Preview
 @Composable
-fun PreviewLoginScreen() {
+fun PreviewSignInScreen() {
     val navController = rememberNavController()
     SignInScreen(
         onLoginClicked = {  _, _ -> },
+        onLoginGoogle = {},
         navController = navController)
 }
 
