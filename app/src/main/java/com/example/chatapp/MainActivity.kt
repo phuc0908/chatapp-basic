@@ -35,6 +35,7 @@ import com.example.chatapp.ui.screens.search.SearchViewModel
 import com.example.chatapp.ui.screens.settings.SettingScreen
 import com.example.chatapp.ui.screens.signIn.SignInScreen
 import com.example.chatapp.ui.screens.signUp.SignUpScreen
+import dagger.hilt.android.AndroidEntryPoint
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
