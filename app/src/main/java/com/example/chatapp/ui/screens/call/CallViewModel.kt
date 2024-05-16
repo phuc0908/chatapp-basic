@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.chatapp.model.Call
-import com.example.chatapp_dacs3.R
+import com.example.chatapp.R
 
 class CallViewModel: ViewModel() {
     var calls by mutableStateOf<List<Call>?>(null)

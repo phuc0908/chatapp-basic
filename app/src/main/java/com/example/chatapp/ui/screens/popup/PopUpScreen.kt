@@ -36,7 +36,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.chatapp_dacs3.R
+import com.example.chatapp.R
 import com.example.chatapp.ui.components.ImageMessage
 import com.example.chatapp.ui.components.Message
 import com.example.chatapp.ui.components.RoundIconButton

@@ -21,7 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chatapp.ui.theme.backgroundGoogle
-import com.example.chatapp_dacs3.R
+import com.example.chatapp.R
 
 
 @Composable

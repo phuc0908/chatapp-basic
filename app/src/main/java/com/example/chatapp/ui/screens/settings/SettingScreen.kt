@@ -43,7 +43,6 @@ import com.fatherofapps.jnav.annotations.JNav
 fun SettingScreen(
     popBackStack: () -> Unit,
     navController: NavController,
-    isOpened:() -> Unit
 ) {
 
     Scaffold(
@@ -117,6 +116,5 @@ fun SettingPreview() {
     SettingScreen (
         popBackStack = {},
         rememberNavController(),
-        {}
     )
 }

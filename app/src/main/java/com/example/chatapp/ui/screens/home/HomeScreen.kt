@@ -36,13 +36,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.ui.components.BottomNavigation
-import com.example.chatapp_dacs3.R
+import com.example.chatapp.R
 import com.example.chatapp.model.User
 import com.example.chatapp.ui.components.RoundIconButton
 import com.example.chatapp.ui.components.TextChat
 import com.example.chatapp.ui.components.TextNameUser
 import com.fatherofapps.jnav.annotations.JNav
-import com.fatherofapps.jnav.annotations.JNavArg
 
 
 @JNav(

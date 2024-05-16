@@ -16,7 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.chatapp.Destination
-import com.example.chatapp_dacs3.R
+import com.example.chatapp.R
 import com.fatherofapps.jnav.annotations.JNav
 import kotlinx.coroutines.delay
 

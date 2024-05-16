@@ -37,7 +37,6 @@ import kotlinx.coroutines.launch
 fun SignInScreen(
     navController: NavController,
     onLoginClicked: (String, String) -> Unit,
-    onLoginGoogle: () -> Unit
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -129,7 +128,6 @@ fun SignInScreen(
                     }
                     .padding(top = 8.dp)
             )
-            GoogleButton(onLoginGoogle)
 
         }
         if (showDialog) {
@@ -155,7 +153,6 @@ fun PreviewSignInScreen() {
     val navController = rememberNavController()
     SignInScreen(
         onLoginClicked = {  _, _ -> },
-        onLoginGoogle = {},
         navController = navController)
 }
 

@@ -4,7 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.chatapp_dacs3.R
+import com.example.chatapp.R
 import com.example.chatapp.model.YourRecentSearch
 import com.example.chatapp.model.YourRecommendSearch
 

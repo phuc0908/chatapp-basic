@@ -32,6 +32,7 @@ import com.example.chatapp.ui.screens.message.MessageViewModel
 import com.example.chatapp.ui.screens.search.SearchScreen
 import com.example.chatapp.ui.screens.search.SearchScreenNavigation
 import com.example.chatapp.ui.screens.search.SearchViewModel
+import com.example.chatapp.ui.screens.settings.SettingScreen
 import com.example.chatapp.ui.screens.signIn.SignInScreen
 import com.example.chatapp.ui.screens.signUp.SignUpScreen
 
@@ -83,7 +84,7 @@ fun Main() {
                     EnterAnimation {
                         SignUpScreen (navController = navController)
                         {username, nickname, password, confirmpassword ->
-
+                            navController.navigate(Destination.Home.route)
                         }
                         if (showDialog) {
                             ErrorDialog(onDismiss = { showDialog = false })
@@ -126,7 +127,6 @@ fun Main() {
 
                 composable(
                     route = Destination.Message.route,
-                    arguments = MessageScreenNavigation.arguments()
                     ){
                     val viewModel: MessageViewModel = remember { MessageViewModel() }
                     EnterAnimation {
@@ -141,7 +141,6 @@ fun Main() {
 
                 composable(
                     route = Destination.Search.route,
-                    arguments = SearchScreenNavigation.arguments()
                 ){
                     val viewModel: SearchViewModel = remember { SearchViewModel() }
                     EnterAnimation {
@@ -161,6 +160,17 @@ fun Main() {
                             popBackStack = {
                                 navController.popBackStack()
                             }
+                        )
+                    }
+                }
+
+                composable(Destination.Setting.route){
+                    EnterAnimation {
+                        SettingScreen(
+                            popBackStack = {
+                                navController.popBackStack()
+                            },
+                            navController,
                         )
                     }
                 }

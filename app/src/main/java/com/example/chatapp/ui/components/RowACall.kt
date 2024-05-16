@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.chatapp.model.Call
-import com.example.chatapp_dacs3.R
+import com.example.chatapp.R
 
 @Composable
 fun RowACall(

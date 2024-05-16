@@ -44,7 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.chatapp_dacs3.R
+import com.example.chatapp.R
 import com.example.chatapp.model.Message
 import com.example.chatapp.ui.components.ImageMessage
 import com.example.chatapp.ui.components.Message

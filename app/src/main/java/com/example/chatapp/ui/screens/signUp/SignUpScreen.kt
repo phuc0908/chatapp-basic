@@ -126,7 +126,7 @@ fun SignUpScreen(
             color = Green1,
             modifier = Modifier
                 .clickable {
-                    navController.navigate(Destination.Home.route)
+                    navController.navigate(Destination.SignIn.route)
                 }
                 .padding(top = 8.dp)
         )
