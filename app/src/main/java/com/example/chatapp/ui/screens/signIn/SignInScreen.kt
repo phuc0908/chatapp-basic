@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -21,10 +22,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.chatapp.EmailPasswordActivity
 import com.example.chatapp.ui.components.ErrorDialog
 import com.example.chatapp.ui.components.GoogleButton
 import com.example.chatapp.ui.theme.Green1
 import com.fatherofapps.jnav.annotations.JNav
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -33,18 +38,26 @@ import kotlinx.coroutines.launch
     baseRoute = "sign_in_route",
     destination = "sign_in_destination",
 )
+fun validateInput(username: String, password: String): Boolean {
+    return !(username.isEmpty() || password.isEmpty())
+}
+private var auth: FirebaseAuth = Firebase.auth
+
+
 @Composable
 fun SignInScreen(
     navController: NavController,
-    onLoginClicked: (String, String) -> Unit,
+    authViewModel: AuthViewModel
 ) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
+
+    val username by authViewModel.userName.collectAsState()
+    val password by authViewModel.password.collectAsState()
+    val context = LocalContext.current
+
 
     var currentProgress by remember { mutableFloatStateOf(0f) }
     var loading by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
 
     var showDialog by remember { mutableStateOf(false) }
 
@@ -65,7 +78,7 @@ fun SignInScreen(
             OutlinedTextField(
                 value = username,
                 onValueChange = {
-                    username = it
+                    authViewModel.updateUserName(it)
                 },
                 label = {
                     Text("Your email")
@@ -84,7 +97,7 @@ fun SignInScreen(
             OutlinedTextField(
                 value = password,
                 onValueChange = {
-                    password = it
+                    authViewModel.updatePassword(it)
                 },
                 label = { Text("Password") },
                 modifier = Modifier
@@ -96,24 +109,12 @@ fun SignInScreen(
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = { focusManager.clearFocus() }
-                )
+                ),
             )
             Button(
                 onClick = {
-                    if (validateInput(username, password)) {
-                        loading = true
-                        onLoginClicked(username, password)
-                        scope.launch {
-                            loadProgress { progress ->
-                                currentProgress = progress
-                            }
-                            loading = false
-                        }
-                    }else{
-                        showDialog = true
-                    }
+                    authViewModel.signInS(navController)
                 },
-                enabled = !loading,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors()
             ) {
@@ -143,17 +144,16 @@ suspend fun loadProgress(updateProgress: (Float) -> Unit) {
     }
 }
 
-fun validateInput(username: String, password: String): Boolean {
-    return !(username.isEmpty() || password.isEmpty())
-}
+
 
 @Preview
 @Composable
 fun PreviewSignInScreen() {
     val navController = rememberNavController()
     SignInScreen(
-        onLoginClicked = {  _, _ -> },
-        navController = navController)
+        navController = navController,
+        authViewModel = AuthViewModel(context = LocalContext.current)
+        )
 }
 
 

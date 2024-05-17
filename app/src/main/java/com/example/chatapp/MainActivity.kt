@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -33,11 +36,17 @@ import com.example.chatapp.ui.screens.search.SearchScreen
 import com.example.chatapp.ui.screens.search.SearchScreenNavigation
 import com.example.chatapp.ui.screens.search.SearchViewModel
 import com.example.chatapp.ui.screens.settings.SettingScreen
+import com.example.chatapp.ui.screens.signIn.AuthViewModel
 import com.example.chatapp.ui.screens.signIn.SignInScreen
 import com.example.chatapp.ui.screens.signUp.SignUpScreen
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 
 class MainActivity : ComponentActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -56,6 +65,19 @@ fun Main() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
+            val context = LocalContext.current
+            val authViewModel = AuthViewModel(context)
+
+            val loginState by authViewModel.loginState.collectAsState()
+
+            LaunchedEffect(loginState) {
+                if(loginState) {
+                    navController.navigate(Destination.Home.route) {
+                        popUpTo(Destination.SignIn.route) { inclusive = true }
+                    }
+                }
+            }
+
             NavHost(navController = navController, startDestination = Destination.Splash.route ){
 
                 composable(
@@ -68,28 +90,19 @@ fun Main() {
 
                 composable(Destination.SignIn.route){
                     EnterAnimation {
-                        SignInScreen (navController = navController)
-                        { username, password ->
-                            if(username == "1" && password == "1")
-                                navController.navigate(Destination.Home.route)
-                            else
-                                showDialog = true
-                        }
-                        if (showDialog) {
-                            ErrorDialog(onDismiss = { showDialog = false })
-                        }
+                        SignInScreen (
+                            navController = navController,
+                            authViewModel
+                        )
                     }
                 }
 
                 composable(Destination.SignUp.route){
                     EnterAnimation {
-                        SignUpScreen (navController = navController)
-                        {username, nickname, password, confirmpassword ->
-                            navController.navigate(Destination.Home.route)
-                        }
-                        if (showDialog) {
-                            ErrorDialog(onDismiss = { showDialog = false })
-                        }
+                        SignUpScreen (
+                            navController = navController,
+                            authViewModel
+                        )
                     }
                 }
                 composable(Destination.Home.route){

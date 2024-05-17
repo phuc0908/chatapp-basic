@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -21,16 +22,17 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.Destination
+import com.example.chatapp.ui.screens.signIn.AuthViewModel
 import com.example.chatapp.ui.theme.Green1
 
 @Composable
 fun SignUpScreen(
     navController: NavController,
-    onLoginClicked: (String, String, String, String) -> Unit
+    authViewModel: AuthViewModel
 ) {
-    var nickname by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val nickname by authViewModel.nickName.collectAsState()
+    val username by authViewModel.userName.collectAsState()
+    val password by authViewModel.password.collectAsState()
     var confirmpassword by remember { mutableStateOf("") }
 
     val focusManager = LocalFocusManager.current
@@ -45,7 +47,7 @@ fun SignUpScreen(
         OutlinedTextField(
             value = nickname,
             onValueChange = {
-                nickname = it
+                authViewModel.updateNickName(it)
             },
             label = { Text("Your nickname") },
             modifier = Modifier
@@ -62,7 +64,7 @@ fun SignUpScreen(
         OutlinedTextField(
             value = username,
             onValueChange = {
-                username = it
+                authViewModel.updateUserName(it)
             },
             label = { Text("Your email") },
             modifier = Modifier
@@ -79,7 +81,7 @@ fun SignUpScreen(
         OutlinedTextField(
             value = password,
             onValueChange = {
-                password = it
+                authViewModel.updatePassword(it)
             },
             label = { Text("Password") },
             modifier = Modifier
@@ -112,9 +114,7 @@ fun SignUpScreen(
         )
         Button(
             onClick = {
-                onLoginClicked(
-                    username, nickname, password, confirmpassword
-                )
+                authViewModel.signUp()
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors()
@@ -138,8 +138,8 @@ fun SignUpScreen(
 fun PreviewLoginScreen() {
     val navController = rememberNavController()
     SignUpScreen(
-        onLoginClicked = { _, _ ,_,_-> },
-        navController = navController
+        navController = navController,
+        authViewModel = AuthViewModel(LocalContext.current)
     )
 }
 
