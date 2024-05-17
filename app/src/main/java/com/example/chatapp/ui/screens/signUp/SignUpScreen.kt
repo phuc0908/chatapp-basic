@@ -114,7 +114,7 @@ fun SignUpScreen(
         )
         Button(
             onClick = {
-                authViewModel.signUp()
+                authViewModel.createAccount(navController)
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors()

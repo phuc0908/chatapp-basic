@@ -67,24 +67,32 @@ class AuthViewModel(
         }
     }
 
-//    fun createAccount() {
-//        auth.createUserWithEmailAndPassword(userName.value, password.value)
-//            .addOnCompleteListener { task ->
-//                if (task.isSuccessful) {
-//                    Log.d(TAG, "createUserWithEmail:success")
-//                    val user = auth.currentUser
-//                    updateUI(user)
-//                } else {
-//                    Log.w(TAG, "createUserWithEmail:failure", task.exception)
-//                    Toast.makeText(
-//                        context,
-//                        "Authentication failed.",
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-//                    updateUI(null)
-//                }
-//            }
-//    }
+    fun createAccount(navController: NavController) {
+        auth.createUserWithEmailAndPassword(userName.value, password.value)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "createUserWithEmail:success")
+                    Toast.makeText(
+                        context,
+                        "Register Successful.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    val user = auth.currentUser
+                    updateUI(user)
+
+                    navController.navigate(Destination.SignIn.route)
+
+                } else {
+                    Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                    Toast.makeText(
+                        context,
+                        "Authentication failed.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    updateUI(null)
+                }
+            }
+    }
     fun signInS(navController: NavController) {
         auth.signInWithEmailAndPassword(userName.value, password.value)
             .addOnCompleteListener() { task ->
