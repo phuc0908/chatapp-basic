@@ -1,5 +1,8 @@
 package com.example.chatapp.ui.screens.home
 
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import com.example.chatapp.ui.theme.Green1
 import androidx.compose.foundation.horizontalScroll
@@ -24,8 +27,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -41,7 +50,10 @@ import com.example.chatapp.model.User
 import com.example.chatapp.ui.components.RoundIconButton
 import com.example.chatapp.ui.components.TextChat
 import com.example.chatapp.ui.components.TextNameUser
+import com.example.chatapp.ui.screens.signIn.AuthViewModel
 import com.fatherofapps.jnav.annotations.JNav
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @JNav(
@@ -54,11 +66,27 @@ import com.fatherofapps.jnav.annotations.JNav
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
+    authViewModel: AuthViewModel,
     navController: NavController,
     openFriendChat:() -> Unit,
     openSearch:() -> Unit,
     openMyinfo:() -> Unit,
     ) {
+    var backPressedOnce by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+
+    BackHandler {
+        if (backPressedOnce) {
+            (navController.context as? ComponentActivity)?.finish()
+        } else {
+            backPressedOnce = true
+            Toast.makeText(navController.context, "Press back again to exit", Toast.LENGTH_SHORT).show()
+            coroutineScope.launch {
+                delay(2000)
+                backPressedOnce = false
+            }
+        }
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -284,6 +312,7 @@ fun ListOfStatusFriend(
 fun Preview() {
     HomeScreen (
         viewModel = viewModel(),
+        authViewModel = AuthViewModel(LocalContext.current),
         rememberNavController(),
         openFriendChat = {},
         openSearch = {},

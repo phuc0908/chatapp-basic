@@ -113,7 +113,7 @@ fun SignInScreen(
             )
             Button(
                 onClick = {
-                    authViewModel.signInS(navController)
+                    authViewModel.signIn(navController)
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors()

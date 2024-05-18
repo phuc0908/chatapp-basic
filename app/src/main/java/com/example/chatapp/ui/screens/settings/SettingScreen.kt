@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,6 +39,7 @@ import com.example.chatapp.ui.components.BottomNavigation
 import com.example.chatapp.ui.components.RoundIconButton
 import com.fatherofapps.jnav.annotations.JNav
 import com.example.chatapp.R
+import com.example.chatapp.ui.screens.signIn.AuthViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,6 +54,7 @@ import com.example.chatapp.R
 fun SettingScreen(
     popBackStack: () -> Unit,
     navController: NavController,
+    authViewModel: AuthViewModel
 ) {
 
     Scaffold(
@@ -98,14 +101,17 @@ fun SettingScreen(
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState()),
         ){
-            Profile()
+            Profile(authViewModel,navController)
             BodySetting()
         }
     }
 }
 
 @Composable
-fun Profile() {
+fun Profile(
+    authViewModel: AuthViewModel,
+    navController: NavController
+) {
     Column(
         Modifier
             .fillMaxWidth()
@@ -130,7 +136,7 @@ fun Profile() {
         Spacer(modifier = Modifier.height(10.dp))
         Button(
             onClick = {
-
+                authViewModel.signOut(navController = navController)
             },
             Modifier.height(35.dp)
         ) {
@@ -236,5 +242,6 @@ fun SettingPreview() {
     SettingScreen (
         popBackStack = {},
         rememberNavController(),
+        authViewModel = AuthViewModel(LocalContext.current)
     )
 }

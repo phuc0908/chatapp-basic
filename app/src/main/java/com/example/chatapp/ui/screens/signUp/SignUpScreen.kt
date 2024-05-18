@@ -30,10 +30,10 @@ fun SignUpScreen(
     navController: NavController,
     authViewModel: AuthViewModel
 ) {
-    val nickname by authViewModel.nickName.collectAsState()
-    val username by authViewModel.userName.collectAsState()
-    val password by authViewModel.password.collectAsState()
-    var confirmpassword by remember { mutableStateOf("") }
+    val nickname by authViewModel.nickNameRegister.collectAsState()
+    val username by authViewModel.userNameRegister.collectAsState()
+    val password by authViewModel.passwordRegister.collectAsState()
+    val repassword by authViewModel.cfpasswordRegister.collectAsState()
 
     val focusManager = LocalFocusManager.current
 
@@ -64,7 +64,7 @@ fun SignUpScreen(
         OutlinedTextField(
             value = username,
             onValueChange = {
-                authViewModel.updateUserName(it)
+                authViewModel.updateUserNameRegister(it)
             },
             label = { Text("Your email") },
             modifier = Modifier
@@ -81,7 +81,7 @@ fun SignUpScreen(
         OutlinedTextField(
             value = password,
             onValueChange = {
-                authViewModel.updatePassword(it)
+                authViewModel.updatePasswordRegister(it)
             },
             label = { Text("Password") },
             modifier = Modifier
@@ -96,9 +96,9 @@ fun SignUpScreen(
             )
         )
         OutlinedTextField(
-            value = confirmpassword,
+            value = repassword,
             onValueChange = {
-                confirmpassword = it
+                authViewModel.updateCfPassword(it)
             },
             label = { Text("Confirm Password") },
             modifier = Modifier

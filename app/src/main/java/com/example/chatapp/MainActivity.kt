@@ -59,6 +59,8 @@ class MainActivity : ComponentActivity() {
 fun Main() {
     val navController = rememberNavController()
     var showDialog by remember { mutableStateOf(false) }
+    val auth = FirebaseAuth.getInstance()
+    val currentUser by remember { mutableStateOf(auth.currentUser) }
 
     ChatApp_DACS3Theme {
         Surface(
@@ -68,23 +70,15 @@ fun Main() {
             val context = LocalContext.current
             val authViewModel = AuthViewModel(context)
 
-            val loginState by authViewModel.loginState.collectAsState()
-
-            LaunchedEffect(loginState) {
-                if(loginState) {
-                    navController.navigate(Destination.Home.route) {
-                        popUpTo(Destination.SignIn.route) { inclusive = true }
-                    }
-                }
-            }
 
             NavHost(navController = navController, startDestination = Destination.Splash.route ){
+
 
                 composable(
                     route = Destination.Splash.route
                 ) {
                     EnterAnimation {
-                        SplashScreen(navController)
+                        SplashScreen(navController,authViewModel)
                     }
                 }
 
@@ -110,6 +104,8 @@ fun Main() {
                     EnterAnimation {
                         HomeScreen(
                             viewModel = viewModel,
+
+                            authViewModel,
                             navController,
                             openFriendChat = {
                                 navController.navigate(Destination.Message.route)
@@ -185,6 +181,7 @@ fun Main() {
                                 navController.popBackStack()
                             },
                             navController,
+                            authViewModel
                         )
                     }
                 }

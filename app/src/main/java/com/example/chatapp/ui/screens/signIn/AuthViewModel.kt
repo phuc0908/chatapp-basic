@@ -4,30 +4,38 @@ package com.example.chatapp.ui.screens.signIn
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.runtime.mutableStateOf
 import com.google.firebase.auth.FirebaseAuth
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.chatapp.Destination
 import com.google.firebase.auth.FirebaseUser
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 class AuthViewModel(
-    private val context: Context
+    val context: Context
 ) : ViewModel(){
-
-    private val _nickName = MutableStateFlow("")
-    val nickName = _nickName.asStateFlow()
-
+//    Sign In
     private val _userName = MutableStateFlow("")
     val userName = _userName.asStateFlow()
 
     private val _password = MutableStateFlow("")
     val password = _password.asStateFlow()
+
+//    Sign Up
+    private val _userNameRegister = MutableStateFlow("")
+    val userNameRegister = _userNameRegister.asStateFlow()
+
+    private val _passwordRegister = MutableStateFlow("")
+    val passwordRegister = _passwordRegister.asStateFlow()
+
+    private val _nickNameRegister = MutableStateFlow("")
+    val nickNameRegister = _nickNameRegister.asStateFlow()
+
+    private val _cfpasswordRegister = MutableStateFlow("")
+    val cfpasswordRegister = _cfpasswordRegister.asStateFlow()
+
+//    OTHER
 
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Empty)
     val uiState = _uiState.asStateFlow()
@@ -37,11 +45,13 @@ class AuthViewModel(
 
     private val auth = FirebaseAuth.getInstance()
 
-    var currentUser: FirebaseUser? = null
-        public set
-    fun updateNickName(newName: String) {
-        _nickName.value = newName
+    public fun getAuthInstance(): FirebaseAuth {
+        return auth
     }
+
+    var currentUser: FirebaseUser? = null
+        set
+//  SIGN IN
     fun updateUserName(newName: String) {
         _userName.value = newName
     }
@@ -49,23 +59,21 @@ class AuthViewModel(
     fun updatePassword(newPassword: String) {
         _password.value = newPassword
     }
-
-    fun signUp() {
-        viewModelScope.launch {
-            try {
-                _uiState.value = AuthUiState.Loading
-                auth.createUserWithEmailAndPassword(userName.value, password.value).await()
-                _uiState.value = AuthUiState.Success
-                _loginState.value = true
-                Toast.makeText(context, "Đăng ký thành công!", Toast.LENGTH_SHORT).show()
-            }
-
-            catch (e :Exception) {
-                Toast.makeText(context, "Đăng nhập không thành công!", Toast.LENGTH_SHORT).show()
-                _uiState.value = AuthUiState.Error(e.message ?: "Đã xảy ra lỗi không mong muốn")
-            }
-        }
+//    SIGN UP
+    fun updateUserNameRegister(newName: String) {
+        _userNameRegister.value = newName
     }
+
+    fun updatePasswordRegister(newPassword: String) {
+        _passwordRegister.value = newPassword
+    }
+    fun updateNickName(newName: String) {
+        _nickNameRegister.value = newName
+    }
+    fun updateCfPassword(newPassword: String) {
+        _cfpasswordRegister.value = newPassword
+    }
+
 
     fun createAccount(navController: NavController) {
         auth.createUserWithEmailAndPassword(userName.value, password.value)
@@ -93,7 +101,18 @@ class AuthViewModel(
                 }
             }
     }
-    fun signInS(navController: NavController) {
+    fun signIn(navController: NavController) {
+
+        if (!isEmailValid(userName.value)) {
+            Toast.makeText(context, "Invalid email address.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (!isPasswordValid(password.value)) {
+            Toast.makeText(context, "Password must be at least 6 characters.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         auth.signInWithEmailAndPassword(userName.value, password.value)
             .addOnCompleteListener() { task ->
                 if (task.isSuccessful) {
@@ -107,7 +126,11 @@ class AuthViewModel(
                     val user = auth.currentUser
                     updateUI(user)
 
-                    navController.navigate(Destination.Home.route)
+                    navController.navigate(Destination.Home.route){
+                        popUpTo(Destination.SignIn.route) {
+                            inclusive = true
+                        }
+                    }
                 } else {
                     Log.w(TAG, "signInWithEmail:failure", task.exception)
                     Toast.makeText(
@@ -120,22 +143,16 @@ class AuthViewModel(
             }
     }
 
-
-    fun signIn() {
-        viewModelScope.launch {
-            try {
-                _uiState.value = AuthUiState.Loading
-                auth.signInWithEmailAndPassword(userName.value, password.value)
-                _uiState.value = AuthUiState.Success
-                _loginState.value = true
-                Toast.makeText(context, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show()
-            }
-            catch (e: Exception) {
-                _uiState.value = AuthUiState.Error(e.message ?: "Đã xảy ra lỗi không mong muốn")
-                Toast.makeText(context, "Đăng nhập không thành công!", Toast.LENGTH_SHORT).show()
+    fun signOut(navController: NavController){
+        auth.signOut()
+        navController.navigate(Destination.SignIn.route) {
+            popUpTo(Destination.Home.route) {
+                inclusive = true
             }
         }
+        updateUI(null)
     }
+
     private fun updateUI(user: FirebaseUser?) {
         currentUser = user
     }
@@ -146,6 +163,13 @@ class AuthViewModel(
 
     companion object {
         private const val TAG = "EmailPassword"
+    }
+    fun isEmailValid(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    fun isPasswordValid(password: String): Boolean {
+        return password.length >= 6
     }
 }
 

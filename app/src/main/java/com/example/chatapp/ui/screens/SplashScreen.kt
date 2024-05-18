@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.chatapp.Destination
 import com.example.chatapp.R
+import com.example.chatapp.ui.screens.signIn.AuthViewModel
 import com.fatherofapps.jnav.annotations.JNav
 import kotlinx.coroutines.delay
 
@@ -28,11 +29,16 @@ import kotlinx.coroutines.delay
 )
 @Composable
 fun SplashScreen(
-    navController: NavController
+    navController: NavController,
+    authViewModel: AuthViewModel
 ) {
     LaunchedEffect(Unit) {
-        delay(2000)
-        navController.navigate(Destination.SignIn.route)
+        delay(1000)
+        if(authViewModel.getAuthInstance().currentUser!=null){
+            navController.navigate(Destination.Home.route)
+        }else{
+            navController.navigate(Destination.SignIn.route)
+        }
     }
     Column(
         Modifier
