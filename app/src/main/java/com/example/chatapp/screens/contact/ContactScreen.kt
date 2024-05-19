@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.screens.contact
+package com.example.chatapp.screens.contact
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController

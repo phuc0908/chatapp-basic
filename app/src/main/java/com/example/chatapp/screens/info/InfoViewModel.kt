@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.screens.info
+package com.example.chatapp.screens.info
 
 import androidx.lifecycle.ViewModel
 

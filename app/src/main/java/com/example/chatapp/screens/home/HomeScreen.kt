@@ -1,5 +1,6 @@
-package com.example.chatapp.ui.screens.home
+package com.example.chatapp.screens.home
 
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -50,7 +51,7 @@ import com.example.chatapp.model.User
 import com.example.chatapp.ui.components.RoundIconButton
 import com.example.chatapp.ui.components.TextChat
 import com.example.chatapp.ui.components.TextNameUser
-import com.example.chatapp.ui.screens.signIn.AuthViewModel
+import com.example.chatapp.screens.signIn.AuthViewModel
 import com.fatherofapps.jnav.annotations.JNav
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -127,6 +128,7 @@ fun HomeScreen(
 
             viewModel.statusFriend?.let {
                 ListOfStatusFriend(it)
+
             }
             viewModel.lastFriend?.let {
                 ListMyChat(openFriendChat = openFriendChat,it)

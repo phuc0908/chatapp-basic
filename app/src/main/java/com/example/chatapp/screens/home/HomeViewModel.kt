@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.screens.home
+package com.example.chatapp.screens.home
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

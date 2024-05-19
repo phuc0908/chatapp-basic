@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.screens.signIn
+package com.example.chatapp.screens.signIn
 
 
 import android.content.Context
@@ -36,7 +36,6 @@ class AuthViewModel(
     val cfpasswordRegister = _cfpasswordRegister.asStateFlow()
 
 //    OTHER
-
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Empty)
     val uiState = _uiState.asStateFlow()
 
@@ -123,6 +122,9 @@ class AuthViewModel(
                         Toast.LENGTH_SHORT
                     ).show()
                     Log.d(TAG, "signInWithEmail:success")
+                    auth.currentUser?.let { it1 ->
+                        Log.d("s", it1.uid)
+                    }
                     val user = auth.currentUser
                     updateUI(user)
 
@@ -164,11 +166,11 @@ class AuthViewModel(
     companion object {
         private const val TAG = "EmailPassword"
     }
-    fun isEmailValid(email: String): Boolean {
+    private fun isEmailValid(email: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
-    fun isPasswordValid(password: String): Boolean {
+    private fun isPasswordValid(password: String): Boolean {
         return password.length >= 6
     }
 }

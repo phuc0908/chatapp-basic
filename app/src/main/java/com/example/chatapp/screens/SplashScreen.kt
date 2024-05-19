@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.screens
+package com.example.chatapp.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.chatapp.Destination
 import com.example.chatapp.R
-import com.example.chatapp.ui.screens.signIn.AuthViewModel
+import com.example.chatapp.screens.signIn.AuthViewModel
 import com.fatherofapps.jnav.annotations.JNav
 import kotlinx.coroutines.delay
 

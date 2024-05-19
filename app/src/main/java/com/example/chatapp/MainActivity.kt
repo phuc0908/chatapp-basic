@@ -21,28 +21,24 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.ui.theme.ChatApp_DACS3Theme
 import com.example.chatapp.ui.animations.EnterAnimation
-import com.example.chatapp.ui.components.ErrorDialog
-import com.example.chatapp.ui.screens.SplashScreen
-import com.example.chatapp.ui.screens.call.CallScreen
-import com.example.chatapp.ui.screens.call.CallViewModel
-import com.example.chatapp.ui.screens.home.HomeScreen
-import com.example.chatapp.ui.screens.home.HomeViewModel
-import com.example.chatapp.ui.screens.info.InfoScreen
-import com.example.chatapp.ui.screens.info.InfoViewModel
-import com.example.chatapp.ui.screens.message.MessageScreen
-import com.example.chatapp.ui.screens.message.MessageScreenNavigation
-import com.example.chatapp.ui.screens.message.MessageViewModel
-import com.example.chatapp.ui.screens.search.SearchScreen
-import com.example.chatapp.ui.screens.search.SearchScreenNavigation
-import com.example.chatapp.ui.screens.search.SearchViewModel
-import com.example.chatapp.ui.screens.settings.SettingScreen
-import com.example.chatapp.ui.screens.signIn.AuthViewModel
-import com.example.chatapp.ui.screens.signIn.SignInScreen
-import com.example.chatapp.ui.screens.signUp.SignUpScreen
+import com.example.chatapp.screens.SplashScreen
+import com.example.chatapp.screens.call.CallScreen
+import com.example.chatapp.screens.call.CallViewModel
+import com.example.chatapp.screens.home.HomeScreen
+import com.example.chatapp.screens.home.HomeViewModel
+import com.example.chatapp.screens.info.InfoScreen
+import com.example.chatapp.screens.info.InfoViewModel
+import com.example.chatapp.screens.message.MessageScreen
+import com.example.chatapp.screens.message.MessageViewModel
+import com.example.chatapp.screens.search.SearchScreen
+import com.example.chatapp.screens.search.SearchViewModel
+import com.example.chatapp.screens.settings.DarkThemeScreen
+import com.example.chatapp.screens.settings.SettingScreen
+import com.example.chatapp.screens.signIn.AuthViewModel
+import com.example.chatapp.screens.signIn.SignInScreen
+import com.example.chatapp.screens.signUp.SignUpScreen
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import dagger.hilt.android.AndroidEntryPoint
+
 
 class MainActivity : ComponentActivity() {
 
@@ -54,6 +50,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+enum class ThemeOption {
+    LIGHT, DARK, SYSTEM
+}
 
 @Composable
 fun Main() {
@@ -62,7 +61,12 @@ fun Main() {
     val auth = FirebaseAuth.getInstance()
     val currentUser by remember { mutableStateOf(auth.currentUser) }
 
-    ChatApp_DACS3Theme {
+    var themeOption by remember { mutableStateOf(ThemeOption.SYSTEM) }
+
+    ChatApp_DACS3Theme(
+        useSystemTheme = themeOption == ThemeOption.SYSTEM,
+        darkTheme = themeOption == ThemeOption.DARK
+    ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -185,6 +189,13 @@ fun Main() {
                         )
                     }
                 }
+                composable(Destination.DarkTheme.route){
+                    EnterAnimation {
+                        DarkThemeScreen (navController,themeOption){ newThemeOption ->
+                            themeOption = newThemeOption
+                        }
+                    }
+                }
             }
         }
     }
@@ -197,6 +208,8 @@ sealed class Destination(val route: String){
     object SignUp: Destination("signup")
     object Message: Destination("message")
     object Setting: Destination("setting")
+    object DarkTheme: Destination("darktheme")
+
     object Contact: Destination("contact")
     object Call: Destination("call")
     object Search: Destination("search")

@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.screens.settings
+package com.example.chatapp.screens.settings
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,11 +35,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.chatapp.Destination
 import com.example.chatapp.ui.components.BottomNavigation
 import com.example.chatapp.ui.components.RoundIconButton
 import com.fatherofapps.jnav.annotations.JNav
 import com.example.chatapp.R
-import com.example.chatapp.ui.screens.signIn.AuthViewModel
+import com.example.chatapp.screens.signIn.AuthViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -102,7 +103,7 @@ fun SettingScreen(
                 .verticalScroll(rememberScrollState()),
         ){
             Profile(authViewModel,navController)
-            BodySetting()
+            BodySetting(navController)
         }
     }
 }
@@ -146,7 +147,7 @@ fun Profile(
 }
 
 @Composable
-fun BodySetting() {
+fun BodySetting(navController: NavController) {
     Column(
         Modifier
             .fillMaxSize()
@@ -164,7 +165,7 @@ fun BodySetting() {
             "Dark theme",
             "System",
             onClick = {
-
+                navController.navigate(Destination.DarkTheme.route)
             }
         )
         RowInSetting(

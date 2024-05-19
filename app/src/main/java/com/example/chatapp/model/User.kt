@@ -10,3 +10,7 @@ data class User(val avatar: Int,
     constructor(avatar: Int, name: String) : this(avatar, name, null, null, false, false)
 }
 
+data class Account(val uid: String, val username: String, val password: String, val imageUri: String)
+
+
+

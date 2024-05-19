@@ -1,7 +1,7 @@
-package com.example.chatapp.ui.screens.popup
-
+package com.example.chatapp.screens.message
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -22,7 +25,6 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -33,19 +35,42 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chatapp.R
+import com.example.chatapp.model.Message
 import com.example.chatapp.ui.components.ImageMessage
 import com.example.chatapp.ui.components.Message
 import com.example.chatapp.ui.components.RoundIconButton
 import com.example.chatapp.ui.components.TextChat
+import com.example.chatapp.ui.components.CustomTextField
 import com.example.chatapp.ui.components.TextNameUser
+import com.fatherofapps.jnav.annotations.JNav
+import com.fatherofapps.jnav.annotations.JNavArg
 
 @OptIn(ExperimentalMaterial3Api::class)
+
+@JNav(
+    name = "MessageScreenNavigation",
+    baseRoute = "message_route",
+    destination = "message_destination",
+    arguments = [
+        JNavArg(name = "userName", type = String::class)
+    ]
+)
 @Composable
-fun MessageScreen() {
+fun MessageScreen(
+    viewModel: MessageViewModel,
+    popBackStack: () -> Unit
+) {
+
     val text  = remember{ mutableStateOf("") }
 
 
@@ -70,9 +95,7 @@ fun MessageScreen() {
                         imageVector = Icons.Default.ArrowBack,
                         modifier = Modifier
                             .fillMaxHeight(),
-                        onClick = {
-//                            navController.popBackStack()
-                        },
+                        onClick = popBackStack,
                     )
                 }
             )
@@ -92,31 +115,59 @@ fun MessageScreen() {
             }
         },
     ) { innerPadding ->
-        val scrollState = rememberScrollState()
+        LaunchedEffect(true) {
+            viewModel.fetchMessage()
+        }
 
+        val scrollState = rememberScrollState()
         LaunchedEffect(Unit) {
             scrollState.animateScrollTo(scrollState.maxValue)
         }
+
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(scrollState),
         ) {
-            Message(message = "Hello! How are you",true)
-            Message(message = "Im fine",false)
-            Message(message = "Hello!",true)
-            Message(message = "Hello! you the fucking go wtf is it sdd dfdf kinch",true)
-            Message(message = "Hello! you the fucking go wtf is it sdd dfdf kinch sdsd",false)
-            ImageMessage(R.drawable.avatar_garena_2,true)
-            ImageMessage(R.drawable.avatar_garena_2,false)
+            viewModel.message?.let {
+                MessageListWithAFriend(list = it)
+            }
+        }
+    }
+}
 
+@Composable
+fun MessageListWithAFriend(
+    list : List<Message>
+) {
+    val typeText = 0
+    val typeImage = 1
+
+    list.forEach{mes->
+        if(mes.type == typeText){
+
+            mes.message?.let {text ->
+                Message(
+                    message = text,
+                    isMyMessage = mes.idFrom == 1
+                )
+            }
+        }else if(mes.type == typeImage){
+            mes.image?.let {image ->
+                ImageMessage(
+                    imageResId = image,
+                    isMyImage = mes.idFrom == 1
+                )
+            }
         }
     }
 }
 
 @Composable
 fun TopBarMes(
+
 ) {
     Row (modifier = Modifier
         .fillMaxWidth()
@@ -127,7 +178,9 @@ fun TopBarMes(
         Row (
             modifier = Modifier
                 .fillMaxHeight()
-                .clickable() {},
+                .clickable {
+
+                },
             verticalAlignment = Alignment.CenterVertically
         ){
 
@@ -166,12 +219,12 @@ fun TopBarMes(
 fun BottomBarMes(
     text: MutableState<String>,
 ) {
+    val focusManager = LocalFocusManager.current
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(70.dp)
-            .padding(bottom = 10.dp)
-        ,
+            .padding(bottom = 10.dp),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ){
@@ -183,8 +236,29 @@ fun BottomBarMes(
                 .rotate(15f)
         ) {
         }
-
-//        TextfieldChatbox(text = text)
+        CustomTextField(
+            value = text,
+            leadingIcon = {
+            },
+            trailingIcon = null,
+            modifier = Modifier
+                .background(
+                    MaterialTheme.colorScheme.surface,
+                    RoundedCornerShape(percent = 20)
+                )
+                .padding(4.dp)
+                .width(200.dp),
+            fontSize = 14.sp,
+            placeholderText = "Nhắn tin",
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            ),
+            maxLine = 4
+        )
 
         RoundIconButton(
             imageResId = R.drawable.camera,
@@ -207,6 +281,9 @@ fun BottomBarMes(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun PopUpPreview() {
-    MessageScreen()
+fun MesPreview() {
+        MessageScreen(
+            viewModel(),
+            popBackStack = {}
+        )
 }

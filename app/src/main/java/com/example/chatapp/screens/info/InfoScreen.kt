@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.screens.info
+package com.example.chatapp.screens.info
 
 import androidx.compose.runtime.Composable
 import com.fatherofapps.jnav.annotations.JNav

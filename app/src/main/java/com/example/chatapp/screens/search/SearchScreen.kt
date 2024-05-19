@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.screens.search
+package com.example.chatapp.screens.search
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

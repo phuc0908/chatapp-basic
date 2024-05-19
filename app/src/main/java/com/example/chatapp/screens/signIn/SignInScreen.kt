@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.screens.signIn
+package com.example.chatapp.screens.signIn
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
