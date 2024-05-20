@@ -37,6 +37,7 @@ import com.example.chatapp.screens.settings.SettingScreen
 import com.example.chatapp.screens.signIn.AuthViewModel
 import com.example.chatapp.screens.signIn.SignInScreen
 import com.example.chatapp.screens.signUp.SignUpScreen
+import com.example.chatapp.viewmodel.AccountViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -56,11 +57,10 @@ enum class ThemeOption {
 
 @Composable
 fun Main() {
+//    ViewModel
+    val accountViewModel = AccountViewModel()
+//    Navigation
     val navController = rememberNavController()
-    var showDialog by remember { mutableStateOf(false) }
-    val auth = FirebaseAuth.getInstance()
-    val currentUser by remember { mutableStateOf(auth.currentUser) }
-
     var themeOption by remember { mutableStateOf(ThemeOption.SYSTEM) }
 
     ChatApp_DACS3Theme(
@@ -99,7 +99,8 @@ fun Main() {
                     EnterAnimation {
                         SignUpScreen (
                             navController = navController,
-                            authViewModel
+                            authViewModel,
+                            accountViewModel = accountViewModel
                         )
                     }
                 }

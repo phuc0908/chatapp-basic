@@ -88,7 +88,7 @@ fun CallScreen(
                 contentColor = MaterialTheme.colorScheme.onSurface,
             ) {
 
-                BottomNavigation(0,navController)
+                BottomNavigation(1,navController)
             }
         },
 

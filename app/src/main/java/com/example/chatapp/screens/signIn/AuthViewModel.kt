@@ -1,55 +1,59 @@
 package com.example.chatapp.screens.signIn
 
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.runtime.mutableStateOf
 import com.google.firebase.auth.FirebaseAuth
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import androidx.navigation.NavController
 import com.example.chatapp.Destination
+import com.example.chatapp.model.Account
+import com.example.chatapp.viewmodel.AccountViewModel
 import com.google.firebase.auth.FirebaseUser
-
+@SuppressLint("StaticFieldLeak")
 class AuthViewModel(
     val context: Context
 ) : ViewModel(){
 //    Sign In
-    private val _userName = MutableStateFlow("")
-    val userName = _userName.asStateFlow()
 
-    private val _password = MutableStateFlow("")
-    val password = _password.asStateFlow()
+    private val _userName = mutableStateOf("")
+    val userName: String
+        get() = _userName.value
+    private val _password = mutableStateOf("")
+    val password: String
+        get() = _password.value
 
 //    Sign Up
-    private val _userNameRegister = MutableStateFlow("")
-    val userNameRegister = _userNameRegister.asStateFlow()
+    private val _userNameRegister = mutableStateOf("")
+    val userNameRegister: String
+        get() = _userNameRegister.value
 
-    private val _passwordRegister = MutableStateFlow("")
-    val passwordRegister = _passwordRegister.asStateFlow()
+    private val _passwordRegister = mutableStateOf("")
+    val passwordRegister: String
+        get() = _passwordRegister.value
 
-    private val _nickNameRegister = MutableStateFlow("")
-    val nickNameRegister = _nickNameRegister.asStateFlow()
+    private val _nickNameRegister = mutableStateOf("")
+    val nickNameRegister: String
+        get() = _nickNameRegister.value
 
-    private val _cfpasswordRegister = MutableStateFlow("")
-    val cfpasswordRegister = _cfpasswordRegister.asStateFlow()
-
+    private val _cfpasswordRegister = mutableStateOf("")
+    val cfpasswordRegister: String
+        get() = _cfpasswordRegister.value
 //    OTHER
-    private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Empty)
-    val uiState = _uiState.asStateFlow()
-
-    private val _loginState = MutableStateFlow(false)
-    val loginState = _loginState.asStateFlow()
 
     private val auth = FirebaseAuth.getInstance()
 
-    public fun getAuthInstance(): FirebaseAuth {
+    fun getAuthInstance(): FirebaseAuth {
         return auth
     }
 
-    var currentUser: FirebaseUser? = null
-        set
+    private var currentUser: FirebaseUser? = null
+
 //  SIGN IN
     fun updateUserName(newName: String) {
         _userName.value = newName
@@ -74,8 +78,11 @@ class AuthViewModel(
     }
 
 
-    fun createAccount(navController: NavController) {
-        auth.createUserWithEmailAndPassword(userName.value, password.value)
+    fun createAccount(
+        navController: NavController,
+        accountViewModel: AccountViewModel
+    ) {
+        auth.createUserWithEmailAndPassword(userNameRegister, passwordRegister)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.d(TAG, "createUserWithEmail:success")
@@ -84,10 +91,24 @@ class AuthViewModel(
                         "Register Successful.",
                         Toast.LENGTH_SHORT
                     ).show()
-                    val user = auth.currentUser
-                    updateUI(user)
+//                    Push firebase
 
+
+                    val account = auth.currentUser?.let {
+                        Account(
+                            uid = it.uid,
+                            username = userNameRegister,
+                            password = passwordRegister,
+                            nickName = nickNameRegister,
+                            imageUri = ""
+                        )
+                    }
+                    if (account !== null) {
+                        accountViewModel.createAccount(account)
+                    }
                     navController.navigate(Destination.SignIn.route)
+
+
 
                 } else {
                     Log.w(TAG, "createUserWithEmail:failure", task.exception)
@@ -102,20 +123,19 @@ class AuthViewModel(
     }
     fun signIn(navController: NavController) {
 
-        if (!isEmailValid(userName.value)) {
+        if (!isEmailValid(userName)) {
             Toast.makeText(context, "Invalid email address.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        if (!isPasswordValid(password.value)) {
+        if (!isPasswordValid(password)) {
             Toast.makeText(context, "Password must be at least 6 characters.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        auth.signInWithEmailAndPassword(userName.value, password.value)
-            .addOnCompleteListener() { task ->
+        auth.signInWithEmailAndPassword(userName, password)
+            .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    _loginState.value = true
                     Toast.makeText(
                         context,
                         "Authentication successful.",
@@ -159,10 +179,6 @@ class AuthViewModel(
         currentUser = user
     }
 
-    private fun reload() {
-
-    }
-
     companion object {
         private const val TAG = "EmailPassword"
     }
@@ -173,11 +189,4 @@ class AuthViewModel(
     private fun isPasswordValid(password: String): Boolean {
         return password.length >= 6
     }
-}
-
-sealed class AuthUiState {
-    object Empty : AuthUiState()
-    object Loading : AuthUiState()
-    object Success : AuthUiState()
-    data class Error(val message: String) : AuthUiState()
 }

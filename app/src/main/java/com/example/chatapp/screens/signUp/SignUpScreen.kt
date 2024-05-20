@@ -24,16 +24,18 @@ import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.Destination
 import com.example.chatapp.screens.signIn.AuthViewModel
 import com.example.chatapp.ui.theme.Green1
+import com.example.chatapp.viewmodel.AccountViewModel
 
 @Composable
 fun SignUpScreen(
     navController: NavController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    accountViewModel: AccountViewModel
 ) {
-    val nickname by authViewModel.nickNameRegister.collectAsState()
-    val username by authViewModel.userNameRegister.collectAsState()
-    val password by authViewModel.passwordRegister.collectAsState()
-    val repassword by authViewModel.cfpasswordRegister.collectAsState()
+    val nickname = authViewModel.nickNameRegister
+    val username = authViewModel.userNameRegister
+    val password = authViewModel.passwordRegister
+    val repassword = authViewModel.cfpasswordRegister
 
     val focusManager = LocalFocusManager.current
 
@@ -114,7 +116,7 @@ fun SignUpScreen(
         )
         Button(
             onClick = {
-                authViewModel.createAccount(navController)
+                authViewModel.createAccount(navController,accountViewModel)
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors()
@@ -139,7 +141,8 @@ fun PreviewLoginScreen() {
     val navController = rememberNavController()
     SignUpScreen(
         navController = navController,
-        authViewModel = AuthViewModel(LocalContext.current)
+        authViewModel = AuthViewModel(LocalContext.current),
+        AccountViewModel()
     )
 }
 

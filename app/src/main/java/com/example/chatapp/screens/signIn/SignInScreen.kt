@@ -22,7 +22,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.chatapp.EmailPasswordActivity
 import com.example.chatapp.ui.components.ErrorDialog
 import com.example.chatapp.ui.components.GoogleButton
 import com.example.chatapp.ui.theme.Green1
@@ -51,8 +50,8 @@ fun SignInScreen(
 ) {
     val focusManager = LocalFocusManager.current
 
-    val username by authViewModel.userName.collectAsState()
-    val password by authViewModel.password.collectAsState()
+    val username = authViewModel.userName
+    val password = authViewModel.password
     val context = LocalContext.current
 
 
