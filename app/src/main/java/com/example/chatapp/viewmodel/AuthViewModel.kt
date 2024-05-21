@@ -1,4 +1,4 @@
-package com.example.chatapp.screens.signIn
+package com.example.chatapp.viewmodel
 
 
 import android.annotation.SuppressLint
@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.chatapp.Destination
 import com.example.chatapp.model.Account
-import com.example.chatapp.viewmodel.AccountViewModel
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.storage.FirebaseStorage
 

@@ -1,4 +1,4 @@
-package com.example.chatapp.screens.home
+package com.example.chatapp.screens
 
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -47,6 +47,7 @@ import com.example.chatapp.R
 import com.example.chatapp.ui.components.BottomNavigation
 import com.example.chatapp.model.Account
 import com.example.chatapp.model.User
+import com.example.chatapp.viewmodel.HomeViewModel
 import com.example.chatapp.screens.settings.AvatarIcon
 import com.example.chatapp.ui.components.RoundIconButton
 import com.example.chatapp.ui.components.TextChat

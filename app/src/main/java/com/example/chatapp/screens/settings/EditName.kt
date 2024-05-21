@@ -19,9 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.chatapp.Destination
-import com.example.chatapp.model.Account
-import com.example.chatapp.screens.signIn.AuthViewModel
+import com.example.chatapp.viewmodel.AuthViewModel
 import com.example.chatapp.viewmodel.AccountViewModel
 
 @Composable

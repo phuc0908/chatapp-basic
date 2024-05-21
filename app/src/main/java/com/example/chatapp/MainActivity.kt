@@ -8,7 +8,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,27 +22,26 @@ import com.example.chatapp.model.Account
 import com.example.chatapp.ui.theme.ChatApp_DACS3Theme
 import com.example.chatapp.ui.animations.EnterAnimation
 import com.example.chatapp.screens.SplashScreen
-import com.example.chatapp.screens.call.CallScreen
-import com.example.chatapp.screens.call.CallViewModel
-import com.example.chatapp.screens.contact.ContactScreen
-import com.example.chatapp.screens.contact.ContactViewModel
-import com.example.chatapp.screens.home.HomeScreen
-import com.example.chatapp.screens.home.HomeViewModel
-import com.example.chatapp.screens.info.InfoScreen
-import com.example.chatapp.screens.info.InfoViewModel
-import com.example.chatapp.screens.message.MessageScreen
-import com.example.chatapp.screens.message.MessageViewModel
-import com.example.chatapp.screens.search.SearchScreen
-import com.example.chatapp.screens.search.SearchViewModel
+import com.example.chatapp.screens.CallScreen
+import com.example.chatapp.viewmodel.CallViewModel
+import com.example.chatapp.screens.ContactScreen
+import com.example.chatapp.viewmodel.ContactViewModel
+import com.example.chatapp.screens.HomeScreen
+import com.example.chatapp.viewmodel.HomeViewModel
+import com.example.chatapp.screens.InfoScreen
+import com.example.chatapp.viewmodel.InfoViewModel
+import com.example.chatapp.screens.MessageScreen
+import com.example.chatapp.viewmodel.MessageViewModel
+import com.example.chatapp.screens.SearchScreen
+import com.example.chatapp.viewmodel.SearchViewModel
 import com.example.chatapp.screens.settings.AccountSettingScreen
 import com.example.chatapp.screens.settings.DarkThemeScreen
 import com.example.chatapp.screens.settings.EditName
 import com.example.chatapp.screens.settings.SettingScreen
-import com.example.chatapp.screens.signIn.AuthViewModel
-import com.example.chatapp.screens.signIn.SignInScreen
-import com.example.chatapp.screens.signUp.SignUpScreen
+import com.example.chatapp.viewmodel.AuthViewModel
+import com.example.chatapp.screens.SignInScreen
+import com.example.chatapp.screens.SignUpScreen
 import com.example.chatapp.viewmodel.AccountViewModel
-import com.google.firebase.auth.FirebaseAuth
 
 
 class MainActivity : ComponentActivity() {

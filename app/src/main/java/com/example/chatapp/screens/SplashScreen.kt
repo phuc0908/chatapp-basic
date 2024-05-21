@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.chatapp.Destination
 import com.example.chatapp.R
-import com.example.chatapp.screens.signIn.AuthViewModel
+import com.example.chatapp.viewmodel.AuthViewModel
 import com.fatherofapps.jnav.annotations.JNav
 import kotlinx.coroutines.delay
 

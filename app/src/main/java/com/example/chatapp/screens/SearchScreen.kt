@@ -1,4 +1,4 @@
-package com.example.chatapp.screens.search
+package com.example.chatapp.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chatapp.model.YourRecentSearch
 import com.example.chatapp.model.YourRecommendSearch
+import com.example.chatapp.viewmodel.SearchViewModel
 import com.example.chatapp.ui.components.CustomTextField
 import com.example.chatapp.ui.components.RoundIconButton
 import com.fatherofapps.jnav.annotations.JNav

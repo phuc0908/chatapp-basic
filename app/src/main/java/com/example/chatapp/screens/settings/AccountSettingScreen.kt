@@ -33,7 +33,7 @@ import com.example.chatapp.Destination
 import com.example.chatapp.ui.components.RoundIconButton
 import com.fatherofapps.jnav.annotations.JNav
 import com.example.chatapp.R
-import com.example.chatapp.screens.signIn.AuthViewModel
+import com.example.chatapp.viewmodel.AuthViewModel
 import com.example.chatapp.viewmodel.AccountViewModel
 
 

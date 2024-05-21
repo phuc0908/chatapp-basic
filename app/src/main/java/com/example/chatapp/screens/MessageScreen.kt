@@ -1,4 +1,4 @@
-package com.example.chatapp.screens.message
+package com.example.chatapp.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chatapp.R
 import com.example.chatapp.model.Message
+import com.example.chatapp.viewmodel.MessageViewModel
 import com.example.chatapp.ui.components.ImageMessage
 import com.example.chatapp.ui.components.Message
 import com.example.chatapp.ui.components.RoundIconButton

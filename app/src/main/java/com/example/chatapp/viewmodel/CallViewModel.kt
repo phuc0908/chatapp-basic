@@ -1,4 +1,4 @@
-package com.example.chatapp.screens.call
+package com.example.chatapp.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
