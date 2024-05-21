@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.chatapp.Destination
 import com.example.chatapp.ui.components.ErrorDialog
 import com.example.chatapp.ui.components.GoogleButton
 import com.example.chatapp.ui.theme.Green1
@@ -124,7 +125,7 @@ fun SignInScreen(
                 color = Green1,
                 modifier = Modifier
                     .clickable {
-                        navController.navigate("signUp")
+                        navController.navigate(Destination.SignUp.route)
                     }
                     .padding(top = 8.dp)
             )

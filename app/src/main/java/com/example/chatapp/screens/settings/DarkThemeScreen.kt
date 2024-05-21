@@ -17,10 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,8 +34,6 @@ navController: NavController,
 currentTheme: ThemeOption,
 onThemeChange: (ThemeOption) -> Unit
 ) {
-    var isDarkTheme by remember { mutableStateOf(false) }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -102,16 +96,16 @@ onThemeChange: (ThemeOption) -> Unit
                 Text(text = "System")
             }
         }
-
-
     }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DarkPreview() {
-    DarkThemeScreen(rememberNavController(),
+    DarkThemeScreen(
+        rememberNavController(),
         ThemeOption.DARK,
-        {}
-    )
+    ){
+
+    }
 }

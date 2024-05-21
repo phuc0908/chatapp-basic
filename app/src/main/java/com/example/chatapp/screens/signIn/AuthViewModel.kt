@@ -8,8 +8,6 @@ import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import com.google.firebase.auth.FirebaseAuth
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import androidx.navigation.NavController
 import com.example.chatapp.Destination
 import com.example.chatapp.model.Account
@@ -48,7 +46,13 @@ class AuthViewModel(
 
     private val auth = FirebaseAuth.getInstance()
 
-    var currentUser: FirebaseUser? = auth.currentUser
+//    currentUser
+    private val _currentUser = mutableStateOf<FirebaseUser?>(null)
+    val currentUser: FirebaseUser?
+        get() = _currentUser.value
+    fun updateCurrentUser(currentUser: FirebaseUser?) {
+        _currentUser.value = currentUser
+    }
 
 //  SIGN IN
     fun updateUserName(newName: String) {
@@ -87,32 +91,40 @@ class AuthViewModel(
                         "Register Successful.",
                         Toast.LENGTH_SHORT
                     ).show()
-
-                    val user = auth.currentUser
-                    updateUI(user)
+                    val user = task.result?.user
 
 //                    Push firebase
                     val account = user?.let {
-                        Account(
-                            uid = it.uid,
-                            username = userNameRegister,
-                            password = passwordRegister,
-                            nickName = nickNameRegister,
-                            imageUri = ""
-                        )
-                    }
+                            Account(
+                                uid = it.uid,
+                                username = userNameRegister,
+                                password = passwordRegister,
+                                nickName = nickNameRegister,
+                                imageUri = ""
+                            )
+                        }
+
                     if (account !== null) {
-                        accountViewModel.updateAccount(account)
+                        accountViewModel.updateAccount(account,user)
+                        navController.navigate(Destination.SignIn.route)
+                    }else{
+                        Toast.makeText(
+                            context,
+                            "Register firebase realtime failed.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        Log.w(TAG, "createUserWithEmailFirebaseRealtime:failure", task.exception)
+
                     }
-                    navController.navigate(Destination.SignIn.route)
+
                 } else {
                     Log.w(TAG, "createUserWithEmail:failure", task.exception)
                     Toast.makeText(
                         context,
-                        "Authentication failed.",
+                        "Register failed.",
                         Toast.LENGTH_SHORT
                     ).show()
-                    updateUI(null)
+                    updateCurrentUser(null)
                 }
             }
     }
@@ -141,7 +153,7 @@ class AuthViewModel(
                         Log.d("s", it1.uid)
                     }
                     val user = auth.currentUser
-                    updateUI(user)
+                    updateCurrentUser(user)
 
                     navController.navigate(Destination.Home.route){
                         popUpTo(Destination.SignIn.route) {
@@ -155,7 +167,7 @@ class AuthViewModel(
                         "Authentication failed.",
                         Toast.LENGTH_SHORT
                     ).show()
-                    updateUI(null)
+                    updateCurrentUser(null)
                 }
             }
     }
@@ -167,12 +179,9 @@ class AuthViewModel(
                 inclusive = true
             }
         }
-        updateUI(null)
+        updateCurrentUser(null)
     }
 
-    private fun updateUI(user: FirebaseUser?) {
-        currentUser = user
-    }
 
     companion object {
         private const val TAG = "EmailPassword"

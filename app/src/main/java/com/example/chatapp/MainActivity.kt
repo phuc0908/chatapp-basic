@@ -118,9 +118,8 @@ fun Main() {
                     EnterAnimation {
                         HomeScreen(
                             viewModel = viewModel,
-
-                            authViewModel,
-                            navController,
+                            currentAccount = currentAccount,
+                            navController = navController,
                             openFriendChat = {
                                 navController.navigate(Destination.Message.route)
                             },
@@ -128,11 +127,12 @@ fun Main() {
                                 navController.navigate(Destination.Search.route)
                             },
                             openMyinfo = {
-                                navController.navigate(Destination.Info.route)
+                                navController.navigate(Destination.Setting.route)
                             },
-
-
                         )
+                        accountViewModel.setCurrentAccount(context) { account ->
+                            currentAccount = account
+                        }
                     }
                 }
 

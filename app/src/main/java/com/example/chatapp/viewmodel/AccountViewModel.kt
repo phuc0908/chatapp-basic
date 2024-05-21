@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.example.chatapp.model.Account
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -24,19 +25,12 @@ class AccountViewModel:ViewModel() {
     private val database = FirebaseDatabase.getInstance()
     private val reference = database.getReference("accounts")
     private val user = FirebaseAuth.getInstance().currentUser
-    val account: Account? = null
-
-    private val _nickName = mutableStateOf("")
-    val nickName: String
-        get() = _nickName.value
 
 //    FUNCTION
-    fun updateNickName(newName: String) {
-        _nickName.value = newName
-    }
 
-    fun updateAccount(account: Account){
-        user?.run {
+
+    fun updateAccount(account: Account,user: FirebaseUser){
+        user.run {
             val userIdReference = reference.child(user.uid)
 
             userIdReference.setValue(account)
@@ -129,10 +123,9 @@ class AccountViewModel:ViewModel() {
     }
 
     private fun getAccountByUid(uid: String, onDataChange: (Account?) -> Unit, onCancelled: ((error: DatabaseError) -> Unit)? = null) {
-        val database = FirebaseDatabase.getInstance()
-        val reference = database.getReference("accounts").child(uid)
+        val ref = reference.child(uid)
 
-        reference.addListenerForSingleValueEvent(object : ValueEventListener {
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val account = snapshot.getValue(Account::class.java)
                 onDataChange(account)

@@ -1,6 +1,5 @@
 package com.example.chatapp.screens.home
 
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -35,7 +34,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -46,12 +44,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.ui.components.BottomNavigation
-import com.example.chatapp.R
+import com.example.chatapp.model.Account
 import com.example.chatapp.model.User
+import com.example.chatapp.screens.settings.AvatarIcon
 import com.example.chatapp.ui.components.RoundIconButton
 import com.example.chatapp.ui.components.TextChat
 import com.example.chatapp.ui.components.TextNameUser
-import com.example.chatapp.screens.signIn.AuthViewModel
 import com.fatherofapps.jnav.annotations.JNav
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -67,7 +65,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
-    authViewModel: AuthViewModel,
+    currentAccount: Account?,
     navController: NavController,
     openFriendChat:() -> Unit,
     openSearch:() -> Unit,
@@ -90,7 +88,7 @@ fun HomeScreen(
     }
     Scaffold(
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.primary,
@@ -100,10 +98,48 @@ fun HomeScreen(
                     .height(70.dp),
 
                 title = {
-                    TopBar(
-                        openSearch = openSearch,
-                        openMyinfo = openMyinfo
-                    )
+                    Row (
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ){
+                        Text("Home", color = Green1)
+                    }
+
+                },
+                navigationIcon = {
+                    Row (
+                        Modifier.fillMaxHeight(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ){
+                        RoundIconButton(
+                            null,
+                            imageVector = Icons.Default.Search,
+                            modifier = Modifier
+                                .size(50.dp)
+                                .aspectRatio(1f),
+                            onClick = openSearch,
+                        )
+                    }
+
+                },
+                actions = {
+                    Row (
+                        Modifier.fillMaxHeight(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ){
+                        if (currentAccount != null) {
+                            AvatarIcon(
+                                imageUrl = currentAccount.imageUri,
+                                modifier = Modifier.size(50.dp).aspectRatio(1f),
+                                onClick = openMyinfo
+                            )
+                        }
+                    }
+
                 }
             )
         },
@@ -134,38 +170,6 @@ fun HomeScreen(
                 ListMyChat(openFriendChat = openFriendChat,it)
             }
         }
-    }
-}
-
-
-@Composable
-fun TopBar(
-    openSearch: () -> Unit,
-    openMyinfo: () -> Unit,
-    ) {
-    Row (
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(end = 15.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ){
-        RoundIconButton(
-            null,
-            imageVector = Icons.Default.Search,
-            modifier = Modifier
-                .size(50.dp)
-                .aspectRatio(1f),
-            onClick = openSearch,
-        )
-        Text("Home", color = Green1)
-
-        RoundIconButton(
-            imageResId = R.drawable.avatar_garena_2,
-            null,
-            modifier = Modifier.size(50.dp,50.dp),
-            onClick = openMyinfo
-        )
     }
 }
 
@@ -314,7 +318,7 @@ fun ListOfStatusFriend(
 fun Preview() {
     HomeScreen (
         viewModel = viewModel(),
-        authViewModel = AuthViewModel(LocalContext.current),
+        Account(),
         rememberNavController(),
         openFriendChat = {},
         openSearch = {},
