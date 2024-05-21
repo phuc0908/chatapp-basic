@@ -16,17 +16,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.chatapp.Destination
 import com.example.chatapp.model.Account
+import com.example.chatapp.screens.signIn.AuthViewModel
 import com.example.chatapp.viewmodel.AccountViewModel
 
 @Composable
 fun EditName(
     navController: NavController,
+    authViewModel: AuthViewModel
 ) {
-    val accountViewModel = AccountViewModel()
+    val context = LocalContext.current
+    val accountViewModel = AccountViewModel(context)
     val nickname = remember {
         mutableStateOf("")
     }
@@ -54,7 +58,11 @@ fun EditName(
 
         Button(
             onClick = {
-                accountViewModel.updateUserNickName(nickname.value)
+                authViewModel.currentUser?.let {
+                    accountViewModel.updateUserNickName(nickname.value,
+                        it
+                    )
+                }
                 navController.popBackStack()
             },
             modifier = Modifier.fillMaxWidth()

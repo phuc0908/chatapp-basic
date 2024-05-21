@@ -1,5 +1,8 @@
 package com.example.chatapp.model
 
+import com.google.firebase.database.DatabaseReference
+import kotlinx.coroutines.tasks.await
+
 data class User(val avatar: Int,
                 val name: String,
                 val lastMessage: String?,
@@ -18,6 +21,7 @@ data class Account(val uid: String,
 ){
     constructor(): this("","","","","")
 }
+
 
 
 

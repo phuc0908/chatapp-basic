@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.chatapp.R
 import com.example.chatapp.ui.components.BottomNavigation
 import com.example.chatapp.model.Account
 import com.example.chatapp.model.User
@@ -134,7 +135,17 @@ fun HomeScreen(
                         if (currentAccount != null) {
                             AvatarIcon(
                                 imageUrl = currentAccount.imageUri,
-                                modifier = Modifier.size(50.dp).aspectRatio(1f),
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .aspectRatio(1f),
+                                onClick = openMyinfo
+                            )
+                        }else{
+                            RoundIconButton(imageResId = R.drawable.newuser,
+                                imageVector = null,
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .aspectRatio(1f),
                                 onClick = openMyinfo
                             )
                         }

@@ -139,10 +139,11 @@ fun SignUpScreen(
 @Composable
 fun PreviewLoginScreen() {
     val navController = rememberNavController()
+    val context = LocalContext.current
     SignUpScreen(
         navController = navController,
         authViewModel = AuthViewModel(LocalContext.current),
-        AccountViewModel()
+        AccountViewModel(context)
     )
 }
 

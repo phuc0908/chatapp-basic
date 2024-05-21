@@ -1,33 +1,33 @@
 package com.example.chatapp.viewmodel
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.chatapp.model.Account
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.util.UUID
+@SuppressLint("StaticFieldLeak")
 
-class AccountViewModel:ViewModel() {
-
+class AccountViewModel(
+    context: Context
+):ViewModel() {
     private val database = FirebaseDatabase.getInstance()
     private val reference = database.getReference("accounts")
-    private val user = FirebaseAuth.getInstance().currentUser
-
 //    FUNCTION
-
+//Realtime Firebase
 
     fun updateAccount(account: Account,user: FirebaseUser){
         user.run {
@@ -36,34 +36,45 @@ class AccountViewModel:ViewModel() {
             userIdReference.setValue(account)
         }
     }
-    private fun updateAvatar(imageUrl: String){
-        user?.run {
+    private fun updateAvatar(imageUrl: String,user: FirebaseUser){
+        user.run {
             val reference = reference.child(user.uid).child("imageUri")
 
             reference.setValue(imageUrl)
         }
     }
+    fun setCurrentAccount(
+        user: FirebaseUser,
+        context: Context,
+        onResult: (Account?) -> Unit){
 
+        reference.child(user.uid).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val account = snapshot.getValue(Account::class.java)
+                onResult(account)
+            }
 
-    fun setCurrentAccount(context: Context, onResult: (Account?) -> Unit){
-
-        if (user != null) {
-            reference.child(user.uid).addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val account = snapshot.getValue(Account::class.java)
-                    onResult(account)
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(context, "Failed to load data: ${error.message}", Toast.LENGTH_SHORT).show()
-                    onResult(null)
-                }
-            })
-        }else{
-            Toast.makeText(context, "User not logged in", Toast.LENGTH_SHORT).show()
-            onResult(null)
-        }
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(context, "Failed to load data: ${error.message}", Toast.LENGTH_SHORT).show()
+                onResult(null)
+            }
+        })
     }
+    fun updateAccountByUid(uid: String, onDataChange: (Account?) -> Unit, onCancelled: ((error: DatabaseError) -> Unit)? = null) {
+        val ref = reference.child(uid)
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val account = snapshot.getValue(Account::class.java)
+                onDataChange(account)
+            }
+            override fun onCancelled(error: DatabaseError) {
+                onCancelled?.invoke(error)
+            }
+        })
+    }
+
+
+
     fun uploadImageToFirebase(context: Context, fileUri: Uri, onSuccess: (String) -> Unit) {
         val storage = Firebase.storage
         val storageRef = storage.reference
@@ -83,58 +94,40 @@ class AccountViewModel:ViewModel() {
     }
 
 
-    fun updateUserImageUri(imageUrl: String) {
+    fun updateUserImageUri(imageUrl: String,user: FirebaseUser) {
 
-        user?.let {
-            getAccountByUid(it.uid,
-                onDataChange = { account ->
-                    if (account != null) {
-                        updateAvatar(imageUrl)
-                    } else {
-                        Log.d("","updateUserImageUri : account null")
-                    }
-                }, onCancelled = { error ->
-                    Log.d("","updateUserImageUri : onCancelled")
-                    Log.d("",error.message)
+        updateAccountByUid(
+            user.uid,
+            onDataChange = { account ->
+                if (account != null) {
+                    updateAvatar(imageUrl,user)
+                } else {
+                    Log.d("","updateUserImageUri : account null")
                 }
-            )
-        }
+            }, onCancelled = { error ->
+                Log.d("","updateUserImageUri : onCancelled")
+                Log.d("",error.message)
+            }
+        )
     }
 
-    fun updateUserNickName(name: String) {
-
-        user?.let {
-            getAccountByUid(it.uid,
-                onDataChange = { account ->
-                    if (account != null) {
-                        val reference = reference
-                                        .child(user.uid)
-                                        .child("nickName")
-                        reference.setValue(name)
-                    } else {
-                        Log.d("","updateNickName : account null")
-                    }
-                }, onCancelled = { error ->
-                    Log.d("","updateNickName : onCancelled")
-                    Log.d("",error.message)
+    fun updateUserNickName(name: String, user: FirebaseUser ) {
+        updateAccountByUid(
+            user.uid,
+            onDataChange = { account ->
+                if (account != null) {
+                    val reference = reference
+                                    .child(user.uid)
+                                    .child("nickName")
+                    reference.setValue(name)
+                } else {
+                    Log.d("","updateNickName : account null")
                 }
-            )
-        }
-    }
-
-    private fun getAccountByUid(uid: String, onDataChange: (Account?) -> Unit, onCancelled: ((error: DatabaseError) -> Unit)? = null) {
-        val ref = reference.child(uid)
-
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val account = snapshot.getValue(Account::class.java)
-                onDataChange(account)
+            }, onCancelled = { error ->
+                Log.d("","updateNickName : onCancelled")
+                Log.d("",error.message)
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                onCancelled?.invoke(error)
-            }
-        })
+        )
     }
 
 }

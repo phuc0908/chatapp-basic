@@ -13,6 +13,8 @@ import com.example.chatapp.Destination
 import com.example.chatapp.model.Account
 import com.example.chatapp.viewmodel.AccountViewModel
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.storage.FirebaseStorage
+
 @SuppressLint("StaticFieldLeak")
 class AuthViewModel(
     val context: Context
@@ -45,12 +47,18 @@ class AuthViewModel(
 //    OTHER
 
     private val auth = FirebaseAuth.getInstance()
+    private val storage = FirebaseStorage.getInstance()
+    private val storageReference = storage.reference.child("avatars/newUser.png")
 
 //    currentUser
+
     private val _currentUser = mutableStateOf<FirebaseUser?>(null)
     val currentUser: FirebaseUser?
         get() = _currentUser.value
-    fun updateCurrentUser(currentUser: FirebaseUser?) {
+    init {
+        _currentUser.value = auth.currentUser
+    }
+    private fun updateCurrentUser(currentUser: FirebaseUser?) {
         _currentUser.value = currentUser
     }
 
@@ -92,29 +100,34 @@ class AuthViewModel(
                         Toast.LENGTH_SHORT
                     ).show()
                     val user = task.result?.user
-
+                    updateCurrentUser(user)
 //                    Push firebase
-                    val account = user?.let {
+                    storageReference.downloadUrl.addOnSuccessListener { uri ->
+                        val account = user?.let {
                             Account(
                                 uid = it.uid,
                                 username = userNameRegister,
                                 password = passwordRegister,
                                 nickName = nickNameRegister,
-                                imageUri = ""
+                                imageUri = uri.toString()
                             )
                         }
+                        if (account !== null) {
+                            accountViewModel.updateAccount(account,user)
+                            navController.navigate(Destination.Home.route)
 
-                    if (account !== null) {
-                        accountViewModel.updateAccount(account,user)
-                        navController.navigate(Destination.SignIn.route)
-                    }else{
-                        Toast.makeText(
-                            context,
-                            "Register firebase realtime failed.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        Log.w(TAG, "createUserWithEmailFirebaseRealtime:failure", task.exception)
-
+                        }else{
+                            Toast.makeText(
+                                context,
+                                "Register firebase realtime failed.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            Log.w(TAG, "createUserWithEmailFirebaseRealtime:failure", task.exception)
+                        }
+                    }.addOnFailureListener { exception ->
+                        exception.message?.let {
+                            Log.d("Error Get Picture in Storage", it)
+                        }
                     }
 
                 } else {
@@ -174,12 +187,14 @@ class AuthViewModel(
 
     fun signOut(navController: NavController){
         auth.signOut()
+        updateCurrentUser(null)
+
         navController.navigate(Destination.SignIn.route) {
             popUpTo(Destination.Home.route) {
                 inclusive = true
             }
         }
-        updateCurrentUser(null)
+
     }
 
 

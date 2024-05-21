@@ -33,7 +33,6 @@ import com.example.chatapp.Destination
 import com.example.chatapp.ui.components.RoundIconButton
 import com.fatherofapps.jnav.annotations.JNav
 import com.example.chatapp.R
-import com.example.chatapp.model.Account
 import com.example.chatapp.screens.signIn.AuthViewModel
 import com.example.chatapp.viewmodel.AccountViewModel
 
@@ -49,13 +48,14 @@ import com.example.chatapp.viewmodel.AccountViewModel
 @Composable
 fun AccountSettingScreen(
     navController: NavController,
+    authViewModel: AuthViewModel
 ) {
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         selectedImageUri = uri
     }
     val context = LocalContext.current
-    val accountViewModel = AccountViewModel()
+    val accountViewModel = AccountViewModel(context)
     Scaffold(
         topBar =
         {
@@ -120,7 +120,11 @@ fun AccountSettingScreen(
             imageUri = uri,
             onSetProfilePicture = {
                 accountViewModel.uploadImageToFirebase(context, uri){ imgUri->
-                    accountViewModel.updateUserImageUri(imgUri)
+                    authViewModel.currentUser?.let {
+                        accountViewModel.updateUserImageUri(imgUri,
+                            it
+                        )
+                    }
                     navController.navigate(Destination.AccountSetting.route)
                 }
             }
@@ -136,5 +140,6 @@ fun AccountSettingScreen(
 fun AccountSettingPreview() {
     AccountSettingScreen (
         rememberNavController(),
+        AuthViewModel(LocalContext.current)
     )
 }

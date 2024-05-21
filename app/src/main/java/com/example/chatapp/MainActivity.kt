@@ -63,14 +63,23 @@ enum class ThemeOption {
 @Composable
 fun Main() {
 //    ViewModel
-    val accountViewModel = AccountViewModel()
+    val context = LocalContext.current
+    val accountViewModel = AccountViewModel(context)
+    val authViewModel = AuthViewModel(context)
+
 //    Navigation
     val navController = rememberNavController()
     var themeOption by remember { mutableStateOf(ThemeOption.SYSTEM) }
-
     var currentAccount by remember { mutableStateOf<Account?>(null) }
-    val context = LocalContext.current
+    val currentUser = authViewModel.currentUser
 
+    LaunchedEffect(true) {
+        if (currentUser != null) {
+            accountViewModel.setCurrentAccount(currentUser,context) { account ->
+                currentAccount = account
+            }
+        }
+    }
 
 
     ChatApp_DACS3Theme(
@@ -81,11 +90,14 @@ fun Main() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            val authViewModel = AuthViewModel(context)
-
-
+            LaunchedEffect(true) {
+                if (currentUser != null) {
+                    accountViewModel.setCurrentAccount(currentUser,context) { account ->
+                        currentAccount = account
+                    }
+                }
+            }
             NavHost(navController = navController, startDestination = Destination.Splash.route ){
-
 
                 composable(
                     route = Destination.Splash.route
@@ -130,8 +142,10 @@ fun Main() {
                                 navController.navigate(Destination.Setting.route)
                             },
                         )
-                        accountViewModel.setCurrentAccount(context) { account ->
-                            currentAccount = account
+                        if (currentUser != null) {
+                            accountViewModel.setCurrentAccount(currentUser,context) { account ->
+                                currentAccount = account
+                            }
                         }
                     }
                 }
@@ -209,11 +223,7 @@ fun Main() {
                             authViewModel,
                             currentAccount
                         )
-                        LaunchedEffect(Unit) {
-                            accountViewModel.setCurrentAccount(context) { account ->
-                                currentAccount = account
-                            }
-                        }
+
                     }
                 }
                 composable(Destination.DarkTheme.route){
@@ -225,12 +235,12 @@ fun Main() {
                 }
                 composable(Destination.AccountSetting.route){
                     EnterAnimation {
-                        AccountSettingScreen (navController)
+                        AccountSettingScreen (navController,authViewModel)
                     }
                 }
                 composable(Destination.EditName.route){
                     EnterAnimation {
-                        EditName(navController)
+                        EditName(navController,authViewModel)
                     }
                 }
             }
