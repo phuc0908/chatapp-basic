@@ -34,7 +34,7 @@ fun SplashScreen(
 ) {
     LaunchedEffect(Unit) {
         delay(1000)
-        if(authViewModel.getAuthInstance().currentUser!=null){
+        if(authViewModel.currentUser!=null){
             navController.navigate(Destination.Home.route)
         }else{
             navController.navigate(Destination.SignIn.route)

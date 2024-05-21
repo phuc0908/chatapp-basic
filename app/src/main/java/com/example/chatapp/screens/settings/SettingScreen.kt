@@ -1,7 +1,12 @@
 package com.example.chatapp.screens.settings
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -19,15 +25,25 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,11 +51,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.example.chatapp.Destination
 import com.example.chatapp.ui.components.BottomNavigation
 import com.example.chatapp.ui.components.RoundIconButton
 import com.fatherofapps.jnav.annotations.JNav
 import com.example.chatapp.R
+import com.example.chatapp.model.Account
 import com.example.chatapp.screens.signIn.AuthViewModel
 
 
@@ -55,7 +74,8 @@ import com.example.chatapp.screens.signIn.AuthViewModel
 fun SettingScreen(
     popBackStack: () -> Unit,
     navController: NavController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    currentUser: Account?
 ) {
 
     Scaffold(
@@ -72,7 +92,7 @@ fun SettingScreen(
                     .padding(0.dp)
                 ,
                 title = {
-                    TopBar()
+                    TopBar("Settings")
                 },
                 navigationIcon = {
                     RoundIconButton(
@@ -96,14 +116,46 @@ fun SettingScreen(
                 BottomNavigation(3, navController)
             }
         },
-    ) {innerPadding->
+    ) { innerPadding->
         Column(
             Modifier
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState()),
         ){
-            Profile(authViewModel,navController)
-            BodySetting(navController)
+            if (currentUser != null) {
+                Profile(authViewModel,navController,currentUser)
+            }
+//            BODY SETTING
+            Column(
+                Modifier
+                    .fillMaxSize()
+            ) {
+                RowInSetting(
+                    R.drawable.lock,
+                    "Acount",
+                    "Privacy, change my infomation",
+                    onClick = {
+                        navController.navigate(Destination.AccountSetting.route)
+                    }
+                )
+                RowInSetting(
+                    R.drawable.dark_theme,
+                    "Dark theme",
+                    "System",
+                    onClick = {
+                        navController.navigate(Destination.DarkTheme.route)
+                    }
+                )
+                RowInSetting(
+                    R.drawable.status_active,
+                    "Active status",
+                    "On",
+                    onClick = {
+
+                    }
+                )
+            }
+//            End body setting
         }
     }
 }
@@ -111,7 +163,8 @@ fun SettingScreen(
 @Composable
 fun Profile(
     authViewModel: AuthViewModel,
-    navController: NavController
+    navController: NavController,
+    currentUser: Account
 ) {
     Column(
         Modifier
@@ -120,16 +173,15 @@ fun Profile(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RoundIconButton(
-            imageResId = R.drawable.newuser,
-            imageVector = null,
+        AvatarIcon(
+            imageUrl = currentUser.imageUri,
             modifier = Modifier.size(120.dp)
         ) {}
-        Text(text = "Nguyen Hong Phuc",
+        Text(text = currentUser.nickName,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )
-        Text(text = "phucnh.22itb@vku.udn.vn",
+        Text(text = currentUser.username,
             fontSize = 10.sp,
             fontWeight = FontWeight.Light,
             color = Color.DarkGray
@@ -143,39 +195,6 @@ fun Profile(
         ) {
             Text(text = "Sign out")
         }
-    }
-}
-
-@Composable
-fun BodySetting(navController: NavController) {
-    Column(
-        Modifier
-            .fillMaxSize()
-    ) {
-        RowInSetting(
-            R.drawable.lock,
-            "Acount",
-            "Privacy, change my infomation",
-            onClick = {
-
-            }
-        )
-        RowInSetting(
-            R.drawable.dark_theme,
-            "Dark theme",
-            "System",
-            onClick = {
-                navController.navigate(Destination.DarkTheme.route)
-            }
-        )
-        RowInSetting(
-            R.drawable.status_active,
-            "Active status",
-            "On",
-            onClick = {
-
-            }
-        )
     }
 }
 
@@ -221,7 +240,7 @@ fun RowInSetting(
 }
 
 @Composable
-fun TopBar() {
+fun TopBar(text: String) {
     Column(
         Modifier
             .fillMaxSize(),
@@ -229,10 +248,43 @@ fun TopBar() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Settings",
+            text = text,
             style = TextStyle(
                 fontSize = 25.sp
             )
+        )
+    }
+}
+
+@Composable
+fun AvatarIcon(
+    imageUrl: String?,
+    modifier: Modifier,
+    onClick: () -> Unit,
+) {
+    Box(modifier = Modifier.clip(CircleShape)){
+        IconButton(
+            onClick = onClick,
+            modifier = modifier,
+            content = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(9.dp)
+                        .clip(shape = CircleShape),
+                    contentAlignment = Alignment.Center,
+                    content = {
+                        if(imageUrl != null){
+                            Image(
+                                painter = rememberAsyncImagePainter(imageUrl),
+                                contentScale = ContentScale.Crop,
+                                contentDescription = "",
+                                modifier = modifier
+                            )
+                        }
+                    },
+                )
+            }
         )
     }
 }
@@ -243,6 +295,7 @@ fun SettingPreview() {
     SettingScreen (
         popBackStack = {},
         rememberNavController(),
-        authViewModel = AuthViewModel(LocalContext.current)
+        authViewModel = AuthViewModel(LocalContext.current),
+        Account("","","","","")
     )
 }

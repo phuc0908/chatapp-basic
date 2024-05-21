@@ -48,11 +48,7 @@ class AuthViewModel(
 
     private val auth = FirebaseAuth.getInstance()
 
-    fun getAuthInstance(): FirebaseAuth {
-        return auth
-    }
-
-    private var currentUser: FirebaseUser? = null
+    var currentUser: FirebaseUser? = auth.currentUser
 
 //  SIGN IN
     fun updateUserName(newName: String) {
@@ -91,10 +87,12 @@ class AuthViewModel(
                         "Register Successful.",
                         Toast.LENGTH_SHORT
                     ).show()
+
+                    val user = auth.currentUser
+                    updateUI(user)
+
 //                    Push firebase
-
-
-                    val account = auth.currentUser?.let {
+                    val account = user?.let {
                         Account(
                             uid = it.uid,
                             username = userNameRegister,
@@ -104,12 +102,9 @@ class AuthViewModel(
                         )
                     }
                     if (account !== null) {
-                        accountViewModel.createAccount(account)
+                        accountViewModel.updateAccount(account)
                     }
                     navController.navigate(Destination.SignIn.route)
-
-
-
                 } else {
                     Log.w(TAG, "createUserWithEmail:failure", task.exception)
                     Toast.makeText(

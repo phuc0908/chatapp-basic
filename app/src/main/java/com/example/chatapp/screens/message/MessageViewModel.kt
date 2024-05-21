@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.chatapp.R
 import com.example.chatapp.model.Message
-import com.google.firebase.ktx.Firebase
 
 class MessageViewModel : ViewModel(){
     var message by mutableStateOf<List<Message>?>(null)
@@ -19,8 +18,6 @@ class MessageViewModel : ViewModel(){
             Message(2,1, type = 0, message = "Right, can I trust you"),
             Message(1,2, type = 0, message = "Yes , you see, this is mine"),
             Message(1,2, type = 1, image = R.drawable.avatar_garena_2),
-            Message(2,1, type = 1, image = R.drawable.avatar_girl_garena),
-
             )
         message = list
     }

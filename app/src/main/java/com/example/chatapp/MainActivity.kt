@@ -19,11 +19,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.chatapp.model.Account
 import com.example.chatapp.ui.theme.ChatApp_DACS3Theme
 import com.example.chatapp.ui.animations.EnterAnimation
 import com.example.chatapp.screens.SplashScreen
 import com.example.chatapp.screens.call.CallScreen
 import com.example.chatapp.screens.call.CallViewModel
+import com.example.chatapp.screens.contact.ContactScreen
+import com.example.chatapp.screens.contact.ContactViewModel
 import com.example.chatapp.screens.home.HomeScreen
 import com.example.chatapp.screens.home.HomeViewModel
 import com.example.chatapp.screens.info.InfoScreen
@@ -32,7 +35,9 @@ import com.example.chatapp.screens.message.MessageScreen
 import com.example.chatapp.screens.message.MessageViewModel
 import com.example.chatapp.screens.search.SearchScreen
 import com.example.chatapp.screens.search.SearchViewModel
+import com.example.chatapp.screens.settings.AccountSettingScreen
 import com.example.chatapp.screens.settings.DarkThemeScreen
+import com.example.chatapp.screens.settings.EditName
 import com.example.chatapp.screens.settings.SettingScreen
 import com.example.chatapp.screens.signIn.AuthViewModel
 import com.example.chatapp.screens.signIn.SignInScreen
@@ -63,6 +68,11 @@ fun Main() {
     val navController = rememberNavController()
     var themeOption by remember { mutableStateOf(ThemeOption.SYSTEM) }
 
+    var currentAccount by remember { mutableStateOf<Account?>(null) }
+    val context = LocalContext.current
+
+
+
     ChatApp_DACS3Theme(
         useSystemTheme = themeOption == ThemeOption.SYSTEM,
         darkTheme = themeOption == ThemeOption.DARK
@@ -71,7 +81,6 @@ fun Main() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            val context = LocalContext.current
             val authViewModel = AuthViewModel(context)
 
 
@@ -120,7 +129,8 @@ fun Main() {
                             },
                             openMyinfo = {
                                 navController.navigate(Destination.Info.route)
-                            }
+                            },
+
 
                         )
                     }
@@ -137,6 +147,16 @@ fun Main() {
                             },
 
                         )
+                    }
+                }
+                composable(Destination.Contact.route){
+                    EnterAnimation {
+                        val viewModel: ContactViewModel =  remember { ContactViewModel() }
+                        ContactScreen(viewModel = viewModel,
+                            popBackStack = { navController.popBackStack() },
+                            navController = navController
+                        )
+
                     }
                 }
 
@@ -186,8 +206,14 @@ fun Main() {
                                 navController.popBackStack()
                             },
                             navController,
-                            authViewModel
+                            authViewModel,
+                            currentAccount
                         )
+                        LaunchedEffect(Unit) {
+                            accountViewModel.setCurrentAccount(context) { account ->
+                                currentAccount = account
+                            }
+                        }
                     }
                 }
                 composable(Destination.DarkTheme.route){
@@ -195,6 +221,16 @@ fun Main() {
                         DarkThemeScreen (navController,themeOption){ newThemeOption ->
                             themeOption = newThemeOption
                         }
+                    }
+                }
+                composable(Destination.AccountSetting.route){
+                    EnterAnimation {
+                        AccountSettingScreen (navController)
+                    }
+                }
+                composable(Destination.EditName.route){
+                    EnterAnimation {
+                        EditName(navController)
                     }
                 }
             }
@@ -205,16 +241,21 @@ fun Main() {
 sealed class Destination(val route: String){
     object Splash: Destination("splash")
     object Home: Destination("home")
-    object SignIn: Destination("signin")
-    object SignUp: Destination("signup")
+    object SignIn: Destination("sign_in")
+    object SignUp: Destination("sign_up")
     object Message: Destination("message")
     object Setting: Destination("setting")
-    object DarkTheme: Destination("darktheme")
+    object DarkTheme: Destination("dark_theme")
 
     object Contact: Destination("contact")
     object Call: Destination("call")
     object Search: Destination("search")
     object Info: Destination("info")
+    object AccountSetting: Destination("account_setting")
+    object EditAvatar: Destination("edit_avatar")
+    object EditName: Destination("edit_name")
+
+
 
 }
 
