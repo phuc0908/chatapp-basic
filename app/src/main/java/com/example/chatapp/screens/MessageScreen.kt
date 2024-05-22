@@ -95,10 +95,6 @@ fun MessageScreen(
         selectedImageUri = uri
     }
 
-//    val scrollState = rememberScrollState()
-//    LaunchedEffect(Unit) {
-//        scrollState.animateScrollTo(scrollState.maxValue)
-//    }
     val listState = rememberLazyListState()
     LaunchedEffect(messages) {
         listState.animateScrollToItem(messages.size)
@@ -120,7 +116,9 @@ fun MessageScreen(
                     .padding(0.dp)
                 ,
                 title = {
-                    viewModel.user.value?.let { TopBarMes(it) }
+                    viewModel.user.value?.let {
+                        TopBarMes(it)
+                    }
                 },
                 navigationIcon = {
                     RoundIconButton(

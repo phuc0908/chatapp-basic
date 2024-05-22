@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -21,6 +23,7 @@ import com.example.chatapp.ui.theme.Green1
 fun RoundIconButton(
     imageResId: Int?,
     imageVector: ImageVector?,
+    colorTint: Color? = null,
     modifier: Modifier,
     onClick: () -> Unit,
     ) {
@@ -42,6 +45,9 @@ fun RoundIconButton(
                             Image(
                                 painter = painterResource(id = imageResId),
                                 contentScale = ContentScale.Crop,
+                                colorFilter = colorTint?.let {
+                                    ColorFilter.tint(it)
+                                },
                                 contentDescription = "",
                                 modifier = modifier
                             )

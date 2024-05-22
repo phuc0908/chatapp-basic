@@ -227,7 +227,7 @@ fun Main() {
                     val viewModel: InfoViewModel = remember { InfoViewModel() }
                     EnterAnimation {
                         InfoScreen(
-                            viewModel = viewModel,
+                            viewModel.account,
                             popBackStack = {
                                 navController.popBackStack()
                             }
