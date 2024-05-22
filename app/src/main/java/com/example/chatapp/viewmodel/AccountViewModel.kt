@@ -39,7 +39,7 @@ class AccountViewModel(
     private fun updateAvatar(imageUrl: String,user: FirebaseUser){
         user.run {
             val reference = reference.child(user.uid).child("imageUri")
-
+            Log.d("ddddddd",imageUrl)
             reference.setValue(imageUrl)
         }
     }

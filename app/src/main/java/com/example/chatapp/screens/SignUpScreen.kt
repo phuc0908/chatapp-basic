@@ -128,7 +128,12 @@ fun SignUpScreen(
             color = Green1,
             modifier = Modifier
                 .clickable {
-                    navController.navigate(Destination.SignIn.route)
+                    navController.navigate(Destination.SignIn.route){
+                        launchSingleTop = true
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                    }
                 }
                 .padding(top = 8.dp)
         )

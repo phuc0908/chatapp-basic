@@ -189,11 +189,11 @@ class AuthViewModel(
         updateCurrentUser(null)
 
         navController.navigate(Destination.SignIn.route) {
-            popUpTo(Destination.Home.route) {
+            launchSingleTop = true
+            popUpTo(navController.graph.startDestinationId) {
                 inclusive = true
             }
         }
-
     }
 
 

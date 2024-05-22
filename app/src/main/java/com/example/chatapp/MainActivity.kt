@@ -107,7 +107,7 @@ fun Main() {
                     }
                 }
 
-                composable(HomeScreenNavigation.route){
+                composable(Destination.SignIn.route){
                     EnterAnimation {
                         SignInScreen (
                             navController = navController,
