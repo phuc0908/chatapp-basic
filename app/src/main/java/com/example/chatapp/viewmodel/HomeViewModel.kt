@@ -1,50 +1,59 @@
 package com.example.chatapp.viewmodel
 
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.chatapp.R
-import com.example.chatapp.model.User
+import com.example.chatapp.model.Account
+import com.example.chatapp.model.ChatItem
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 
-class HomeViewModel : ViewModel() {
-    var statusFriend by mutableStateOf<List<User>?>(null)
-        private set
-    var lastFriend by mutableStateOf<List<User>?>(null)
-        private set
-    fun fetchStatusFriend() {
-        val friends = listOf(
-            User(R.drawable.newuser, "Nguyen Phuc",),
-            User(R.drawable.newuser, "Mai Thuong"),
-            User(R.drawable.newuser, "Tran Dang"),
-            User(R.drawable.newuser, "Wong Da"),
-            User(R.drawable.newuser, "Ton Lu"),
-            User(R.drawable.newuser, "Tao La Ai"),
-            User(R.drawable.newuser, "Phuc Is Me"),
-            User(R.drawable.newuser, "EEEEEE"),
-            User(R.drawable.newuser, "DDDDg")
-        )
-        statusFriend = friends
+class HomeViewModel : ViewModel(
+
+) {
+    private val database: DatabaseReference = FirebaseDatabase.getInstance().getReference("accounts")
+
+    private val _chatItemList = mutableStateOf<List<ChatItem>>(emptyList())
+
+    val chatItemList: MutableState<List<ChatItem>> = _chatItemList
+
+    fun fetchAccountList(currentUserUid: String) {
+        database.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+                val chatItems = mutableListOf<ChatItem>()
+                for (accountSnapshot in snapshot.children) {
+                    val account = accountSnapshot.getValue(Account::class.java)
+                    account?.let {
+                        if (it.uid != currentUserUid) {
+                            chatItems.add(accountToChatItem(it))
+                        }
+                    }
+                }
+                _chatItemList.value = chatItems
+            }
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
     }
+    fun accountToChatItem(account: Account): ChatItem {
+        val id = account.uid
+        val nickname = account.nickName
+        val imageUri = account.imageUri
 
-
-    fun fetchLastFriend() {
-        val friends = listOf(
-            User(R.drawable.newuser, "Nguyen Phuc","Hello you are my teacher",34),
-            User(R.drawable.newuser, "Ton Lu","Im a dog",0),
-            User(R.drawable.avatar_garena_2, "TDDDD",":)))))))))",32),
-            User(R.drawable.newuser, "Nguyen Phuc","Hello you are my teacher",34),
-            User(R.drawable.newuser, "Nguyen Phuc","Hello you are my teacher",34),
-            User(R.drawable.newuser, "Nguyen Phuc","Hello you are my teacher",34),
-            User(R.drawable.newuser, "Nguyen Phuc","Hello you are my teacher",34),
-            User(R.drawable.newuser, "Nguyen Phuc","Hello you are my teacher",34),
-            User(R.drawable.newuser, "Nguyen Phuc","Hello you are my teacher",34),
-            User(R.drawable.newuser, "Nguyen Phuc","Hello you are my teacher",34),
-
-
+        return ChatItem(
+            id = id,
+            name = nickname,
+            avatar = imageUri,
+            lastMessage = "Don't have message",
+            timeAgo = 0,
+            isFriend = false,
+            isOnline = false
         )
-        lastFriend = friends
     }
 }
 

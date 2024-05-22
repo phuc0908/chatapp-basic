@@ -1,24 +1,61 @@
 package com.example.chatapp.viewmodel
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.chatapp.R
+import com.example.chatapp.model.ChatItem
 import com.example.chatapp.model.Message
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
-class MessageViewModel : ViewModel(){
-    var message by mutableStateOf<List<Message>?>(null)
-        private set
+class MessageViewModel(
 
-    fun fetchMessage() {
-        val list = listOf(
-            Message(1,2, type = 0, message = "Hello"),
-            Message(1,2, type = 0, message = "My name is Phuc"),
-            Message(2,1, type = 0, message = "Right, can I trust you"),
-            Message(1,2, type = 0, message = "Yes , you see, this is mine"),
-            Message(1,2, type = 1, image = R.drawable.avatar_garena_2),
-            )
-        message = list
+) : ViewModel(){
+    private val _messageList = mutableStateOf<List<Message>>(emptyList())
+
+    val messageList: MutableState<List<Message>> = _messageList
+    private val database: DatabaseReference =
+        FirebaseDatabase.getInstance().reference
+
+    fun fetchMessage(currentUserUid: String, friendUid: String) {
+        database.child("messages").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val messages = mutableListOf<Message>()
+                for (messageSnapshot in snapshot.children) {
+                    val message = messageSnapshot.getValue(Message::class.java)
+                    message?.let {
+                        if ((it.idFrom == currentUserUid && it.idTo == friendUid) ||
+                            (it.idFrom == friendUid && it.idTo == currentUserUid)
+                        ) {
+                            messages.add(it)
+                        }
+                    }
+                }
+                _messageList.value = messages
+            }
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+    }
+
+    fun sendMessage(messageText: String,currentUid:String, friendUid: String, type: Int) {
+        val messageId = database.child("messages").push().key ?: return
+        val message = Message(
+            id = messageId,
+            idFrom = currentUid,
+            idTo = friendUid,
+            message = messageText,
+            type = type,
+            timestamp = System.currentTimeMillis()
+        )
+        database.child("messages").child(messageId).setValue(message)
     }
 }

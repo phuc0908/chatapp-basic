@@ -108,8 +108,6 @@ fun MessageScreen() {
             Message(message = "Hello!",true)
             Message(message = "Hello! you the fucking go wtf is it sdd dfdf kinch",true)
             Message(message = "Hello! you the fucking go wtf is it sdd dfdf kinch sdsd",false)
-            ImageMessage(R.drawable.avatar_garena_2,true)
-            ImageMessage(R.drawable.avatar_garena_2,false)
 
         }
     }

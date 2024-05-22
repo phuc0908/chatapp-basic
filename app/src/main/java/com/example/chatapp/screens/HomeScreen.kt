@@ -46,7 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.R
 import com.example.chatapp.ui.components.BottomNavigation
 import com.example.chatapp.model.Account
-import com.example.chatapp.model.User
+import com.example.chatapp.model.ChatItem
 import com.example.chatapp.viewmodel.HomeViewModel
 import com.example.chatapp.screens.settings.AvatarIcon
 import com.example.chatapp.ui.components.RoundIconButton
@@ -69,12 +69,16 @@ fun HomeScreen(
     viewModel: HomeViewModel,
     currentAccount: Account?,
     navController: NavController,
-    openFriendChat:() -> Unit,
     openSearch:() -> Unit,
     openMyinfo:() -> Unit,
+    openChat:(String) -> Unit,
     ) {
     var backPressedOnce by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
+    val chatItems by viewModel.chatItemList
+
+
+
 
     BackHandler {
         if (backPressedOnce) {
@@ -164,23 +168,15 @@ fun HomeScreen(
             }
         },
     ) { innerPadding ->
-        LaunchedEffect(true) {
-            viewModel.fetchStatusFriend()
-            viewModel.fetchLastFriend()
-        }
+
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState()),
         ) {
 
-            viewModel.statusFriend?.let {
-                ListOfStatusFriend(it)
-
-            }
-            viewModel.lastFriend?.let {
-                ListMyChat(openFriendChat = openFriendChat,it)
-            }
+                ListOfStatusFriend(chatItems)
+                ListMyChat(openChat, chatItems)
         }
     }
 }
@@ -189,17 +185,18 @@ fun HomeScreen(
 
 @Composable
 fun OneChatFriend(
-    avatar: Int?,
+    openChat: (String) -> Unit,
+    uid: String,
+    avatar: String = "",
     name: String,
     lastMessage: String,
     lastTimeMessage: String,
-    openFriendChat: () -> Unit
 ) {
     Row (modifier = Modifier
         .fillMaxWidth()
         .clickable(
             onClick = {
-                openFriendChat()
+                openChat(uid)
             }
         )
         .padding(start = 15.dp, end = 15.dp)
@@ -213,9 +210,8 @@ fun OneChatFriend(
                 .width(70.dp),
                 verticalArrangement = Arrangement.Center
         ){
-            RoundIconButton(
-                imageResId = avatar,
-                null,
+            AvatarIcon(
+                imageUrl = avatar,
                 modifier = Modifier
                     .width(65.dp)
                     .aspectRatio(1f)
@@ -262,8 +258,8 @@ fun TimeAgoChat(
 
 @Composable
 fun ListMyChat(
-    openFriendChat: () -> Unit,
-    friends: List<User>
+    openChat:(String)-> Unit,
+    friends: List<ChatItem>
 ) {
     Column (
         modifier = Modifier
@@ -271,22 +267,21 @@ fun ListMyChat(
             .padding()
     ){
         friends.forEach {friend->
-            friend.lastMessage?.let {
-                OneChatFriend(
-                    avatar = friend.avatar,
-                    name = friend.name,
-                    lastMessage = it,
-                    lastTimeMessage = friend.timeAgo.toString(),
-                    openFriendChat = openFriendChat
-                )
-            }
+            OneChatFriend(
+                openChat = { openChat(friend.id) },
+                uid = friend.id,
+                avatar = friend.avatar,
+                name = friend.name,
+                lastMessage = friend.lastMessage,
+                lastTimeMessage = friend.timeAgo.toString(),
+            )
         }
     }
 }
 
 @Composable
 fun StatusFriend(
-    friends: List<User>
+    friends: List<ChatItem>
 ) {
     friends.forEach {friend->
         Column (modifier = Modifier
@@ -294,11 +289,10 @@ fun StatusFriend(
             .width(80.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ){
-            RoundIconButton(
-                imageResId = friend.avatar,
-                null,
+            AvatarIcon(
+                imageUrl = friend.avatar,
                 modifier = Modifier
-                    .width(70.dp)
+                    .width(65.dp)
                     .aspectRatio(1f)
             ) {}
             Text(text = friend.name,
@@ -313,7 +307,7 @@ fun StatusFriend(
 
 @Composable
 fun ListOfStatusFriend(
-    friends: List<User>
+    friends: List<ChatItem>
 ) {
     Row(modifier = Modifier
         .fillMaxWidth()
@@ -332,9 +326,9 @@ fun Preview() {
         viewModel = viewModel(),
         Account(),
         rememberNavController(),
-        openFriendChat = {},
         openSearch = {},
         openMyinfo = {},
+        {}
     )
 }
 

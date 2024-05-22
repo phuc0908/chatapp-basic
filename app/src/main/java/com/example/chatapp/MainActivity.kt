@@ -27,10 +27,12 @@ import com.example.chatapp.viewmodel.CallViewModel
 import com.example.chatapp.screens.ContactScreen
 import com.example.chatapp.viewmodel.ContactViewModel
 import com.example.chatapp.screens.HomeScreen
+import com.example.chatapp.screens.HomeScreenNavigation
 import com.example.chatapp.viewmodel.HomeViewModel
 import com.example.chatapp.screens.InfoScreen
 import com.example.chatapp.viewmodel.InfoViewModel
 import com.example.chatapp.screens.MessageScreen
+import com.example.chatapp.screens.MessageScreenNavigation
 import com.example.chatapp.viewmodel.MessageViewModel
 import com.example.chatapp.screens.SearchScreen
 import com.example.chatapp.viewmodel.SearchViewModel
@@ -105,7 +107,7 @@ fun Main() {
                     }
                 }
 
-                composable(Destination.SignIn.route){
+                composable(HomeScreenNavigation.route){
                     EnterAnimation {
                         SignInScreen (
                             navController = navController,
@@ -130,19 +132,53 @@ fun Main() {
                             viewModel = viewModel,
                             currentAccount = currentAccount,
                             navController = navController,
-                            openFriendChat = {
-                                navController.navigate(Destination.Message.route)
-                            },
                             openSearch = {
                                 navController.navigate(Destination.Search.route)
                             },
                             openMyinfo = {
                                 navController.navigate(Destination.Setting.route)
                             },
+                            openChat = { uid->
+                                navController.navigate(MessageScreenNavigation.createRoute(uid))
+                            }
                         )
+
+                        LaunchedEffect(currentUser) {
+                            currentUser?.let { user ->
+                                accountViewModel.setCurrentAccount(user, context) { account ->
+                                    currentAccount = account
+                                }
+                            }
+                        }
+                        LaunchedEffect(currentAccount) {
+                            currentAccount?.let {
+                                viewModel.fetchAccountList(it.uid)
+                            }
+                        }
+
+                    }
+                }
+                composable(
+                    route = MessageScreenNavigation.route,
+                    arguments = MessageScreenNavigation.arguments()
+                ){
+                    val viewModel: MessageViewModel = remember { MessageViewModel() }
+                    val uid = it.arguments?.getString("uidArg") ?: throw Exception("")
+
+                    EnterAnimation {
                         if (currentUser != null) {
-                            accountViewModel.setCurrentAccount(currentUser,context) { account ->
-                                currentAccount = account
+                            MessageScreen(
+                                viewModel = viewModel,
+                                popBackStack = {
+                                    navController.popBackStack()
+                                },
+                                currentUser.uid,
+                                friendid = uid
+                            )
+                            LaunchedEffect(currentAccount) {
+                                currentAccount?.let {
+                                    viewModel.fetchMessage(currentUser.uid,uid)
+                                }
                             }
                         }
                     }
@@ -172,19 +208,7 @@ fun Main() {
                     }
                 }
 
-                composable(
-                    route = Destination.Message.route,
-                    ){
-                    val viewModel: MessageViewModel = remember { MessageViewModel() }
-                    EnterAnimation {
-                        MessageScreen(
-                        viewModel = viewModel,
-                            popBackStack = {
-                                navController.popBackStack()
-                            }
-                        )
-                    }
-                }
+
 
                 composable(
                     route = Destination.Search.route,
@@ -248,10 +272,10 @@ fun Main() {
 
 sealed class Destination(val route: String){
     object Splash: Destination("splash")
-    object Home: Destination("home")
+    object Home: Destination("home_route")
     object SignIn: Destination("sign_in")
     object SignUp: Destination("sign_up")
-    object Message: Destination("message")
+    object Message: Destination("message_route")
     object Setting: Destination("setting")
     object DarkTheme: Destination("dark_theme")
 

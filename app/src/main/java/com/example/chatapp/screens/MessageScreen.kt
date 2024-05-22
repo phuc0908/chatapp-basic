@@ -30,11 +30,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
@@ -63,17 +63,19 @@ import com.fatherofapps.jnav.annotations.JNavArg
     baseRoute = "message_route",
     destination = "message_destination",
     arguments = [
-        JNavArg(name = "userName", type = String::class)
+        JNavArg(name = "uid", type = String::class)
     ]
 )
 @Composable
 fun MessageScreen(
     viewModel: MessageViewModel,
-    popBackStack: () -> Unit
+    popBackStack: () -> Unit,
+    curentid: String,
+    friendid: String
 ) {
 
     val text  = remember{ mutableStateOf("") }
-
+    val messages by viewModel.messageList
 
     Scaffold(
         topBar = {
@@ -112,12 +114,14 @@ fun MessageScreen(
                         )
                     )
             ) {
-                BottomBarMes(text = text)
+                BottomBarMes(text = text) { message ->
+                    viewModel.sendMessage(message,curentid, friendid, 0)
+                }
             }
         },
     ) { innerPadding ->
         LaunchedEffect(true) {
-            viewModel.fetchMessage()
+            viewModel.fetchMessage(curentid,friendid)
         }
 
         val scrollState = rememberScrollState()
@@ -132,36 +136,31 @@ fun MessageScreen(
                 .padding(innerPadding)
                 .verticalScroll(scrollState),
         ) {
-            viewModel.message?.let {
-                MessageListWithAFriend(list = it)
-            }
+            MessageListWithAFriend(messages, curentid, friendid)
         }
     }
 }
 
 @Composable
 fun MessageListWithAFriend(
-    list : List<Message>
+    list: List<Message>,
+    curentid: String,
+    friendid: String
 ) {
     val typeText = 0
     val typeImage = 1
 
     list.forEach{mes->
         if(mes.type == typeText){
-
-            mes.message?.let {text ->
-                Message(
-                    message = text,
-                    isMyMessage = mes.idFrom == 1
-                )
-            }
+            Message(
+                message = mes.message,
+                isMyMessage = mes.idFrom == curentid
+            )
         }else if(mes.type == typeImage){
-            mes.image?.let {image ->
-                ImageMessage(
-                    imageResId = image,
-                    isMyImage = mes.idFrom == 1
-                )
-            }
+            ImageMessage(
+                imageUrl = mes.message,
+                isMyImage = mes.idFrom == curentid
+            )
         }
     }
 }
@@ -219,6 +218,7 @@ fun TopBarMes(
 @Composable
 fun BottomBarMes(
     text: MutableState<String>,
+    onSendMessage: (String) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -229,12 +229,18 @@ fun BottomBarMes(
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ){
+//        RoundIconButton(
+//            imageResId = R.drawable.file,
+//            imageVector = null,
+//            modifier = Modifier
+//                .size(45.dp)
+//                .rotate(15f)
+//        ) {
+//        }
         RoundIconButton(
-            imageResId = R.drawable.file,
+            imageResId = R.drawable.camera,
             imageVector = null,
-            modifier = Modifier
-                .size(45.dp)
-                .rotate(15f)
+            modifier = Modifier.size(45.dp)
         ) {
         }
         CustomTextField(
@@ -248,7 +254,7 @@ fun BottomBarMes(
                     RoundedCornerShape(percent = 20)
                 )
                 .padding(4.dp)
-                .width(200.dp),
+                .width(240.dp),
             fontSize = 14.sp,
             placeholderText = "Nhắn tin",
             keyboardOptions = KeyboardOptions(
@@ -261,23 +267,17 @@ fun BottomBarMes(
             maxLine = 4
         )
 
+
         RoundIconButton(
-            imageResId = R.drawable.camera,
+            imageResId = R.drawable.sendd,
             imageVector = null,
-            modifier = Modifier.size(45.dp)
+            modifier = Modifier.size(50.dp)
         ) {
-        }
-        RoundIconButton(
-            imageResId = R.drawable.mic,
-            imageVector = null,
-            modifier = Modifier.size(45.dp)
-        ) {
+            onSendMessage(text.value)
+            text.value = ""
         }
     }
 }
-
-
-
 
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -285,6 +285,8 @@ fun BottomBarMes(
 fun MesPreview() {
         MessageScreen(
             viewModel(),
-            popBackStack = {}
+            popBackStack = {},
+            "",
+            ""
         )
 }

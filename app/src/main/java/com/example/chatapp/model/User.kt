@@ -1,17 +1,15 @@
 package com.example.chatapp.model
 
-import com.google.firebase.database.DatabaseReference
-import kotlinx.coroutines.tasks.await
 
-data class User(val avatar: Int,
+data class ChatItem(
+                val id: String,
+                val avatar: String,
                 val name: String,
-                val lastMessage: String?,
-                val timeAgo: Int?,
-                val isFriend: Boolean?=false,
-                val isOnline: Boolean?=false,
-    ) {
-    constructor(avatar: Int, name: String) : this(avatar, name, null, null, false, false)
-}
+                val lastMessage: String = "",
+                val timeAgo: Int = 0,
+                val isFriend: Boolean? = false,
+                val isOnline: Boolean? = false,
+)
 
 data class Account(val uid: String,
                    val username: String,

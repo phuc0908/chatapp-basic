@@ -16,11 +16,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import com.example.chatapp.ui.theme.LightGreen1
 
 @Composable
 fun ImageMessage(
-    imageResId: Int,
+    imageUrl: String,
     isMyImage: Boolean
 ) {
     Column(
@@ -41,7 +42,7 @@ fun ImageMessage(
     ) {
         Box{
             Image(
-                painter = painterResource(id = imageResId),
+                painter = rememberAsyncImagePainter(imageUrl),
                 contentDescription = "",
                 modifier = Modifier
                     .fillMaxSize(),
