@@ -70,7 +70,7 @@ fun HomeScreen(
     currentAccount: Account?,
     navController: NavController,
     openSearch:() -> Unit,
-    openMyinfo:() -> Unit,
+    openMyInfo:() -> Unit,
     openChat:(String) -> Unit,
     ) {
     var backPressedOnce by remember { mutableStateOf(false) }
@@ -143,7 +143,7 @@ fun HomeScreen(
                                 modifier = Modifier
                                     .size(50.dp)
                                     .aspectRatio(1f),
-                                onClick = openMyinfo
+                                onClick = openMyInfo
                             )
                         }else{
                             RoundIconButton(imageResId = R.drawable.newuser,
@@ -151,7 +151,7 @@ fun HomeScreen(
                                 modifier = Modifier
                                     .size(50.dp)
                                     .aspectRatio(1f),
-                                onClick = openMyinfo
+                                onClick = openMyInfo
                             )
                         }
                     }
@@ -268,7 +268,9 @@ fun ListMyChat(
     ){
         friends.forEach {friend->
             OneChatFriend(
-                openChat = { openChat(friend.id) },
+                openChat = {
+                    openChat(friend.id)
+               },
                 uid = friend.id,
                 avatar = friend.avatar,
                 name = friend.name,
@@ -327,7 +329,7 @@ fun Preview() {
         Account(),
         rememberNavController(),
         openSearch = {},
-        openMyinfo = {},
+        openMyInfo = {},
         {}
     )
 }

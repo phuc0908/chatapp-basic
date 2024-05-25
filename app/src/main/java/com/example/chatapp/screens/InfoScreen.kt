@@ -1,6 +1,8 @@
 package com.example.chatapp.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,32 +25,48 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.R
 import com.example.chatapp.model.Account
-import com.example.chatapp.viewmodel.InfoViewModel
 import com.example.chatapp.ui.components.RoundIconButton
+import com.example.chatapp.viewmodel.AccountViewModel
+import com.example.chatapp.viewmodel.InfoViewModel
+import com.example.chatapp.viewmodel.MessageViewModel
 import com.fatherofapps.jnav.annotations.JNav
+import com.fatherofapps.jnav.annotations.JNavArg
+import com.google.firebase.database.FirebaseDatabase
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @JNav(
     name = "InfoScreenNavigation",
-    baseRoute = "info_route",
+    baseRoute = "info",
     destination = "info_destination",
-)
+    arguments = [
+        JNavArg(name = "uid", type = String::class)
+    ])
 @Composable
 fun InfoScreen(
-    account: Account,
-popBackStack:()-> Unit
+    viewModel: InfoViewModel,
+    popBackStack:()-> Unit,
+    navController: NavController,
+    uid: String
 ) {
+    LaunchedEffect(Unit) {
+        Log.d("InfoScreen", "LaunchedEffect triggered")
+        viewModel.getFriend(uid)
+    }
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -80,9 +98,10 @@ popBackStack:()-> Unit
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.onSurface)
         ) {
-            TopProfile(account)
-            BodyProfile(account)
+            viewModel.user.value?.let { TopProfile(it,navController) }
+            viewModel.user.value?.let { BodyProfile(it) }
         }
+
     }
 }
 
@@ -106,9 +125,9 @@ fun BodyProfile(
         ,
     ) {
         Spacer(modifier = Modifier.size(30.dp))
-        RowInfo("Display Name","NGuyen Hong Phuc")
-        RowInfo("Email Address","phucnh.22itb@gmail.com")
-        RowInfo("Phone Number","(+84) 82-2734-103")
+        RowInfo("Display Name",account.nickName)
+        RowInfo("Email Address",account.username)
+        RowInfo("Phone Number","...")
     }
 }
 
@@ -121,7 +140,7 @@ fun RowInfo(
         Modifier
             .fillMaxWidth()
             .height(60.dp)
-            .padding(start = 25.dp, top = 10.dp)
+            .padding(start = 25.dp, top = 15.dp)
     ){
         Column {
             Text(text = title,
@@ -139,7 +158,8 @@ fun RowInfo(
 }
 @Composable
 fun TopProfile(
-    account: Account
+    account: Account,
+    navController: NavController,
 ) {
     Column (
         Modifier.background(MaterialTheme.colorScheme.onSurface),
@@ -158,12 +178,12 @@ fun TopProfile(
                 imageVector = null,
                 modifier = Modifier.size(120.dp)
             ) {}
-            Text(text = "Nguyen Hong Phuc",
-                fontSize = 18.sp,
+            Text(text = account.nickName,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onTertiary
             )
-            Text(text = "phucnh.22itb@vku.udn.vn",
+            Text(text = account.username,
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Light,
                 color = MaterialTheme.colorScheme.onTertiary
@@ -184,6 +204,9 @@ fun TopProfile(
                 modifier = Modifier
                     .size(40.dp)
                     .background(Color.Gray)
+                    .clickable {
+                        navController.navigate(MessageScreenNavigation.createRoute(account.uid))
+                    }
             ) {
 
             }
@@ -213,7 +236,9 @@ fun TopProfile(
 @Composable
 fun InfoPreview() {
     InfoScreen (
-Account(),
+            InfoViewModel(),
         popBackStack = {},
+        rememberNavController(),
+        ""
     )
 }

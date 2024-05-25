@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatapp.model.Account
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -48,7 +49,8 @@ class AccountViewModel(
         context: Context,
         onResult: (Account?) -> Unit){
 
-        reference.child(user.uid).addListenerForSingleValueEvent(object : ValueEventListener {
+        reference.child(user.uid)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val account = snapshot.getValue(Account::class.java)
                 onResult(account)
@@ -60,7 +62,7 @@ class AccountViewModel(
             }
         })
     }
-    fun updateAccountByUid(uid: String, onDataChange: (Account?) -> Unit, onCancelled: ((error: DatabaseError) -> Unit)? = null) {
+    private fun updateAccountByUid(uid: String, onDataChange: (Account?) -> Unit, onCancelled: ((error: DatabaseError) -> Unit)? = null) {
         val ref = reference.child(uid)
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -95,7 +97,6 @@ class AccountViewModel(
 
 
     fun updateUserImageUri(imageUrl: String,user: FirebaseUser) {
-
         updateAccountByUid(
             user.uid,
             onDataChange = { account ->

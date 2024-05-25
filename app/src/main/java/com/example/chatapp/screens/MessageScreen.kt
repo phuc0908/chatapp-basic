@@ -53,6 +53,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.R
 import com.example.chatapp.model.Account
 import com.example.chatapp.viewmodel.MessageViewModel
@@ -80,6 +82,7 @@ import com.fatherofapps.jnav.annotations.JNavArg
 fun MessageScreen(
     viewModel: MessageViewModel,
     popBackStack: () -> Unit,
+    navController: NavController,
     curentid: String,
     friendid: String
 ) {
@@ -103,6 +106,7 @@ fun MessageScreen(
     LaunchedEffect(Unit) {
         viewModel.getFriend(friendid)
     }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -117,7 +121,7 @@ fun MessageScreen(
                 ,
                 title = {
                     viewModel.user.value?.let {
-                        TopBarMes(it)
+                        TopBarMes(navController,it)
                     }
                 },
                 navigationIcon = {
@@ -229,6 +233,7 @@ fun MessageScreen(
 
 @Composable
 fun TopBarMes(
+    navController: NavController,
     account: Account
 ) {
     Row (modifier = Modifier
@@ -271,7 +276,7 @@ fun TopBarMes(
                 imageVector = null,
                 modifier = Modifier.size(50.dp)
             ) {
-
+                navController.navigate(InfoScreenNavigation.createRoute(account.uid))
             }
         }
     }
@@ -282,6 +287,7 @@ fun MesPreview() {
         MessageScreen(
             viewModel(),
             popBackStack = {},
+            navController = rememberNavController(),
             "",
             ""
         )

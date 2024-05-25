@@ -1,6 +1,7 @@
 package com.example.chatapp
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,10 +28,9 @@ import com.example.chatapp.viewmodel.CallViewModel
 import com.example.chatapp.screens.ContactScreen
 import com.example.chatapp.viewmodel.ContactViewModel
 import com.example.chatapp.screens.HomeScreen
-import com.example.chatapp.screens.HomeScreenNavigation
 import com.example.chatapp.viewmodel.HomeViewModel
 import com.example.chatapp.screens.InfoScreen
-import com.example.chatapp.viewmodel.InfoViewModel
+import com.example.chatapp.screens.InfoScreenNavigation
 import com.example.chatapp.screens.MessageScreen
 import com.example.chatapp.screens.MessageScreenNavigation
 import com.example.chatapp.viewmodel.MessageViewModel
@@ -43,7 +43,9 @@ import com.example.chatapp.screens.settings.SettingScreen
 import com.example.chatapp.viewmodel.AuthViewModel
 import com.example.chatapp.screens.SignInScreen
 import com.example.chatapp.screens.SignUpScreen
+import com.example.chatapp.ui.animations.BottomToTopAnimation
 import com.example.chatapp.viewmodel.AccountViewModel
+import com.example.chatapp.viewmodel.InfoViewModel
 
 
 class MainActivity : ComponentActivity() {
@@ -135,7 +137,7 @@ fun Main() {
                             openSearch = {
                                 navController.navigate(Destination.Search.route)
                             },
-                            openMyinfo = {
+                            openMyInfo = {
                                 navController.navigate(Destination.Setting.route)
                             },
                             openChat = { uid->
@@ -172,7 +174,8 @@ fun Main() {
                                 popBackStack = {
                                     navController.popBackStack()
                                 },
-                                currentUser.uid,
+                                navController,
+                                curentid = currentUser.uid,
                                 friendid = uid
                             )
                             LaunchedEffect(currentAccount) {
@@ -180,7 +183,33 @@ fun Main() {
                                     viewModel.fetchMessage(currentUser.uid,uid)
                                 }
                             }
+                        }else{
+                            navController.navigate(Destination.SignIn.route)
+                            Toast.makeText(
+                                context,
+                                "Error-1: currentUser is null",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+                    }
+                }
+
+                composable(
+                    route = InfoScreenNavigation.route,
+                    arguments = InfoScreenNavigation.arguments()
+                ){
+                    val uid = it.arguments?.getString("uidArg") ?: throw Exception("")
+
+                    val viewModel: InfoViewModel = remember { InfoViewModel() }
+                    BottomToTopAnimation {
+                        InfoScreen(
+                            viewModel,
+                            popBackStack = {
+                                navController.popBackStack()
+                            },
+                            navController,
+                            uid = uid
+                        )
                     }
                 }
 
@@ -223,17 +252,7 @@ fun Main() {
                         )
                     }
                 }
-                composable(Destination.Info.route){
-                    val viewModel: InfoViewModel = remember { InfoViewModel() }
-                    EnterAnimation {
-                        InfoScreen(
-                            viewModel.account,
-                            popBackStack = {
-                                navController.popBackStack()
-                            }
-                        )
-                    }
-                }
+
 
                 composable(Destination.Setting.route){
                     EnterAnimation {
@@ -278,7 +297,6 @@ sealed class Destination(val route: String){
     object Message: Destination("message_route")
     object Setting: Destination("setting")
     object DarkTheme: Destination("dark_theme")
-
     object Contact: Destination("contact")
     object Call: Destination("call")
     object Search: Destination("search")
@@ -286,9 +304,6 @@ sealed class Destination(val route: String){
     object AccountSetting: Destination("account_setting")
     object EditAvatar: Destination("edit_avatar")
     object EditName: Destination("edit_name")
-
-
-
 }
 
 
