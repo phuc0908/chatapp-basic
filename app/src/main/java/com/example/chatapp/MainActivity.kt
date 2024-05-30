@@ -237,8 +237,6 @@ fun Main() {
                     }
                 }
 
-
-
                 composable(
                     route = Destination.Search.route,
                 ){
@@ -246,13 +244,13 @@ fun Main() {
                     EnterAnimation {
                         SearchScreen(
                             viewModel = viewModel,
+                            navController,
                             popBackStack = {
                                 navController.popBackStack()
                             }
                         )
                     }
                 }
-
 
                 composable(Destination.Setting.route){
                     EnterAnimation {
@@ -267,6 +265,7 @@ fun Main() {
 
                     }
                 }
+
                 composable(Destination.DarkTheme.route){
                     EnterAnimation {
                         DarkThemeScreen (navController,themeOption){ newThemeOption ->
@@ -302,7 +301,6 @@ sealed class Destination(val route: String){
     object Search: Destination("search")
     object Info: Destination("info")
     object AccountSetting: Destination("account_setting")
-    object EditAvatar: Destination("edit_avatar")
     object EditName: Destination("edit_name")
 }
 

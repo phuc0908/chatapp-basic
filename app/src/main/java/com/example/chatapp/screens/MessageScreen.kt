@@ -106,6 +106,7 @@ fun MessageScreen(
     LaunchedEffect(Unit) {
         viewModel.getFriend(friendid)
     }
+    var showDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {

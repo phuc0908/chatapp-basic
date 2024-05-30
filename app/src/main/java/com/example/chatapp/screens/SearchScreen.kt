@@ -43,6 +43,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.model.YourRecentSearch
 import com.example.chatapp.model.YourRecommendSearch
 import com.example.chatapp.viewmodel.SearchViewModel
@@ -64,6 +66,7 @@ import com.fatherofapps.jnav.annotations.JNavArg
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel,
+    navController: NavController,
     popBackStack: () -> Unit
 ) {
     val text  = remember{ mutableStateOf("") }
@@ -101,8 +104,7 @@ fun SearchScreen(
 
     ) {innerPadding->
         LaunchedEffect(true) {
-            viewModel.fetchYourRecentSearch()
-            viewModel.fetchRecommendSearch()
+
         }
         Column(
             Modifier
@@ -110,13 +112,9 @@ fun SearchScreen(
                 .verticalScroll(rememberScrollState()),
 
             ){
-            viewModel.recentSearch?.let {
-                RecentSearch(it)
-            }
-            viewModel.recommendSearch?.let {
-                RecommendSearch(it)
-            }
+                RecentSearch(listOfNotNull())
 
+//                RecommendSearch()
         }
     }
 }
@@ -288,6 +286,7 @@ fun TopBarSearch(
 fun SearchPreview() {
     SearchScreen(
         viewModel(),
+        rememberNavController(),
         popBackStack = {}
     )
 }
