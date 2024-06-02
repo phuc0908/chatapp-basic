@@ -26,7 +26,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -190,7 +189,7 @@ fun OneChatFriend(
     avatar: String = "",
     name: String,
     lastMessage: String,
-    lastTimeMessage: String,
+    lastTimeMessage: Long?,
 ) {
     Row (modifier = Modifier
         .fillMaxWidth()
@@ -247,9 +246,9 @@ fun OneChatFriend(
 
 @Composable
 fun TimeAgoChat(
-    text: String
+    text: Long?,
 ) {
-    Text(text = "$text ago",
+    Text(text = text?.let { parseTimestampToString(it) }.toString(),
         style = TextStyle(fontSize = 8.sp,
             fontWeight = FontWeight.W300
         ),
@@ -259,7 +258,7 @@ fun TimeAgoChat(
 @Composable
 fun ListMyChat(
     openChat:(String)-> Unit,
-    friends: List<ChatItem>
+    friends: List<ChatItem>,
 ) {
     Column (
         modifier = Modifier
@@ -275,9 +274,25 @@ fun ListMyChat(
                 avatar = friend.avatar,
                 name = friend.name,
                 lastMessage = friend.lastMessage,
-                lastTimeMessage = friend.timeAgo.toString(),
+                lastTimeMessage = friend.timestamp,
             )
         }
+    }
+}
+
+fun parseTimestampToString(timestamp:Long?):String{
+    timestamp ?: return "Không có tin nhắn"
+
+    val currentTime = System.currentTimeMillis()
+    val diffInMillis = currentTime - timestamp
+    val diffInMinutes = diffInMillis / 60000
+
+    return when {
+        diffInMinutes < 1 -> "Vừa xong"
+        diffInMinutes == 1L -> "1 phút trước"
+        diffInMinutes < 60 -> "$diffInMinutes phút trước"
+        diffInMinutes < 1440 -> "${diffInMinutes / 60} giờ trước"
+        else -> "${diffInMinutes / 1440} ngày trước"
     }
 }
 

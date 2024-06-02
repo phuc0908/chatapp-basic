@@ -154,7 +154,7 @@ fun Main() {
                         }
                         LaunchedEffect(currentAccount) {
                             currentAccount?.let {
-                                viewModel.fetchAccountList(it.uid)
+                                viewModel.fetchAccountListWithLastMessages(it.uid)
                             }
                         }
 

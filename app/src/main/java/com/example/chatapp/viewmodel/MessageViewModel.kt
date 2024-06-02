@@ -75,7 +75,7 @@ class MessageViewModel(
                             (it.idFrom == friendUid && it.idTo == currentUserUid)
                         ) {
                             messages.add(it)
-                            Log.d("EEEEEEEEEE",it.message)
+                            Log.d("fetchMes",it.message)
                         }
                     }
                 }

@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.chatapp.model.Account
 import com.example.chatapp.model.ChatItem
+import com.example.chatapp.model.Message
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -15,46 +16,96 @@ import com.google.firebase.database.ValueEventListener
 class HomeViewModel : ViewModel(
 
 ) {
-    private val database: DatabaseReference = FirebaseDatabase.getInstance().getReference("accounts")
+    private val accountsDatabase: DatabaseReference =
+        FirebaseDatabase.getInstance().getReference("accounts")
+    private val messagesDatabase: DatabaseReference =
+        FirebaseDatabase.getInstance().getReference("messages")
 
     private val _chatItemList = mutableStateOf<List<ChatItem>>(emptyList())
-
     val chatItemList: MutableState<List<ChatItem>> = _chatItemList
 
-    fun fetchAccountList(currentUserUid: String) {
-        database.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-
-                val chatItems = mutableListOf<ChatItem>()
-                for (accountSnapshot in snapshot.children) {
-                    val account = accountSnapshot.getValue(Account::class.java)
+    fun fetchAccountListWithLastMessages(currentUserUid: String) {
+        accountsDatabase.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(accountSnapshot: DataSnapshot) {
+                val accounts = mutableListOf<Account>()
+                for (accountSnap in accountSnapshot.children) {
+                    val account = accountSnap.getValue(Account::class.java)
                     account?.let {
                         if (it.uid != currentUserUid) {
-                            chatItems.add(accountToChatItem(it))
+                            accounts.add(it)
                         }
                     }
                 }
-                _chatItemList.value = chatItems
+                fetchLastMessagesForAccounts(currentUserUid, accounts)
             }
             override fun onCancelled(error: DatabaseError) {
             }
         })
     }
-    fun accountToChatItem(account: Account): ChatItem {
+
+    private fun fetchLastMessagesForAccounts(currentUserUid: String, accounts: List<Account>) {
+        messagesDatabase.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(messageSnapshot: DataSnapshot) {
+                val lastMessagesMap = mutableMapOf<String, Message>()
+
+                for (messageSnap in messageSnapshot.children) {
+                    val message = messageSnap.getValue(Message::class.java)
+                    message?.let {
+                        val key = if (it.idFrom < it.idTo) {
+                            "${it.idFrom}_${it.idTo}"
+                        } else {
+                            "${it.idTo}_${it.idFrom}"
+                        }
+
+                        if (!lastMessagesMap.containsKey(key) ||
+                            (lastMessagesMap[key]?.timestamp ?: 0) < it.timestamp)
+                        {
+                            lastMessagesMap[key] = it
+                        }
+                    }
+                }
+
+                val chatItems = accounts.map { account ->
+                    val key = if (currentUserUid < account.uid) {
+                        "${currentUserUid}_${account.uid}"
+                    } else {
+                        "${account.uid}_${currentUserUid}"
+                    }
+                    val lastMessage = lastMessagesMap[key]
+                        accountToChatItem(account, lastMessage)
+                }.sortedByDescending { it.timestamp }
+
+                _chatItemList.value = chatItems
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+    }
+
+
+    private fun accountToChatItem(account: Account, lastMessage: Message?): ChatItem {
         val id = account.uid
         val nickname = account.nickName
         val imageUri = account.imageUri
+
+        val lastMessageContent = when (lastMessage?.type) {
+            1 -> "Hình ảnh"
+            else -> lastMessage?.message ?: "Không có tin nhắn"
+        }
 
         return ChatItem(
             id = id,
             name = nickname,
             avatar = imageUri,
-            lastMessage = "Don't have message",
-            timeAgo = 0,
+            lastMessage = lastMessageContent,
+            timestamp =  lastMessage?.timestamp,
             isFriend = false,
             isOnline = false
         )
     }
+
+
 }
 
 
