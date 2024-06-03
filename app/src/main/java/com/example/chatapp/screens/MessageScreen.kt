@@ -1,6 +1,7 @@
 package com.example.chatapp.screens
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,11 +22,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.BottomAppBar
@@ -45,8 +43,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -106,7 +106,13 @@ fun MessageScreen(
     LaunchedEffect(Unit) {
         viewModel.getFriend(friendid)
     }
-    var showDialog by remember { mutableStateOf(false) }
+    var selectedMessageId by remember { mutableStateOf<String?>(null) }
+    var selectedUserIdByMes by remember { mutableStateOf<String?>(null) }
+
+    var selectedMessageText by remember { mutableStateOf<String?>(null) }
+    var showOptionsMesDialog by remember { mutableStateOf(false) }
+    var showOptionsImageDialog by remember { mutableStateOf(false) }
+    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -219,18 +225,105 @@ fun MessageScreen(
                 if (mes.type == 0) {
                     Message(
                         message = mes.message,
-                        isMyMessage = mes.idFrom == curentid
+                        isMyMessage = mes.idFrom == curentid,
+                        onLongPress = {
+                            selectedMessageId =
+                            if(mes.idFrom == curentid) {
+                                mes.id
+                            }else{
+                                null
+                            }
+                            selectedMessageText = mes.message
+                            selectedUserIdByMes = mes.idFrom
+                            showOptionsMesDialog = true
+                        }
                     )
                 } else if (mes.type == 1) {
                     ImageMessage(
                         imageUrl = mes.message,
-                        isMyImage = mes.idFrom == curentid
+                        isMyImage = mes.idFrom == curentid,
+                        onLongPress = {
+                            selectedMessageId =
+                                if(mes.idFrom == curentid) {
+                                    mes.id
+                                }else{
+                                    null
+                                }
+                            selectedMessageText = mes.message
+                            selectedUserIdByMes = mes.idFrom
+                            showOptionsImageDialog = true
+                        }
                     )
                 }
             }
         }
+
+        val clipboardManager = LocalClipboardManager.current
+
+        if (showOptionsMesDialog) {
+            OptionsMesDialog(
+                isMyMessage = selectedUserIdByMes == curentid,
+                showDialog = showOptionsMesDialog,
+                onCopy = {
+                    selectedMessageText?.let { text ->
+                        clipboardManager.setText(AnnotatedString(text))
+                    }
+                    Toast.makeText(
+                        context,
+                        "Copied.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    showOptionsMesDialog = false
+                },
+                onDelete = {
+                    showOptionsMesDialog = false
+                    showConfirmDeleteDialog = true
+                },
+                onDismiss = {
+                    showOptionsMesDialog = false
+                }
+            )
+        }
+        if (showOptionsImageDialog) {
+            OptionsImageDialog(
+                isMyImage = selectedUserIdByMes == curentid,
+                showDialog = showOptionsImageDialog,
+                onDownload = {
+                    Toast.makeText(
+                        context,
+                        "downloaded.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    showOptionsImageDialog = false
+                },
+                onDelete = {
+                    showOptionsImageDialog = false
+                    showConfirmDeleteDialog = true
+                },
+                onDismiss = {
+                    showOptionsImageDialog = false
+                }
+            )
+        }
+
+        if (showConfirmDeleteDialog) {
+            ConfirmDeleteDialog(
+                showDialog = showConfirmDeleteDialog,
+                onConfirm = {
+                    selectedMessageId?.let {
+                        viewModel.deleteMessageFromFirebase(it)
+                    }
+                    showConfirmDeleteDialog = false
+                },
+                onDismiss = {
+                    showConfirmDeleteDialog = false
+                }
+            )
+        }
+
     }
 }
+
 
 @Composable
 fun TopBarMes(
@@ -282,6 +375,7 @@ fun TopBarMes(
         }
     }
 }
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun MesPreview() {

@@ -1,5 +1,6 @@
 package com.example.chatapp.viewmodel
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -11,6 +12,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -29,10 +31,11 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.util.UUID
 
+@SuppressLint("StaticFieldLeak")
+
 class MessageViewModel(
-
+    val context: Context
 ) : ViewModel(){
-
     private val _messageList = mutableStateOf<List<Message>>(emptyList())
 
     val messageList: MutableState<List<Message>> = _messageList
@@ -128,5 +131,25 @@ class MessageViewModel(
         }.addOnFailureListener {
             Toast.makeText(context, "Upload failed", Toast.LENGTH_SHORT).show()
         }
+    }
+
+
+    fun deleteMessageFromFirebase(messageId: String) {
+        database.child("messages").child(messageId)
+            .removeValue().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(
+                        context,
+                        "Message is deleted.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        context,
+                        "delete message fail.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
     }
 }

@@ -248,7 +248,8 @@ fun OneChatFriend(
 fun TimeAgoChat(
     text: Long?,
 ) {
-    Text(text = text?.let { parseTimestampToString(it) }.toString(),
+    Text(text =
+    text?.let { parseTimestampToString(it) }?.toString() ?: "",
         style = TextStyle(fontSize = 8.sp,
             fontWeight = FontWeight.W300
         ),

@@ -164,7 +164,7 @@ fun Main() {
                     route = MessageScreenNavigation.route,
                     arguments = MessageScreenNavigation.arguments()
                 ){
-                    val viewModel: MessageViewModel = remember { MessageViewModel() }
+                    val viewModel: MessageViewModel = remember { MessageViewModel(context) }
                     val uid = it.arguments?.getString("uidArg") ?: throw Exception("")
 
                     EnterAnimation {

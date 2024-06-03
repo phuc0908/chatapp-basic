@@ -51,11 +51,7 @@ class HomeViewModel : ViewModel(
                 for (messageSnap in messageSnapshot.children) {
                     val message = messageSnap.getValue(Message::class.java)
                     message?.let {
-                        val key = if (it.idFrom < it.idTo) {
-                            "${it.idFrom}_${it.idTo}"
-                        } else {
-                            "${it.idTo}_${it.idFrom}"
-                        }
+                        val key = "${it.idFrom}_${it.idTo}"
 
                         if (!lastMessagesMap.containsKey(key) ||
                             (lastMessagesMap[key]?.timestamp ?: 0) < it.timestamp)
@@ -64,24 +60,21 @@ class HomeViewModel : ViewModel(
                         }
                     }
                 }
-
                 val chatItems = accounts.map { account ->
-                    val key = if (currentUserUid < account.uid) {
-                        "${currentUserUid}_${account.uid}"
-                    } else {
-                        "${account.uid}_${currentUserUid}"
-                    }
+                    val key = "${account.uid}_${currentUserUid}"
+
                     val lastMessage = lastMessagesMap[key]
                         accountToChatItem(account, lastMessage)
                 }.sortedByDescending { it.timestamp }
 
                 _chatItemList.value = chatItems
             }
-
             override fun onCancelled(error: DatabaseError) {
             }
         })
     }
+
+
 
 
     private fun accountToChatItem(account: Account, lastMessage: Message?): ChatItem {
@@ -91,7 +84,7 @@ class HomeViewModel : ViewModel(
 
         val lastMessageContent = when (lastMessage?.type) {
             1 -> "Hình ảnh"
-            else -> lastMessage?.message ?: "Không có tin nhắn"
+            else -> lastMessage?.message ?: ""
         }
 
         return ChatItem(
@@ -104,7 +97,6 @@ class HomeViewModel : ViewModel(
             isOnline = false
         )
     }
-
 
 }
 

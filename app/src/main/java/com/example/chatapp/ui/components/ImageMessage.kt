@@ -2,6 +2,7 @@ package com.example.chatapp.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,7 +28,8 @@ import coil.request.ImageRequest
 @Composable
 fun ImageMessage(
     imageUrl: String,
-    isMyImage: Boolean
+    isMyImage: Boolean,
+    onLongPress: ()-> Unit
 ) {
     val painter = rememberAsyncImagePainter(
         model = ImageRequest.Builder(LocalContext.current)
@@ -44,6 +47,14 @@ fun ImageMessage(
                 .wrapContentSize()
                 .clip(RoundedCornerShape(8.dp))
                 .background(Color.LightGray)
+//                Long press
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onLongPress = {
+                            onLongPress()
+                        }
+                    )
+                }
                 .align(if (isMyImage) Alignment.End else Alignment.Start)
         ) {
             if (painter.state is AsyncImagePainter.State.Loading) {
@@ -68,6 +79,7 @@ fun ImageMessage(
 fun PreviewImageMessage() {
     ImageMessage(
         imageUrl = "https://your-image-url.com/image.jpg",
-        isMyImage = true
+        isMyImage = true,
+        {}
     )
 }

@@ -103,11 +103,6 @@ fun MessageScreen() {
                 .padding(innerPadding)
                 .verticalScroll(scrollState),
         ) {
-            Message(message = "Hello! How are you",true)
-            Message(message = "Im fine",false)
-            Message(message = "Hello!",true)
-            Message(message = "Hello! you the fucking go wtf is it sdd dfdf kinch",true)
-            Message(message = "Hello! you the fucking go wtf is it sdd dfdf kinch sdsd",false)
 
         }
     }
