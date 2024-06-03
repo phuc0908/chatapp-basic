@@ -26,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -75,8 +76,6 @@ fun HomeScreen(
     var backPressedOnce by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val chatItems by viewModel.chatItemList
-
-
 
 
     BackHandler {
@@ -167,7 +166,11 @@ fun HomeScreen(
             }
         },
     ) { innerPadding ->
-
+        LaunchedEffect(true) {
+            if (currentAccount != null) {
+                viewModel.fetchAccountListWithLastMessages(currentAccount.uid)
+            }
+        }
         Column(
             modifier = Modifier
                 .padding(innerPadding)

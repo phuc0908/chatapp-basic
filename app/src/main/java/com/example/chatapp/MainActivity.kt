@@ -75,6 +75,8 @@ fun Main() {
     var currentAccount by remember { mutableStateOf<Account?>(null) }
     val currentUser = authViewModel.currentUser
 
+    val downloader = Downloader(context)
+
     LaunchedEffect(true) {
         if (currentUser != null) {
             accountViewModel.setCurrentAccount(currentUser,context) { account ->
@@ -175,6 +177,7 @@ fun Main() {
                                     navController.popBackStack()
                                 },
                                 navController,
+                                downloader,
                                 curentid = currentUser.uid,
                                 friendid = uid
                             )

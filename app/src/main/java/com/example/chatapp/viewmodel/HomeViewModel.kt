@@ -61,7 +61,11 @@ class HomeViewModel : ViewModel(
                     }
                 }
                 val chatItems = accounts.map { account ->
-                    val key = "${account.uid}_${currentUserUid}"
+                    val key = if(account.uid < currentUserUid){
+                        "${account.uid}_${currentUserUid}"
+                    }else{
+                        "${currentUserUid}_${account.uid}"
+                    }
 
                     val lastMessage = lastMessagesMap[key]
                         accountToChatItem(account, lastMessage)

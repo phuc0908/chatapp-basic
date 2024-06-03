@@ -1,6 +1,7 @@
 package com.example.chatapp.screens
 
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -52,9 +53,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.chatapp.Downloader
 import com.example.chatapp.R
 import com.example.chatapp.model.Account
 import com.example.chatapp.viewmodel.MessageViewModel
@@ -66,6 +69,8 @@ import com.example.chatapp.ui.components.CustomTextField
 import com.example.chatapp.ui.components.TextNameUser
 import com.fatherofapps.jnav.annotations.JNav
 import com.fatherofapps.jnav.annotations.JNavArg
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 
@@ -83,6 +88,7 @@ fun MessageScreen(
     viewModel: MessageViewModel,
     popBackStack: () -> Unit,
     navController: NavController,
+    downloader: Downloader,
     curentid: String,
     friendid: String
 ) {
@@ -289,12 +295,9 @@ fun MessageScreen(
                 isMyImage = selectedUserIdByMes == curentid,
                 showDialog = showOptionsImageDialog,
                 onDownload = {
-                    Toast.makeText(
-                        context,
-                        "downloaded.",
-                        Toast.LENGTH_SHORT
-                    ).show()
                     showOptionsImageDialog = false
+                    downloader.downloadFile(selectedMessageText.toString())
+
                 },
                 onDelete = {
                     showOptionsImageDialog = false
@@ -382,8 +385,9 @@ fun MesPreview() {
         MessageScreen(
             viewModel(),
             popBackStack = {},
+            downloader = Downloader(LocalContext.current),
             navController = rememberNavController(),
-            "",
-            ""
+            curentid = "",
+            friendid = ""
         )
 }
