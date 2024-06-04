@@ -55,7 +55,7 @@ fun AccountSettingScreen(
         selectedImageUri = uri
     }
     val context = LocalContext.current
-    val accountViewModel = AccountViewModel(context)
+    val accountViewModel = AccountViewModel()
     Scaffold(
         topBar =
         {

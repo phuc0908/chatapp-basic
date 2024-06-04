@@ -27,8 +27,7 @@ fun EditName(
     navController: NavController,
     authViewModel: AuthViewModel
 ) {
-    val context = LocalContext.current
-    val accountViewModel = AccountViewModel(context)
+    val accountViewModel = AccountViewModel()
     val nickname = remember {
         mutableStateOf("")
     }

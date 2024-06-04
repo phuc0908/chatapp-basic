@@ -11,11 +11,12 @@ data class ChatItem(
     val isOnline: Boolean? = false,
 )
 
-data class Account(val uid: String,
-                   val username: String,
-                   val password: String,
-                   val nickName: String,
-                   val imageUri: String
+data class Account(
+    val uid: String,
+    val username: String,
+    val password: String,
+    val nickName: String,
+    val imageUri: String
 ){
     constructor(): this("","","","","")
 }

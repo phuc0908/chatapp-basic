@@ -22,9 +22,7 @@ import kotlinx.coroutines.tasks.await
 import java.util.UUID
 @SuppressLint("StaticFieldLeak")
 
-class AccountViewModel(
-    context: Context
-):ViewModel() {
+class AccountViewModel:ViewModel() {
     private val database = FirebaseDatabase.getInstance()
     private val reference = database.getReference("accounts")
 //    FUNCTION
@@ -33,7 +31,6 @@ class AccountViewModel(
     fun updateAccount(account: Account,user: FirebaseUser){
         user.run {
             val userIdReference = reference.child(user.uid)
-
             userIdReference.setValue(account)
         }
     }
@@ -47,17 +44,18 @@ class AccountViewModel(
     fun setCurrentAccount(
         user: FirebaseUser,
         context: Context,
-        onResult: (Account?) -> Unit){
-
+        onResult: (Account?) -> Unit)
+    {
         reference.child(user.uid)
             .addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val account = snapshot.getValue(Account::class.java)
                 onResult(account)
             }
-
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, "Failed to load data: ${error.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,
+                    "Failed to load data: ${error.message}",
+                    Toast.LENGTH_SHORT).show()
                 onResult(null)
             }
         })
@@ -75,8 +73,6 @@ class AccountViewModel(
         })
     }
 
-
-
     fun uploadImageToFirebase(context: Context, fileUri: Uri, onSuccess: (String) -> Unit) {
         val storage = Firebase.storage
         val storageRef = storage.reference
@@ -84,6 +80,7 @@ class AccountViewModel(
         val imageRef = storageRef.child("avatars/$fileName")
 
         val uploadTask = imageRef.putFile(fileUri)
+
         uploadTask.addOnSuccessListener {
             imageRef.downloadUrl.addOnSuccessListener { uri ->
                 val downloadUrl = uri.toString()

@@ -148,7 +148,7 @@ fun PreviewLoginScreen() {
     SignUpScreen(
         navController = navController,
         authViewModel = AuthViewModel(LocalContext.current),
-        AccountViewModel(context)
+        AccountViewModel()
     )
 }
 

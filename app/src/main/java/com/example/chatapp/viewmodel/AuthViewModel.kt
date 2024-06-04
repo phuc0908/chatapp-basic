@@ -89,6 +89,19 @@ class AuthViewModel(
         navController: NavController,
         accountViewModel: AccountViewModel
     ) {
+        if (!isEmailValid(userNameRegister)) {
+            Toast.makeText(context, "Invalid email address.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (!isPasswordValid(cfpasswordRegister) || !isPasswordValid(passwordRegister)) {
+            Toast.makeText(context, "Password must be at least 6 characters.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (cfpasswordRegister != passwordRegister) {
+            Toast.makeText(context, "Confirm password does not match", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         auth.createUserWithEmailAndPassword(userNameRegister, passwordRegister)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -114,7 +127,6 @@ class AuthViewModel(
                         if (account !== null) {
                             accountViewModel.updateAccount(account,user)
                             navController.navigate(Destination.Home.route)
-
                         }else{
                             Toast.makeText(
                                 context,
@@ -146,7 +158,6 @@ class AuthViewModel(
             Toast.makeText(context, "Invalid email address.", Toast.LENGTH_SHORT).show()
             return
         }
-
         if (!isPasswordValid(password)) {
             Toast.makeText(context, "Password must be at least 6 characters.", Toast.LENGTH_SHORT).show()
             return
@@ -203,7 +214,6 @@ class AuthViewModel(
     private fun isEmailValid(email: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
-
     private fun isPasswordValid(password: String): Boolean {
         return password.length >= 6
     }

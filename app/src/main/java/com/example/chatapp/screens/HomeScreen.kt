@@ -237,7 +237,8 @@ fun OneChatFriend(
             }
             Row (
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(end = 50.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
@@ -285,18 +286,18 @@ fun ListMyChat(
 }
 
 fun parseTimestampToString(timestamp:Long?):String{
-    timestamp ?: return "Không có tin nhắn"
+    timestamp ?: return "No messages"
 
     val currentTime = System.currentTimeMillis()
     val diffInMillis = currentTime - timestamp
     val diffInMinutes = diffInMillis / 60000
 
     return when {
-        diffInMinutes < 1 -> "Vừa xong"
-        diffInMinutes == 1L -> "1 phút trước"
-        diffInMinutes < 60 -> "$diffInMinutes phút trước"
-        diffInMinutes < 1440 -> "${diffInMinutes / 60} giờ trước"
-        else -> "${diffInMinutes / 1440} ngày trước"
+        diffInMinutes < 1 -> "Just now"
+        diffInMinutes == 1L -> "1 minute ago"
+        diffInMinutes < 60 -> "$diffInMinutes minutes ago"
+        diffInMinutes < 1440 -> "${diffInMinutes / 60} hours ago"
+        else -> "${diffInMinutes / 1440} days ago"
     }
 }
 

@@ -24,9 +24,7 @@ class SearchViewModel: ViewModel() {
     val user: State<List<Account>> = _user
     fun searchRecommendByName(name: String) {
         Log.d("SearchViewModel", "getFriend called with uid: $name")
-
         dataAccount.addValueEventListener(object : ValueEventListener {
-
             override fun onDataChange(snapshot: DataSnapshot) {
                 Log.d("SearchViewModel", "onDataChange called")
 
@@ -44,7 +42,6 @@ class SearchViewModel: ViewModel() {
                 }
                 _user.value  = userList
             }
-
             override fun onCancelled(error: DatabaseError) {
                 Log.d("getFriend", "Database error: ${error.message}")
             }

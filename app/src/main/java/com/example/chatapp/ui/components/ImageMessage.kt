@@ -40,7 +40,7 @@ fun ImageMessage(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp)
+            .padding(7.dp)
     ) {
         Box(
             modifier = Modifier

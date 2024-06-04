@@ -1,9 +1,12 @@
 package com.example.chatapp
 
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -15,7 +18,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -50,12 +55,18 @@ import com.example.chatapp.viewmodel.InfoViewModel
 
 class MainActivity : ComponentActivity() {
 
-
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        startService(Intent(this, UpdateStatusService::class.java))
+
         setContent {
             Main()
         }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        stopService(Intent(this, UpdateStatusService::class.java))
     }
 }
 enum class ThemeOption {
@@ -66,7 +77,7 @@ enum class ThemeOption {
 fun Main() {
 //    ViewModel
     val context = LocalContext.current
-    val accountViewModel = AccountViewModel(context)
+    val accountViewModel = AccountViewModel()
     val authViewModel = AuthViewModel(context)
 
 //    Navigation
@@ -84,7 +95,6 @@ fun Main() {
             }
         }
     }
-
 
     ChatApp_DACS3Theme(
         useSystemTheme = themeOption == ThemeOption.SYSTEM,
@@ -179,7 +189,8 @@ fun Main() {
                                 navController,
                                 downloader,
                                 curentid = currentUser.uid,
-                                friendid = uid
+                                friendid = uid,
+                                context = context
                             )
                             LaunchedEffect(currentAccount) {
                                 currentAccount?.let {
@@ -292,19 +303,19 @@ fun Main() {
 }
 
 sealed class Destination(val route: String){
-    object Splash: Destination("splash")
-    object Home: Destination("home_route")
-    object SignIn: Destination("sign_in")
-    object SignUp: Destination("sign_up")
-    object Message: Destination("message_route")
-    object Setting: Destination("setting")
-    object DarkTheme: Destination("dark_theme")
-    object Contact: Destination("contact")
-    object Call: Destination("call")
-    object Search: Destination("search")
-    object Info: Destination("info")
-    object AccountSetting: Destination("account_setting")
-    object EditName: Destination("edit_name")
+    data object Splash: Destination("splash")
+    data object Home: Destination("home_route")
+    data object SignIn: Destination("sign_in")
+    data object SignUp: Destination("sign_up")
+    data object Message: Destination("message_route")
+    data object Setting: Destination("setting")
+    data object DarkTheme: Destination("dark_theme")
+    data object Contact: Destination("contact")
+    data object Call: Destination("call")
+    data object Search: Destination("search")
+    data object Info: Destination("info")
+    data object AccountSetting: Destination("account_setting")
+    data object EditName: Destination("edit_name")
 }
 
 

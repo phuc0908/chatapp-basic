@@ -37,11 +37,6 @@ import kotlinx.coroutines.delay
     baseRoute = "sign_in_route",
     destination = "sign_in_destination",
 )
-fun validateInput(username: String, password: String): Boolean {
-    return !(username.isEmpty() || password.isEmpty())
-}
-private var auth: FirebaseAuth = Firebase.auth
-
 
 @Composable
 fun SignInScreen(
@@ -52,11 +47,9 @@ fun SignInScreen(
 
     val username = authViewModel.userName
     val password = authViewModel.password
-    val context = LocalContext.current
 
-
-    var currentProgress by remember { mutableFloatStateOf(0f) }
-    var loading by remember { mutableStateOf(false) }
+    val currentProgress by remember { mutableFloatStateOf(0f) }
+    val loading by remember { mutableStateOf(false) }
 
     var showDialog by remember { mutableStateOf(false) }
 

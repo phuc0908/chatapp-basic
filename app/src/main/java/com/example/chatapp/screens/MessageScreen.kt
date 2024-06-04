@@ -1,7 +1,7 @@
 package com.example.chatapp.screens
 
+import android.content.Context
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -53,7 +53,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -64,13 +63,11 @@ import com.example.chatapp.viewmodel.MessageViewModel
 import com.example.chatapp.ui.components.ImageMessage
 import com.example.chatapp.ui.components.Message
 import com.example.chatapp.ui.components.RoundIconButton
-import com.example.chatapp.ui.components.TextChat
 import com.example.chatapp.ui.components.CustomTextField
 import com.example.chatapp.ui.components.TextNameUser
 import com.fatherofapps.jnav.annotations.JNav
 import com.fatherofapps.jnav.annotations.JNavArg
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 
@@ -90,11 +87,11 @@ fun MessageScreen(
     navController: NavController,
     downloader: Downloader,
     curentid: String,
-    friendid: String
+    friendid: String,
+    context: Context
 ) {
     val typeText = 0
     val typeImage = 1
-    val context = LocalContext.current
     val text  = remember{ mutableStateOf("") }
     val messages by viewModel.messageList
 
@@ -297,7 +294,11 @@ fun MessageScreen(
                 onDownload = {
                     showOptionsImageDialog = false
                     downloader.downloadFile(selectedMessageText.toString())
-
+                    Toast.makeText(
+                        context,
+                        "Downloading.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 },
                 onDelete = {
                     showOptionsImageDialog = false
@@ -357,7 +358,6 @@ fun TopBarMes(
             }
             Column {
                 TextNameUser(account.nickName)
-                TextChat(text = "Active Now")
             }
         }
 
@@ -388,6 +388,7 @@ fun MesPreview() {
             downloader = Downloader(LocalContext.current),
             navController = rememberNavController(),
             curentid = "",
-            friendid = ""
+            friendid = "",
+            context = LocalContext.current
         )
 }

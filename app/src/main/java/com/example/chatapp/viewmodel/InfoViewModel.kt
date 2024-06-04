@@ -36,8 +36,6 @@ class InfoViewModel (): ViewModel(){
                 _user.value  = userList.firstOrNull()
                 if (_user.value == null) {
                     Log.d("getFriend", "User với UID $uid không được tìm thấy.")
-                } else {
-                    Log.d("getFriend", "User với UID $uid được tìm thấy: ${_user.value}")
                 }
             }
 

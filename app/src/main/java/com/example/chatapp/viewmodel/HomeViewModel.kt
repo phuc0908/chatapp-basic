@@ -12,10 +12,8 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-
-class HomeViewModel : ViewModel(
-
-) {
+class HomeViewModel : ViewModel()
+{
     private val accountsDatabase: DatabaseReference =
         FirebaseDatabase.getInstance().getReference("accounts")
     private val messagesDatabase: DatabaseReference =
@@ -24,8 +22,10 @@ class HomeViewModel : ViewModel(
     private val _chatItemList = mutableStateOf<List<ChatItem>>(emptyList())
     val chatItemList: MutableState<List<ChatItem>> = _chatItemList
 
-    fun fetchAccountListWithLastMessages(currentUserUid: String) {
-        accountsDatabase.addValueEventListener(object : ValueEventListener {
+    fun fetchAccountListWithLastMessages(currentUserUid: String)
+    {
+        accountsDatabase.addValueEventListener(object : ValueEventListener
+        {
             override fun onDataChange(accountSnapshot: DataSnapshot) {
                 val accounts = mutableListOf<Account>()
                 for (accountSnap in accountSnapshot.children) {
@@ -42,21 +42,24 @@ class HomeViewModel : ViewModel(
             }
         })
     }
-
-    private fun fetchLastMessagesForAccounts(currentUserUid: String, accounts: List<Account>) {
+    private fun fetchLastMessagesForAccounts(currentUserUid: String, accounts: List<Account>)
+    {
         messagesDatabase.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(messageSnapshot: DataSnapshot) {
-                val lastMessagesMap = mutableMapOf<String, Message>()
+                val lastMessagesMap = mutableMapOf<String, Pair<Message, String>>()
 
                 for (messageSnap in messageSnapshot.children) {
                     val message = messageSnap.getValue(Message::class.java)
                     message?.let {
-                        val key = "${it.idFrom}_${it.idTo}"
-
+                        val key = if (it.idFrom < it.idTo) {
+                            "${it.idFrom}_${it.idTo}"
+                        } else {
+                            "${it.idTo}_${it.idFrom}"
+                        }
                         if (!lastMessagesMap.containsKey(key) ||
-                            (lastMessagesMap[key]?.timestamp ?: 0) < it.timestamp)
-                        {
-                            lastMessagesMap[key] = it
+                            (lastMessagesMap[key]?.first?.timestamp ?: 0) < it.timestamp
+                        ) {
+                            lastMessagesMap[key] = Pair(it, it.idFrom)
                         }
                     }
                 }
@@ -66,9 +69,8 @@ class HomeViewModel : ViewModel(
                     }else{
                         "${currentUserUid}_${account.uid}"
                     }
-
-                    val lastMessage = lastMessagesMap[key]
-                        accountToChatItem(account, lastMessage)
+                    val (lastMessage, idFrom) = lastMessagesMap[key] ?: return
+                        accountToChatItem(account, lastMessage,idFrom==currentUserUid)
                 }.sortedByDescending { it.timestamp }
 
                 _chatItemList.value = chatItems
@@ -77,20 +79,24 @@ class HomeViewModel : ViewModel(
             }
         })
     }
-
-
-
-
-    private fun accountToChatItem(account: Account, lastMessage: Message?): ChatItem {
+    private fun accountToChatItem(account: Account, lastMessage: Message?, isMy: Boolean)
+    : ChatItem {
         val id = account.uid
         val nickname = account.nickName
         val imageUri = account.imageUri
 
-        val lastMessageContent = when (lastMessage?.type) {
-            1 -> "Hình ảnh"
-            else -> lastMessage?.message ?: ""
-        }
-
+        val lastMessageContent =
+            if(isMy){
+                when (lastMessage?.type) {
+                    1 -> "You: Picture"
+                    else -> "You: ${lastMessage?.message}" ?: ""
+                }
+            }else{
+                when (lastMessage?.type) {
+                    1 -> "Picture"
+                    else -> lastMessage?.message ?: ""
+                }
+            }
         return ChatItem(
             id = id,
             name = nickname,
@@ -101,7 +107,6 @@ class HomeViewModel : ViewModel(
             isOnline = false
         )
     }
-
 }
 
 
