@@ -9,7 +9,9 @@ import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
-class UpdateStatusService : Service(), CoroutineScope {
+
+class StatusService : Service(), CoroutineScope {
+
     private var isServiceRunning = false
     private lateinit var job: Job
 
@@ -23,11 +25,15 @@ class UpdateStatusService : Service(), CoroutineScope {
         return null
     }
     override fun onCreate() {
+        Log.d("StatusService", "Service created")
         super.onCreate()
         job = Job()
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int)
+    : Int
+    {
+        Log.d("StatusService", "Service started")
         if (!isServiceRunning) {
             isServiceRunning = true
             startUpdatingStatus()
@@ -37,6 +43,7 @@ class UpdateStatusService : Service(), CoroutineScope {
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.d("StatusService", "Service destroyed")
         job.cancel()
         isServiceRunning = false
         updateStatusInFirebase(false)
@@ -45,12 +52,14 @@ class UpdateStatusService : Service(), CoroutineScope {
     private fun startUpdatingStatus() {
         launch {
             while (isServiceRunning) {
+                Log.d("StatusService", "Service updating")
                 updateStatusInFirebase(true)
                 delay(60_000)
                 Log.d("UpdateStatus-Service","after 60s")
             }
         }
     }
+
     private fun updateStatusInFirebase(isConnected: Boolean) {
         val status = if (isConnected) "online" else "offline"
         val timestamp = System.currentTimeMillis()
@@ -58,9 +67,9 @@ class UpdateStatusService : Service(), CoroutineScope {
             "status" to status,
             "timestamp" to timestamp
         )
-
         if (userId != null) {
             database.child(userId).updateChildren(userStatus)
+            Log.d("CurrentId",userId)
         }
     }
 }

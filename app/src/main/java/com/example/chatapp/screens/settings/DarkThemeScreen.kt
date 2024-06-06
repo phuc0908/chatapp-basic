@@ -23,16 +23,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.chatapp.ThemeOption
+import com.example.chatapp.screens.ThemeOption
 
 import com.example.chatapp.ui.components.RoundIconButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DarkThemeScreen(
-navController: NavController,
-currentTheme: ThemeOption,
-onThemeChange: (ThemeOption) -> Unit
+    navController: NavController,
+    currentTheme: ThemeOption,
+    onThemeChange: (ThemeOption) -> Unit
 ) {
     Scaffold(
         topBar = {

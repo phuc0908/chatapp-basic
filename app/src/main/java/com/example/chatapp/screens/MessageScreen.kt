@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -59,6 +60,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.Downloader
 import com.example.chatapp.R
 import com.example.chatapp.model.Account
+import com.example.chatapp.ui.components.AvatarIcon
 import com.example.chatapp.viewmodel.MessageViewModel
 import com.example.chatapp.ui.components.ImageMessage
 import com.example.chatapp.ui.components.Message
@@ -348,14 +350,13 @@ fun TopBarMes(
                 },
             verticalAlignment = Alignment.CenterVertically
         ){
-
-            RoundIconButton(
-                imageResId = R.drawable.newuser,
-                null,
-                modifier = Modifier.size(60.dp)
-            ) {
-
-            }
+            AvatarIcon(
+                imageUrl = account.imageUri,
+                modifier = Modifier
+                    .width(65.dp)
+                    .aspectRatio(1f),
+                isOnline = true
+            ) {}
             Column {
                 TextNameUser(account.nickName)
             }

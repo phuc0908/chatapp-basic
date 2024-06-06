@@ -34,7 +34,6 @@ fun RowACall(
                 imageResId = call.avatar,
                 imageVector = null,
                 modifier = Modifier.size(60.dp),
-
             ) {}
 
             Column(

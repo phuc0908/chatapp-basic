@@ -84,12 +84,14 @@ class HomeViewModel : ViewModel()
         val id = account.uid
         val nickname = account.nickName
         val imageUri = account.imageUri
+        val isOnline = account.status == "online"
+        val timestamp = account.timestamp
 
         val lastMessageContent =
             if(isMy){
                 when (lastMessage?.type) {
                     1 -> "You: Picture"
-                    else -> "You: ${lastMessage?.message}" ?: ""
+                    else -> "You: ${lastMessage?.message}"
                 }
             }else{
                 when (lastMessage?.type) {
@@ -104,7 +106,7 @@ class HomeViewModel : ViewModel()
             lastMessage = lastMessageContent,
             timestamp =  lastMessage?.timestamp,
             isFriend = false,
-            isOnline = false
+            isOnline = isOnline
         )
     }
 }

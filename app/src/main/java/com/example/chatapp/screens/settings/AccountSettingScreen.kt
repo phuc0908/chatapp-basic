@@ -29,10 +29,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.chatapp.Destination
 import com.example.chatapp.ui.components.RoundIconButton
 import com.fatherofapps.jnav.annotations.JNav
 import com.example.chatapp.R
+import com.example.chatapp.screens.Destination
 import com.example.chatapp.viewmodel.AuthViewModel
 import com.example.chatapp.viewmodel.AccountViewModel
 

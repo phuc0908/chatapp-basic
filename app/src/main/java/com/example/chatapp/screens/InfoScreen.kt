@@ -39,6 +39,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.R
 import com.example.chatapp.model.Account
+import com.example.chatapp.ui.components.AvatarIcon
 import com.example.chatapp.ui.components.RoundIconButton
 import com.example.chatapp.viewmodel.AccountViewModel
 import com.example.chatapp.viewmodel.InfoViewModel
@@ -173,10 +174,10 @@ fun TopProfile(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            RoundIconButton(
-                imageResId = R.drawable.newuser,
-                imageVector = null,
-                modifier = Modifier.size(120.dp)
+            AvatarIcon(
+                imageUrl = account.imageUri,
+                modifier = Modifier.size(120.dp),
+                isOnline = false
             ) {}
             Text(text = account.nickName,
                 fontSize = 22.sp,

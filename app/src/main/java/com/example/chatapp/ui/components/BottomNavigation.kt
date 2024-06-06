@@ -18,8 +18,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.chatapp.Destination
 import com.example.chatapp.R
+import com.example.chatapp.screens.Destination
 import com.example.chatapp.ui.theme.Green1
 
 @Composable

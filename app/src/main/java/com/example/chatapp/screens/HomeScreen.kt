@@ -47,8 +47,8 @@ import com.example.chatapp.R
 import com.example.chatapp.ui.components.BottomNavigation
 import com.example.chatapp.model.Account
 import com.example.chatapp.model.ChatItem
+import com.example.chatapp.ui.components.AvatarIcon
 import com.example.chatapp.viewmodel.HomeViewModel
-import com.example.chatapp.screens.settings.AvatarIcon
 import com.example.chatapp.ui.components.RoundIconButton
 import com.example.chatapp.ui.components.TextChat
 import com.example.chatapp.ui.components.TextNameUser
@@ -141,7 +141,8 @@ fun HomeScreen(
                                 modifier = Modifier
                                     .size(50.dp)
                                     .aspectRatio(1f),
-                                onClick = openMyInfo
+                                onClick = openMyInfo,
+                                isOnline = false
                             )
                         }else{
                             RoundIconButton(imageResId = R.drawable.newuser,
@@ -193,6 +194,7 @@ fun OneChatFriend(
     name: String,
     lastMessage: String,
     lastTimeMessage: Long?,
+    isOnline: Boolean?
 ) {
     Row (modifier = Modifier
         .fillMaxWidth()
@@ -205,21 +207,16 @@ fun OneChatFriend(
         .height(75.dp),
         verticalAlignment = Alignment.CenterVertically
     ){
-//        Avatar
-        Column (
+//      Avatar
+        AvatarIcon(
+            imageUrl = avatar,
             modifier = Modifier
-                .fillMaxHeight()
-                .width(70.dp),
-                verticalArrangement = Arrangement.Center
-        ){
-            AvatarIcon(
-                imageUrl = avatar,
-                modifier = Modifier
-                    .width(65.dp)
-                    .aspectRatio(1f)
-            ) {}
-        }
-//        Other
+                .width(65.dp)
+                .aspectRatio(1f),
+            isOnline = isOnline == true
+        ) {}
+
+//      Other
         Column (
             modifier = Modifier
                 .fillMaxSize(),
@@ -230,7 +227,6 @@ fun OneChatFriend(
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
-
             ){
                 TextNameUser(name)
                 TimeAgoChat(lastTimeMessage)
@@ -280,6 +276,7 @@ fun ListMyChat(
                 name = friend.name,
                 lastMessage = friend.lastMessage,
                 lastTimeMessage = friend.timestamp,
+                isOnline = friend.isOnline
             )
         }
     }
@@ -315,7 +312,8 @@ fun StatusFriend(
                 imageUrl = friend.avatar,
                 modifier = Modifier
                     .width(65.dp)
-                    .aspectRatio(1f)
+                    .aspectRatio(1f),
+                isOnline = true
             ) {}
             Text(text = friend.name,
                 modifier = Modifier.padding(top = 0.dp),

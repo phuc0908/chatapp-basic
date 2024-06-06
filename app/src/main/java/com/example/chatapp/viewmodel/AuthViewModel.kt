@@ -3,21 +3,25 @@ package com.example.chatapp.viewmodel
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseAuth
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
-import com.example.chatapp.Destination
+import com.example.chatapp.StatusService
 import com.example.chatapp.model.Account
+import com.example.chatapp.screens.Destination
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.storage.FirebaseStorage
 
+
 @SuppressLint("StaticFieldLeak")
-class AuthViewModel(
-    val context: Context
-) : ViewModel(){
+class AuthViewModel(val context: Context)  : ViewModel(){
+
 //    Sign In
 
     private val _userName = mutableStateOf("")
@@ -112,7 +116,10 @@ class AuthViewModel(
                         Toast.LENGTH_SHORT
                     ).show()
                     val user = task.result?.user
+
                     updateCurrentUser(user)
+
+                    startStatusService()
 //                    Push firebase
                     storageReference.downloadUrl.addOnSuccessListener { uri ->
                         val account = user?.let {
@@ -121,7 +128,9 @@ class AuthViewModel(
                                 username = userNameRegister,
                                 password = passwordRegister,
                                 nickName = nickNameRegister,
-                                imageUri = uri.toString()
+                                imageUri = uri.toString(),
+                                status = "offline",
+                                isActiveStatus = true
                             )
                         }
                         if (account !== null) {
@@ -178,6 +187,8 @@ class AuthViewModel(
                     val user = auth.currentUser
                     updateCurrentUser(user)
 
+                    startStatusService()
+
                     navController.navigate(Destination.Home.route){
                         popUpTo(Destination.SignIn.route) {
                             inclusive = true
@@ -199,12 +210,24 @@ class AuthViewModel(
         auth.signOut()
         updateCurrentUser(null)
 
+        stopStatusService()
+
         navController.navigate(Destination.SignIn.route) {
             launchSingleTop = true
             popUpTo(navController.graph.startDestinationId) {
                 inclusive = true
             }
         }
+    }
+
+    fun startStatusService() {
+        val intent = Intent(context, StatusService::class.java)
+        context.startService(intent)
+    }
+
+    fun stopStatusService() {
+        val intent = Intent(context, StatusService::class.java)
+        context.stopService(intent)
     }
 
 

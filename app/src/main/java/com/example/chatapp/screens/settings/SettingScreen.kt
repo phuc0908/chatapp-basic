@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -23,7 +22,6 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -31,9 +29,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -42,13 +38,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import coil.compose.rememberAsyncImagePainter
-import com.example.chatapp.Destination
 import com.example.chatapp.ui.components.BottomNavigation
 import com.example.chatapp.ui.components.RoundIconButton
 import com.fatherofapps.jnav.annotations.JNav
 import com.example.chatapp.R
 import com.example.chatapp.model.Account
+import com.example.chatapp.screens.Destination
+import com.example.chatapp.ui.components.AvatarIcon
 import com.example.chatapp.viewmodel.AuthViewModel
 
 
@@ -166,7 +162,8 @@ fun Profile(
         if(currentUser.imageUri!==""){
             AvatarIcon(
                 imageUrl = currentUser.imageUri,
-                modifier = Modifier.size(120.dp)
+                modifier = Modifier.size(120.dp),
+                isOnline = false
             ) {}
         }else{
             RoundIconButton(imageResId = R.drawable.newuser,
@@ -257,38 +254,6 @@ fun TopBar(text: String) {
     }
 }
 
-@Composable
-fun AvatarIcon(
-    imageUrl: String?,
-    modifier: Modifier,
-    onClick: () -> Unit,
-) {
-    Box(modifier = Modifier.clip(CircleShape)){
-        IconButton(
-            onClick = onClick,
-            modifier = modifier,
-            content = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(9.dp)
-                        .clip(shape = CircleShape),
-                    contentAlignment = Alignment.Center,
-                    content = {
-                        if(imageUrl != null){
-                            Image(
-                                painter = rememberAsyncImagePainter(imageUrl),
-                                contentScale = ContentScale.Crop,
-                                contentDescription = "",
-                                modifier = modifier
-                            )
-                        }
-                    },
-                )
-            }
-        )
-    }
-}
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
