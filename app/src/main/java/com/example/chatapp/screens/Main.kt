@@ -122,7 +122,6 @@ fun Main() {
                                 navController.navigate(MessageScreenNavigation.createRoute(uid))
                             }
                         )
-
                         LaunchedEffect(currentUser) {
                             currentUser?.let { user ->
                                 accountViewModel.setCurrentAccount(user, context) { account ->
@@ -135,7 +134,6 @@ fun Main() {
                                 viewModel.fetchAccountListWithLastMessages(it.uid)
                             }
                         }
-
                     }
                 }
                 composable(

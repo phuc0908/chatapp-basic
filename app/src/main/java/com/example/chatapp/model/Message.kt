@@ -7,4 +7,6 @@ data class Message(
     var message: String = "",
     val type: Int = 0,
     val timestamp: Long = System.currentTimeMillis()
-)
+){
+    constructor() :this("","","","",0,0)
+}

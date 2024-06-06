@@ -31,7 +31,7 @@
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
         </receiver>
-        <service android:name=".UpdateStatusService" />
+<!--        <service android:name=".StatusService" />-->
 
     </application>
 

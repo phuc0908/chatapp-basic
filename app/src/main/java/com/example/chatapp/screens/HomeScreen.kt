@@ -1,5 +1,6 @@
 package com.example.chatapp.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -27,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -76,6 +78,7 @@ fun HomeScreen(
     var backPressedOnce by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val chatItems by viewModel.chatItemList
+
 
 
     BackHandler {
@@ -167,7 +170,7 @@ fun HomeScreen(
             }
         },
     ) { innerPadding ->
-        LaunchedEffect(true) {
+        LaunchedEffect(Unit) {
             if (currentAccount != null) {
                 viewModel.fetchAccountListWithLastMessages(currentAccount.uid)
             }

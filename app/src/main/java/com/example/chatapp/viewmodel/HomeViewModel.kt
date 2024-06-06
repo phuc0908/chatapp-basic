@@ -1,5 +1,6 @@
 package com.example.chatapp.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -31,11 +32,11 @@ class HomeViewModel : ViewModel()
                 for (accountSnap in accountSnapshot.children) {
                     val account = accountSnap.getValue(Account::class.java)
                     account?.let {
-                        if (it.uid != currentUserUid) {
-                            accounts.add(it)
-                        }
+                        accounts.add(it)
+                        Log.d("Uid:",account.uid)
                     }
                 }
+                Log.d("AccountSize1",accounts.size.toString())
                 fetchLastMessagesForAccounts(currentUserUid, accounts)
             }
             override fun onCancelled(error: DatabaseError) {
@@ -63,19 +64,24 @@ class HomeViewModel : ViewModel()
                         }
                     }
                 }
-                val chatItems = accounts.map { account ->
-                    val key = if(account.uid < currentUserUid){
+                Log.d("AccountSize2",accounts.size.toString())
+                Log.d("AccountSize2",accounts.size.toString())
+                val chatItems = mutableListOf<ChatItem>()
+                for (account in accounts) {
+                    val key = if (account.uid < currentUserUid) {
                         "${account.uid}_${currentUserUid}"
-                    }else{
+                    } else {
                         "${currentUserUid}_${account.uid}"
                     }
-                    val (lastMessage, idFrom) = lastMessagesMap[key] ?: return
-                        accountToChatItem(account, lastMessage,idFrom==currentUserUid)
-                }.sortedByDescending { it.timestamp }
+                    val (lastMessage, idFrom) = lastMessagesMap[key] ?: continue
+                    chatItems.add(accountToChatItem(account, lastMessage, idFrom == currentUserUid))
+                }
+                _chatItemList.value = chatItems.sortedByDescending { it.timestamp }
 
-                _chatItemList.value = chatItems
+                Log.d("ChatItemsSize",_chatItemList.value.size.toString())
             }
             override fun onCancelled(error: DatabaseError) {
+                Log.e("onCancelled",error.message)
             }
         })
     }
@@ -85,7 +91,6 @@ class HomeViewModel : ViewModel()
         val nickname = account.nickName
         val imageUri = account.imageUri
         val isOnline = account.status == "online"
-        val timestamp = account.timestamp
 
         val lastMessageContent =
             if(isMy){

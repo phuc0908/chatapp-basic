@@ -130,7 +130,6 @@ class AuthViewModel(val context: Context)  : ViewModel(){
                                 nickName = nickNameRegister,
                                 imageUri = uri.toString(),
                                 status = "offline",
-                                isActiveStatus = true
                             )
                         }
                         if (account !== null) {
