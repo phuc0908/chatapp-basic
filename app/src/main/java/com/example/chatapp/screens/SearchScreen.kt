@@ -1,15 +1,18 @@
 package com.example.chatapp.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -29,6 +32,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -45,8 +49,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.chatapp.model.Account
 import com.example.chatapp.model.YourRecentSearch
 import com.example.chatapp.model.YourRecommendSearch
+import com.example.chatapp.ui.components.AvatarIcon
 import com.example.chatapp.viewmodel.SearchViewModel
 import com.example.chatapp.ui.components.CustomTextField
 import com.example.chatapp.ui.components.RoundIconButton
@@ -67,9 +73,11 @@ import com.fatherofapps.jnav.annotations.JNavArg
 fun SearchScreen(
     viewModel: SearchViewModel,
     navController: NavController,
-    popBackStack: () -> Unit
+    popBackStack: () -> Unit,
+    openChat:(String) -> Unit,
 ) {
     val text  = remember{ mutableStateOf("") }
+    val data by viewModel.users
 
     Scaffold(
         topBar =
@@ -86,7 +94,11 @@ fun SearchScreen(
                 ,
                 title = {
                     TopBarSearch(
-                        text = text
+                        text = text,
+                        onValueChange = {
+                            text.value = it
+                            viewModel.searchByName(it)
+                        }
                     )
                 },
                 navigationIcon = {
@@ -101,20 +113,20 @@ fun SearchScreen(
                 }
             )
         }
-
     ) {innerPadding->
-        LaunchedEffect(true) {
 
-        }
         Column(
             Modifier
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState()),
 
             ){
-                RecentSearch(listOfNotNull())
-
-//                RecommendSearch()
+            if(data.isNotEmpty()){
+                Search(list = data, openChat)
+            }else{
+                RecentSearch(list = listOfNotNull())
+                RecommendSearch(list = listOfNotNull())
+            }
         }
     }
 }
@@ -152,7 +164,46 @@ fun RecommendSearch(
                 .padding(10.dp)
         ){
             list.forEach{user->
-                OneRowInRecommandSearch(user)
+//                OneRowInSearch(user)
+            }
+        }
+    }
+}
+
+@Composable
+fun Search(
+    list: List<Account>,
+    openChat:(String)-> Unit,
+) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+    ) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(30.dp)
+                .padding(top = 10.dp, start = 10.dp)
+        ) {
+            Text(
+                text = "Gợi ý",
+                Modifier
+                    .fillMaxWidth()
+                    .height(30.dp),
+                style = TextStyle(
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.DarkGray
+                )
+            )
+        }
+        Column (
+            Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+        ){
+            list.forEach{user->
+                OneRowInSearch(user, openChat)
             }
         }
     }
@@ -160,24 +211,30 @@ fun RecommendSearch(
 
 
 @Composable
-fun OneRowInRecommandSearch(
-    user: YourRecommendSearch
-) {
+fun OneRowInSearch(
+    user: Account,
+    openChat:(String)-> Unit,
+    ) {
     Row (
         Modifier
             .fillMaxWidth()
-            .height(50.dp),
+            .height(65.dp)
+            .clickable (
+                onClick = {
+                    openChat(user.uid)
+                }
+            ),
         verticalAlignment = Alignment.CenterVertically
     ){
-        RoundIconButton(
-            imageResId = user.avatar,
-            imageVector = null,
+        AvatarIcon(
+            imageUrl = user.imageUri,
             modifier = Modifier
-                .size(50.dp)
-            ,
-            onClick = {}
-        )
-        Text(text = user.name, Modifier.padding(10.dp))
+                .width(65.dp)
+                .aspectRatio(1f),
+            isOnline = user.status == "online"
+        ) {}
+
+        Text(text = user.nickName, Modifier.padding(10.dp))
     }
 }
 
@@ -228,7 +285,6 @@ fun RecentSearch(
                             imageVector = null,
                             modifier = Modifier.size(90.dp)
                         ) {}
-
                     }
                 }
             }
@@ -239,6 +295,7 @@ fun RecentSearch(
 @Composable
 fun TopBarSearch(
     text: MutableState<String>,
+    onValueChange: (String) -> Unit
     ){
     val focusManager = LocalFocusManager.current
 
@@ -248,6 +305,7 @@ fun TopBarSearch(
     ) {
          CustomTextField(
              value = text,
+             onValueChange = onValueChange,
              leadingIcon = {
                  Icon(
                      Icons.Filled.Search,
@@ -287,6 +345,7 @@ fun SearchPreview() {
     SearchScreen(
         viewModel(),
         rememberNavController(),
-        popBackStack = {}
+        popBackStack = {},
+        {}
     )
 }

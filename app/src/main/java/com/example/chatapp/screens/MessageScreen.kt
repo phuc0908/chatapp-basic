@@ -192,7 +192,8 @@ fun MessageScreen(
                         keyboardActions = KeyboardActions(
                             onNext = { focusManager.moveFocus(FocusDirection.Down) }
                         ),
-                        maxLine = 4
+                        maxLine = 4,
+                        onValueChange = {}
                     )
                     if(text.value!=""){
                         RoundIconButton(

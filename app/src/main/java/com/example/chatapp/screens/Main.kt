@@ -225,6 +225,9 @@ fun Main() {
                             navController,
                             popBackStack = {
                                 navController.popBackStack()
+                            },
+                            openChat = { uid->
+                                navController.navigate(MessageScreenNavigation.createRoute(uid))
                             }
                         )
                     }

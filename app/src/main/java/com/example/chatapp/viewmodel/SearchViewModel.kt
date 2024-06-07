@@ -2,45 +2,50 @@ package com.example.chatapp.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.chatapp.R
 import com.example.chatapp.model.Account
-import com.example.chatapp.model.YourRecentSearch
-import com.example.chatapp.model.YourRecommendSearch
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.util.Locale
 
 class SearchViewModel: ViewModel() {
     private val database: DatabaseReference = FirebaseDatabase.getInstance().reference
     private val dataAccount: DatabaseReference = database.child("accounts")
 
-    private val _user = mutableStateOf<List<Account>>(emptyList())
-    val user: State<List<Account>> = _user
-    fun searchRecommendByName(name: String) {
-        Log.d("SearchViewModel", "getFriend called with uid: $name")
+    private val curentId = FirebaseAuth.getInstance().currentUser?.uid
+
+    private val _users = mutableStateOf<List<Account>>(emptyList())
+    val users: State<List<Account>> = _users
+    fun searchByName(name: String) {
+
+        if (name.isEmpty()) {
+            _users.value = emptyList()
+            return
+        }
         dataAccount.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 Log.d("SearchViewModel", "onDataChange called")
 
                 val userList = mutableListOf<Account>()
+                val query = name.trim().lowercase()
 
                 for (accountSnapshot in snapshot.children) {
                     val account = accountSnapshot.getValue(Account::class.java)
                     Log.d("SearchViewModel", "Account snapshot: $account")
 
                     account?.let {
-                        if (it.uid == name) {
+                        if (it.nickName.lowercase(Locale.getDefault()).contains(query)) {
                             userList.add(it)
+                            Log.d("NameSearch", it.nickName)
                         }
                     }
                 }
-                _user.value  = userList
+                _users.value  = userList
             }
             override fun onCancelled(error: DatabaseError) {
                 Log.d("getFriend", "Database error: ${error.message}")

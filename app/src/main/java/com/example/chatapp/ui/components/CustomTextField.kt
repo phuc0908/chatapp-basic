@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 fun CustomTextField(
     value: MutableState<String>,
     modifier: Modifier = Modifier,
+    onValueChange: (String) -> Unit?,
     leadingIcon: (@Composable () -> Unit)? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
     placeholderText: String = "Placeholder",
@@ -46,6 +47,7 @@ fun CustomTextField(
         value = value.value,
         onValueChange = {
             value.value = it
+            onValueChange(it)
         },
 
         maxLines = maxLine,

@@ -49,7 +49,6 @@ fun BottomNavigation(
                             1 -> navController.navigate(Destination.Call.route)
                             2 -> navController.navigate(Destination.Contact.route)
                             3 -> navController.navigate(Destination.Setting.route)
-
                         }
                     }),
                 verticalArrangement = Arrangement.Center,
