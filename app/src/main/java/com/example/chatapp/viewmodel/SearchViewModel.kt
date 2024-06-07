@@ -21,6 +21,10 @@ class SearchViewModel: ViewModel() {
 
     private val _users = mutableStateOf<List<Account>>(emptyList())
     val users: State<List<Account>> = _users
+
+    private val _allAccount = mutableStateOf<List<Account>>(emptyList())
+    val allAccount: State<List<Account>> = _allAccount
+
     fun searchByName(name: String) {
 
         if (name.isEmpty()) {
@@ -49,6 +53,25 @@ class SearchViewModel: ViewModel() {
             }
             override fun onCancelled(error: DatabaseError) {
                 Log.d("getFriend", "Database error: ${error.message}")
+            }
+        })
+    }
+
+    fun getAllAccount() {
+        dataAccount.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val userList = mutableListOf<Account>()
+
+                for (accountSnapshot in snapshot.children) {
+                    val account = accountSnapshot.getValue(Account::class.java)
+                    account?.let {
+                        userList.add(it)
+                        Log.d("Account",account.uid)
+                    }
+                }
+                _allAccount.value  = userList
+            }
+            override fun onCancelled(error: DatabaseError) {
             }
         })
     }

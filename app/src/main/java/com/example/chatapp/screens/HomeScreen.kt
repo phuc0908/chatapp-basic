@@ -1,6 +1,5 @@
 package com.example.chatapp.screens
 
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -28,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -316,7 +314,7 @@ fun StatusFriend(
                 modifier = Modifier
                     .width(65.dp)
                     .aspectRatio(1f),
-                isOnline = true
+                isOnline = friend.isOnline == true
             ) {}
             Text(text = friend.name,
                 modifier = Modifier.padding(top = 0.dp),

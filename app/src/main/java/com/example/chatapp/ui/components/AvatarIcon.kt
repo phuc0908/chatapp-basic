@@ -62,8 +62,12 @@ fun AvatarIcon(
                     .background(Color.Green, CircleShape)
                     .border(1.5.dp, Color.White, CircleShape)
             )
+        }else{
+            Box(
+                modifier = Modifier
+                    .size(12.dp)
+                    .offset(x = (-20).dp, y = 40.dp)
+            )
         }
-
-
     }
 }

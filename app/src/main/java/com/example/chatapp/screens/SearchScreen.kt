@@ -51,7 +51,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.model.Account
 import com.example.chatapp.model.YourRecentSearch
-import com.example.chatapp.model.YourRecommendSearch
 import com.example.chatapp.ui.components.AvatarIcon
 import com.example.chatapp.viewmodel.SearchViewModel
 import com.example.chatapp.ui.components.CustomTextField
@@ -78,6 +77,11 @@ fun SearchScreen(
 ) {
     val text  = remember{ mutableStateOf("") }
     val data by viewModel.users
+    val dataRecommend by viewModel.allAccount
+
+    LaunchedEffect(key1 = dataRecommend){
+        viewModel.getAllAccount()
+    }
 
     Scaffold(
         topBar =
@@ -125,7 +129,7 @@ fun SearchScreen(
                 Search(list = data, openChat)
             }else{
                 RecentSearch(list = listOfNotNull())
-                RecommendSearch(list = listOfNotNull())
+                RecommendSearch(list = dataRecommend, openChat)
             }
         }
     }
@@ -133,7 +137,8 @@ fun SearchScreen(
 
 @Composable
 fun RecommendSearch(
-    list: List<YourRecommendSearch>
+    list: List<Account>,
+    openChat: (String) -> Unit
 ) {
     Column(
         Modifier
@@ -143,10 +148,10 @@ fun RecommendSearch(
             Modifier
                 .fillMaxWidth()
                 .height(30.dp)
-                .padding(top = 10.dp, start = 10.dp)
+                .padding(top = 10.dp)
         ) {
             Text(
-                text = "Gợi ý",
+                text = "Recommend",
                 Modifier
                     .fillMaxWidth()
                     .height(30.dp),
@@ -161,10 +166,9 @@ fun RecommendSearch(
         Column (
             Modifier
                 .fillMaxWidth()
-                .padding(10.dp)
         ){
             list.forEach{user->
-//                OneRowInSearch(user)
+                OneRowInSearch(user, openChat = openChat)
             }
         }
     }
@@ -186,7 +190,7 @@ fun Search(
                 .padding(top = 10.dp, start = 10.dp)
         ) {
             Text(
-                text = "Gợi ý",
+                text = "Search",
                 Modifier
                     .fillMaxWidth()
                     .height(30.dp),
@@ -200,7 +204,6 @@ fun Search(
         Column (
             Modifier
                 .fillMaxWidth()
-                .padding(10.dp)
         ){
             list.forEach{user->
                 OneRowInSearch(user, openChat)
@@ -219,25 +222,23 @@ fun OneRowInSearch(
         Modifier
             .fillMaxWidth()
             .height(65.dp)
-            .clickable (
+            .clickable(
                 onClick = {
                     openChat(user.uid)
                 }
-            ),
+            ).padding(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ){
         AvatarIcon(
             imageUrl = user.imageUri,
             modifier = Modifier
-                .width(65.dp)
+                .width(55.dp)
                 .aspectRatio(1f),
             isOnline = user.status == "online"
         ) {}
-
-        Text(text = user.nickName, Modifier.padding(10.dp))
+        Text(text = user.nickName)
     }
 }
-
 
 @Composable
 fun RecentSearch(
@@ -255,7 +256,7 @@ fun RecentSearch(
                 .padding(top = 10.dp, start = 10.dp)
         ) {
             Text(
-                text = "Tìm kiếm gần đây",
+                text = "recent searches",
                 Modifier
                     .fillMaxWidth()
                     .height(30.dp),

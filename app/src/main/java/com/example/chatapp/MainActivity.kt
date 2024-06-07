@@ -17,17 +17,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//    if(auth!=null){
-//        startService(Intent(this, StatusService::class.java))
-//    }
+    if(auth!=null){
+        startService(Intent(this, StatusService::class.java))
+    }
         setContent {
             Main()
         }
     }
     override fun onDestroy() {
         super.onDestroy()
-//        if(auth!=null){
-//            stopService(Intent(this, StatusService::class.java))
-//        }
+        if(auth!=null){
+            stopService(Intent(this, StatusService::class.java))
+        }
     }
 }
