@@ -67,3 +67,49 @@ fun RoundIconButton(
         )
     }
 }
+
+@Composable
+fun NotRoundIconButton(
+    imageResId: Int?,
+    imageVector: ImageVector?,
+    colorTint: Color? = null,
+    modifier: Modifier,
+    onClick: () -> Unit,
+) {
+    Box{
+        IconButton(
+            onClick = onClick,
+            modifier = modifier,
+            content = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(9.dp),
+                    contentAlignment = Alignment.Center,
+                    content = {
+
+                        if(imageResId != null){
+
+                            Image(
+                                painter = painterResource(id = imageResId),
+                                contentScale = ContentScale.Crop,
+                                colorFilter = colorTint?.let {
+                                    ColorFilter.tint(it)
+                                },
+                                contentDescription = "",
+                            )
+                        }
+                        else if(imageVector != null){
+                            Icon(
+                                imageVector = imageVector,
+                                contentDescription = "",
+                                tint = Green1,
+                            )
+                        }
+                    },
+                )
+
+            }
+        )
+    }
+}

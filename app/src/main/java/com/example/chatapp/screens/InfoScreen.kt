@@ -127,7 +127,7 @@ fun BodyProfile(
     ) {
         Spacer(modifier = Modifier.size(30.dp))
         RowInfo("Display Name",account.nickName)
-        RowInfo("Email Address",account.username)
+        RowInfoA("Email Address",account.username)
         RowInfo("Phone Number","...")
     }
 }
@@ -151,6 +151,31 @@ fun RowInfo(
             )
             Text(text = info,
                 fontSize = 20.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+    }
+}
+@Composable
+fun RowInfoA(
+    title: String,
+    info: String
+) {
+    Row (
+        Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .padding(start = 25.dp, top = 15.dp)
+    ){
+        Column {
+            Text(text = title,
+                fontSize = 15.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Normal
+            )
+            Text(text = info,
+                fontSize = 15.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.SemiBold
             )

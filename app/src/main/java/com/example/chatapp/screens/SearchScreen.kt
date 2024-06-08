@@ -54,6 +54,7 @@ import com.example.chatapp.model.YourRecentSearch
 import com.example.chatapp.ui.components.AvatarIcon
 import com.example.chatapp.viewmodel.SearchViewModel
 import com.example.chatapp.ui.components.CustomTextField
+import com.example.chatapp.ui.components.RecommendAvatarIcon
 import com.example.chatapp.ui.components.RoundIconButton
 import com.fatherofapps.jnav.annotations.JNav
 import com.fatherofapps.jnav.annotations.JNavArg
@@ -128,7 +129,7 @@ fun SearchScreen(
             if(data.isNotEmpty()){
                 Search(list = data, openChat)
             }else{
-                RecentSearch(list = listOfNotNull())
+                RecentSearch(list = null)
                 RecommendSearch(list = dataRecommend, openChat)
             }
         }
@@ -147,7 +148,7 @@ fun RecommendSearch(
         Row(
             Modifier
                 .fillMaxWidth()
-                .height(30.dp)
+                .height(40.dp)
                 .padding(top = 10.dp)
         ) {
             Text(
@@ -162,7 +163,6 @@ fun RecommendSearch(
                 )
             )
         }
-
         Column (
             Modifier
                 .fillMaxWidth()
@@ -212,7 +212,6 @@ fun Search(
     }
 }
 
-
 @Composable
 fun OneRowInSearch(
     user: Account,
@@ -229,63 +228,67 @@ fun OneRowInSearch(
             ).padding(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ){
-        AvatarIcon(
+        RecommendAvatarIcon(
             imageUrl = user.imageUri,
             modifier = Modifier
                 .width(55.dp)
                 .aspectRatio(1f),
             isOnline = user.status == "online"
-        ) {}
+        ) {
+            openChat(user.uid)
+        }
         Text(text = user.nickName)
     }
 }
 
 @Composable
 fun RecentSearch(
-    list: List<YourRecentSearch>
+    list: List<Account>?
 ) {
     Column (
         Modifier
             .fillMaxWidth()
     ){
-//        Text
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .padding(top = 10.dp, start = 10.dp)
-        ) {
-            Text(
-                text = "recent searches",
+        if (list != null) {
+            //  Text
+            Row(
                 Modifier
                     .fillMaxWidth()
-                    .height(30.dp),
-                style = TextStyle(
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.DarkGray
+                    .height(50.dp)
+                    .padding(top = 10.dp, start = 10.dp)
+            ) {
+                Text(
+                    text = "Recent searches",
+                    Modifier
+                        .fillMaxWidth()
+                        .height(30.dp),
+                    style = TextStyle(
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.DarkGray
+                    )
                 )
-            )
-        }
-//        List
-        Column (
-            Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .padding(start = 10.dp, end = 10.dp)
-        ){
-            val chunkedList = list.chunked(4)
-            for (row in chunkedList) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    for (item in row) {
-                        RoundIconButton(
-                            imageResId = item.avatar,
-                            imageVector = null,
-                            modifier = Modifier.size(90.dp)
-                        ) {}
+            }
+            //  List
+            Column (
+                Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .padding(start = 10.dp, end = 10.dp)
+            ){
+                val chunkedList = list.chunked(4)
+                for (row in chunkedList) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        for (item in row) {
+                            AvatarIcon(
+                                imageUrl = item.imageUri,
+                                modifier = Modifier.size(120.dp),
+                                isOnline = false
+                            ) {}
+                        }
                     }
                 }
             }

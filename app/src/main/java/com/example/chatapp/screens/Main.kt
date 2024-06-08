@@ -26,12 +26,14 @@ import com.example.chatapp.viewmodel.HomeViewModel
 import com.example.chatapp.viewmodel.MessageViewModel
 import com.example.chatapp.viewmodel.SearchViewModel
 import com.example.chatapp.screens.settings.AccountSettingScreen
+import com.example.chatapp.screens.settings.ActiveStatusScreen
 import com.example.chatapp.screens.settings.DarkThemeScreen
 import com.example.chatapp.screens.settings.EditName
 import com.example.chatapp.screens.settings.SettingScreen
 import com.example.chatapp.viewmodel.AuthViewModel
 import com.example.chatapp.ui.animations.BottomToTopAnimation
 import com.example.chatapp.viewmodel.AccountViewModel
+import com.example.chatapp.viewmodel.ActiveStatusViewModel
 import com.example.chatapp.viewmodel.InfoViewModel
 
 
@@ -44,23 +46,18 @@ fun Main() {
 //    ViewModel
     val context = LocalContext.current
     val accountViewModel = AccountViewModel()
+    val statusViewModel = ActiveStatusViewModel()
     val authViewModel = AuthViewModel(context)
 
 //    Navigation
     val navController = rememberNavController()
     var themeOption by remember { mutableStateOf(ThemeOption.SYSTEM) }
+    var statusOption = statusViewModel.statusOption
     var currentAccount by remember { mutableStateOf<Account?>(null) }
     val currentUser = authViewModel.currentUser
 
     val downloader = Downloader(context)
 
-    LaunchedEffect(true) {
-        if (currentUser != null) {
-            accountViewModel.setCurrentAccount(currentUser,context) { account ->
-                currentAccount = account
-            }
-        }
-    }
 
     ChatApp_DACS3Theme(
         useSystemTheme = themeOption == ThemeOption.SYSTEM,
@@ -70,13 +67,6 @@ fun Main() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            LaunchedEffect(true) {
-                if (currentUser != null) {
-                    accountViewModel.setCurrentAccount(currentUser,context) { account ->
-                        currentAccount = account
-                    }
-                }
-            }
             NavHost(navController = navController, startDestination = Destination.Splash.route ){
 
                 composable(
@@ -147,9 +137,6 @@ fun Main() {
                         if (currentUser != null) {
                             MessageScreen(
                                 viewModel = viewModel,
-                                popBackStack = {
-                                    navController.popBackStack()
-                                },
                                 navController,
                                 downloader,
                                 curentid = currentUser.uid,
@@ -264,6 +251,16 @@ fun Main() {
                         EditName(navController,authViewModel)
                     }
                 }
+                composable(Destination.ActiveStatus.route){
+                    EnterAnimation {
+                        ActiveStatusScreen (
+                            navController,
+                            statusOption.value,
+                            currentUser,
+                            statusViewModel
+                        )
+                    }
+                }
             }
         }
     }
@@ -283,4 +280,5 @@ sealed class Destination(val route: String){
     data object Info: Destination("info")
     data object AccountSetting: Destination("account_setting")
     data object EditName: Destination("edit_name")
+    data object ActiveStatus: Destination("active_status")
 }

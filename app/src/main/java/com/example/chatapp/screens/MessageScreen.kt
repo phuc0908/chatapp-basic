@@ -1,7 +1,12 @@
 package com.example.chatapp.screens
 
+import android.app.Activity
+import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -33,6 +38,7 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -49,11 +55,14 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -66,9 +75,13 @@ import com.example.chatapp.ui.components.ImageMessage
 import com.example.chatapp.ui.components.Message
 import com.example.chatapp.ui.components.RoundIconButton
 import com.example.chatapp.ui.components.CustomTextField
+import com.example.chatapp.ui.components.NotRoundIconButton
+import com.example.chatapp.ui.components.TextChat
 import com.example.chatapp.ui.components.TextNameUser
+import com.example.chatapp.ui.components.VideoMessage
 import com.fatherofapps.jnav.annotations.JNav
 import com.fatherofapps.jnav.annotations.JNavArg
+import java.util.concurrent.TimeUnit
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,7 +98,6 @@ import com.fatherofapps.jnav.annotations.JNavArg
 @Composable
 fun MessageScreen(
     viewModel: MessageViewModel,
-    popBackStack: () -> Unit,
     navController: NavController,
     downloader: Downloader,
     curentid: String,
@@ -94,14 +106,21 @@ fun MessageScreen(
 ) {
     val typeText = 0
     val typeImage = 1
+    val typeVideo = 2
     val text  = remember{ mutableStateOf("") }
     val messages by viewModel.messageList
 
 
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        selectedImageUri = uri
+
+    val mediaPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            selectedImageUri = result.data?.data
+        }
     }
+
 
     val listState = rememberLazyListState()
     LaunchedEffect(messages) {
@@ -136,15 +155,6 @@ fun MessageScreen(
                         TopBarMes(navController,it)
                     }
                 },
-                navigationIcon = {
-                    RoundIconButton(
-                        null,
-                        imageVector = Icons.Default.ArrowBack,
-                        modifier = Modifier
-                            .fillMaxHeight(),
-                        onClick = popBackStack,
-                    )
-                }
             )
         },
         bottomBar = {
@@ -167,12 +177,16 @@ fun MessageScreen(
                     horizontalArrangement = Arrangement.SpaceAround,
                     verticalAlignment = Alignment.CenterVertically
                 ){
-                    RoundIconButton(
-                        imageResId = R.drawable.camera,
+                    NotRoundIconButton(
+                        imageResId = R.drawable.media,
                         imageVector = null,
                         modifier = Modifier.size(45.dp)
                     ) {
-                        launcher.launch("image/*")
+                        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                            type = "*/*"
+                            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*", "video/*"))
+                        }
+                        mediaPickerLauncher.launch(intent)
                     }
                     CustomTextField(
                         value = text,
@@ -208,8 +222,17 @@ fun MessageScreen(
                         Spacer( Modifier.size(50.dp))
                     }
                     selectedImageUri?.let { uri ->
+
+                        val contentResolver: ContentResolver = context.contentResolver
+                        val mimeType = contentResolver.getType(uri) ?: ""
+                        val type = when {
+                            mimeType.startsWith("image") -> typeImage
+                            mimeType.startsWith("video") -> typeVideo
+                            else -> -1
+                        }
+
                         viewModel.uploadImageMessage(context,uri){imageUrl->
-                            viewModel.sendImageMessage(imageUrl,curentid,friendid,typeImage)
+                            viewModel.sendImageMessage(imageUrl,curentid,friendid,type)
                             selectedImageUri = null
                         }
                     }
@@ -228,38 +251,44 @@ fun MessageScreen(
         ) {
 
             items(messages) { mes ->
-                if (mes.type == 0) {
-                    Message(
-                        message = mes.message,
-                        isMyMessage = mes.idFrom == curentid,
-                        onLongPress = {
-                            selectedMessageId =
-                            if(mes.idFrom == curentid) {
-                                mes.id
-                            }else{
-                                null
-                            }
-                            selectedMessageText = mes.message
-                            selectedUserIdByMes = mes.idFrom
-                            showOptionsMesDialog = true
-                        }
-                    )
-                } else if (mes.type == 1) {
-                    ImageMessage(
-                        imageUrl = mes.message,
-                        isMyImage = mes.idFrom == curentid,
-                        onLongPress = {
-                            selectedMessageId =
+                when (mes.type) {
+                    typeText ->
+                        Message(
+                            message = mes.message,
+                            isMyMessage = mes.idFrom == curentid,
+                            onLongPress = {
+                                selectedMessageId =
                                 if(mes.idFrom == curentid) {
                                     mes.id
                                 }else{
                                     null
                                 }
-                            selectedMessageText = mes.message
-                            selectedUserIdByMes = mes.idFrom
-                            showOptionsImageDialog = true
-                        }
-                    )
+                                selectedMessageText = mes.message
+                                selectedUserIdByMes = mes.idFrom
+                                showOptionsMesDialog = true
+                            }
+                        )
+                    typeImage ->
+                        ImageMessage(
+                            imageUrl = mes.message,
+                            isMyImage = mes.idFrom == curentid,
+                            onLongPress = {
+                                selectedMessageId =
+                                    if(mes.idFrom == curentid) {
+                                        mes.id
+                                    }else{
+                                        null
+                                    }
+                                selectedMessageText = mes.message
+                                selectedUserIdByMes = mes.idFrom
+                                showOptionsImageDialog = true
+                            }
+                        )
+                    typeVideo ->
+                        VideoMessage(
+                            mediaUrl = mes.message,
+                            isMyVideo = mes.idFrom == curentid)
+                        {}
                 }
             }
         }
@@ -356,10 +385,30 @@ fun TopBarMes(
                 modifier = Modifier
                     .width(65.dp)
                     .aspectRatio(1f),
-                isOnline = true
+                isOnline = account.status == "online"
             ) {}
             Column {
                 TextNameUser(account.nickName)
+                if(account.status == "online"){
+                    Text(text = "Active now",
+                        style = TextStyle(
+                            fontSize = 10.sp,
+                            color = Color.Gray
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                        )
+                }else{
+                    val timeAgo = account.timestamp?.let { getTimeAgo(it) }
+                    Text(text = "$timeAgo",
+                        style = TextStyle(
+                            fontSize = 10.sp,
+                            color = Color.Gray
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
 
@@ -381,12 +430,27 @@ fun TopBarMes(
     }
 }
 
+fun getTimeAgo(lastOnlineTimestamp: Long): String {
+    val currentTime = System.currentTimeMillis()
+    val diff = currentTime - lastOnlineTimestamp
+
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(diff)
+    val hours = TimeUnit.MILLISECONDS.toHours(diff)
+    val days = TimeUnit.MILLISECONDS.toDays(diff)
+
+    return when {
+        minutes < 60 -> "Active $minutes minutes ago"
+        hours < 24 -> "Active $hours hours ago"
+        days < 7 -> "Active $days days ago"
+        else -> "Active more than 7 days ago"
+    }
+}
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun MesPreview() {
         MessageScreen(
             viewModel(),
-            popBackStack = {},
             downloader = Downloader(LocalContext.current),
             navController = rememberNavController(),
             curentid = "",

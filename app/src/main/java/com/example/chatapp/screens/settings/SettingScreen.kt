@@ -137,7 +137,7 @@ fun SettingScreen(
                     "Active status",
                     "On",
                     onClick = {
-
+                        navController.navigate(Destination.ActiveStatus.route)
                     }
                 )
             }

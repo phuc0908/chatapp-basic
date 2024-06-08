@@ -179,7 +179,7 @@ fun HomeScreen(
                 .verticalScroll(rememberScrollState()),
         ) {
 
-                ListOfStatusFriend(chatItems)
+                ListOfStatusFriend(openChat, chatItems)
                 ListMyChat(openChat, chatItems)
         }
     }
@@ -301,8 +301,9 @@ fun parseTimestampToString(timestamp:Long?):String{
 
 @Composable
 fun StatusFriend(
-    friends: List<ChatItem>
-) {
+    friends: List<ChatItem>,
+    openChat:(String)-> Unit,
+    ) {
     friends.forEach {friend->
         Column (modifier = Modifier
             .height(100.dp)
@@ -315,7 +316,9 @@ fun StatusFriend(
                     .width(65.dp)
                     .aspectRatio(1f),
                 isOnline = friend.isOnline == true
-            ) {}
+            ) {
+                openChat(friend.id)
+            }
             Text(text = friend.name,
                 modifier = Modifier.padding(top = 0.dp),
                 style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.SemiBold),
@@ -328,6 +331,7 @@ fun StatusFriend(
 
 @Composable
 fun ListOfStatusFriend(
+    openChat:(String)-> Unit,
     friends: List<ChatItem>
 ) {
     Row(modifier = Modifier
@@ -336,7 +340,7 @@ fun ListOfStatusFriend(
         .fillMaxWidth()
         .horizontalScroll(rememberScrollState())
     ) {
-        StatusFriend(friends = friends)
+        StatusFriend(friends = friends, openChat)
     }
 }
 

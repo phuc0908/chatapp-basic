@@ -58,7 +58,7 @@ fun AvatarIcon(
             Box(
                 modifier = Modifier
                     .size(12.dp)
-                    .offset(x = (-20).dp, y = 40.dp)
+                    .offset(x = (-23).dp, y = 43.dp)
                     .background(Color.Green, CircleShape)
                     .border(1.5.dp, Color.White, CircleShape)
             )
@@ -66,7 +66,58 @@ fun AvatarIcon(
             Box(
                 modifier = Modifier
                     .size(12.dp)
-                    .offset(x = (-20).dp, y = 40.dp)
+                    .offset(x = (-30).dp, y = 50.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun RecommendAvatarIcon(
+    imageUrl: String?,
+    modifier: Modifier,
+    isOnline: Boolean,
+    onClick: () -> Unit,
+) {
+    Row {
+        Box(modifier = Modifier.clip(CircleShape)){
+            IconButton(
+                onClick = onClick,
+                modifier = modifier,
+                content = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(9.dp)
+                            .clip(shape = CircleShape),
+                        contentAlignment = Alignment.Center,
+                        content = {
+                            if(imageUrl != null){
+                                Image(
+                                    painter = rememberAsyncImagePainter(imageUrl),
+                                    contentScale = ContentScale.Crop,
+                                    contentDescription = "",
+                                    modifier = modifier
+                                )
+                            }
+                        },
+                    )
+                }
+            )
+        }
+        if(isOnline){
+            Box(
+                modifier = Modifier
+                    .size(10.dp)
+                    .offset(x = (-20).dp, y = 31.dp)
+                    .background(Color.Green, CircleShape)
+                    .border(1.5.dp, Color.White, CircleShape)
+            )
+        }else{
+            Box(
+                modifier = Modifier
+                    .size(10.dp)
+                    .offset(x = (-15).dp, y = 0.dp)
             )
         }
     }
