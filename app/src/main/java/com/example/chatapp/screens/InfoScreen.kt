@@ -202,7 +202,7 @@ fun TopProfile(
             AvatarIcon(
                 imageUrl = account.imageUri,
                 modifier = Modifier.size(120.dp),
-                isOnline = false
+                isOnline = account.activeStatus!="OFF" && account.status == "online"
             ) {}
             Text(text = account.nickName,
                 fontSize = 22.sp,

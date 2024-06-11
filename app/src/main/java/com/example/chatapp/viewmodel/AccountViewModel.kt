@@ -37,7 +37,7 @@ class AccountViewModel:ViewModel() {
             reference.setValue(imageUrl)
         }
     }
-    fun setCurrentAccount(
+    fun getAccount(
         user: FirebaseUser,
         context: Context,
         onResult: (Account?) -> Unit)
@@ -55,6 +55,21 @@ class AccountViewModel:ViewModel() {
                 onResult(null)
             }
         })
+    }
+    fun getAccountNotContext(
+        account: Account,
+        onResult: (Account?) -> Unit)
+    {
+        reference.child(account.uid)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val accountTemp = snapshot.getValue(Account::class.java)
+                    onResult(accountTemp)
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    onResult(null)
+                }
+            })
     }
     private fun updateAccountByUid(uid: String, onDataChange: (Account?) -> Unit, onCancelled: ((error: DatabaseError) -> Unit)? = null) {
         val ref = reference.child(uid)

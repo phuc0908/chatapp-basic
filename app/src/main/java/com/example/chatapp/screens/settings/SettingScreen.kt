@@ -27,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,6 +46,7 @@ import com.example.chatapp.R
 import com.example.chatapp.model.Account
 import com.example.chatapp.screens.Destination
 import com.example.chatapp.ui.components.AvatarIcon
+import com.example.chatapp.viewmodel.AccountViewModel
 import com.example.chatapp.viewmodel.AuthViewModel
 
 
@@ -132,14 +134,16 @@ fun SettingScreen(
                         navController.navigate(Destination.DarkTheme.route)
                     }
                 )
-                RowInSetting(
-                    R.drawable.status_active,
-                    "Active status",
-                    "On",
-                    onClick = {
-                        navController.navigate(Destination.ActiveStatus.route)
-                    }
-                )
+                if (currentAccount != null) {
+                    RowInSetting(
+                        R.drawable.status_active,
+                        "Active status",
+                        currentAccount.activeStatus.toString(),
+                        onClick = {
+                            navController.navigate(Destination.ActiveStatus.route)
+                        }
+                    )
+                }
             }
 //            End body setting
         }
@@ -163,7 +167,7 @@ fun Profile(
             AvatarIcon(
                 imageUrl = currentUser.imageUri,
                 modifier = Modifier.size(120.dp),
-                isOnline = false
+                isOnline = false /*currentUser.activeStatus!="OFF" && currentUser.status == "online"*/
             ) {}
         }else{
             RoundIconButton(imageResId = R.drawable.newuser,

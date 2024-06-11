@@ -12,7 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -114,7 +113,7 @@ fun Main() {
                         )
                         LaunchedEffect(currentUser) {
                             currentUser?.let { user ->
-                                accountViewModel.setCurrentAccount(user, context) { account ->
+                                accountViewModel.getAccount(user, context) { account ->
                                     currentAccount = account
                                 }
                             }
@@ -230,7 +229,13 @@ fun Main() {
                             authViewModel,
                             currentAccount
                         )
-
+                        LaunchedEffect(currentUser) {
+                            currentUser?.let { user ->
+                                accountViewModel.getAccount(user, context) { account ->
+                                    currentAccount = account
+                                }
+                            }
+                        }
                     }
                 }
 

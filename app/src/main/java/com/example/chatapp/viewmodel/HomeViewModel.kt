@@ -96,11 +96,13 @@ class HomeViewModel : ViewModel()
             if(isMy){
                 when (lastMessage?.type) {
                     1 -> "You: Picture"
+                    2 -> "You: Video"
                     else -> "You: ${lastMessage?.message}"
                 }
             }else{
                 when (lastMessage?.type) {
                     1 -> "Picture"
+                    2 -> "Video"
                     else -> lastMessage?.message ?: ""
                 }
             }
@@ -111,7 +113,8 @@ class HomeViewModel : ViewModel()
             lastMessage = lastMessageContent,
             timestamp =  lastMessage?.timestamp,
             isFriend = false,
-            isOnline = isOnline
+            isOnline = isOnline,
+            activeStatus = account.activeStatus
         )
     }
 }

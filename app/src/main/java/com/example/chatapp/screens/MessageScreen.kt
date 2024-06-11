@@ -136,6 +136,7 @@ fun MessageScreen(
     var selectedMessageText by remember { mutableStateOf<String?>(null) }
     var showOptionsMesDialog by remember { mutableStateOf(false) }
     var showOptionsImageDialog by remember { mutableStateOf(false) }
+    var showOptionsVideoDialog by remember { mutableStateOf(false) }
     var showConfirmDeleteDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -240,9 +241,10 @@ fun MessageScreen(
             }
         },
     ) { innerPadding ->
-        LaunchedEffect(true) {
-            viewModel.fetchMessage(curentid,friendid)
-        }
+//        LaunchedEffect(true) {
+//            viewModel.fetchMessage(curentid,friendid)
+//            listState.animateScrollToItem(messages.size)
+//        }
         LazyColumn(
             state = listState,
             modifier = Modifier
@@ -287,8 +289,20 @@ fun MessageScreen(
                     typeVideo ->
                         VideoMessage(
                             mediaUrl = mes.message,
-                            isMyVideo = mes.idFrom == curentid)
-                        {}
+                            isMyVideo = mes.idFrom == curentid,
+                            onLongPress = {
+                                selectedMessageId =
+                                    if(mes.idFrom == curentid) {
+                                        mes.id
+                                    }else{
+                                        null
+                                    }
+                                selectedMessageText = mes.message
+                                selectedUserIdByMes = mes.idFrom
+                                showOptionsVideoDialog = true
+                            }
+                        )
+
                 }
             }
         }
@@ -328,7 +342,7 @@ fun MessageScreen(
                     downloader.downloadFile(selectedMessageText.toString())
                     Toast.makeText(
                         context,
-                        "Downloading.",
+                        "Downloading picture.",
                         Toast.LENGTH_SHORT
                     ).show()
                 },
@@ -338,6 +352,28 @@ fun MessageScreen(
                 },
                 onDismiss = {
                     showOptionsImageDialog = false
+                }
+            )
+        }
+        if (showOptionsVideoDialog) {
+            OptionsVideoDialog(
+                isMyVideo = selectedUserIdByMes == curentid,
+                showDialog = showOptionsVideoDialog,
+                onDownload = {
+                    showOptionsVideoDialog = false
+                    downloader.downloadVideo(selectedMessageText.toString())
+                    Toast.makeText(
+                        context,
+                        "Downloading video.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                },
+                onDelete = {
+                    showOptionsVideoDialog = false
+                    showConfirmDeleteDialog = true
+                },
+                onDismiss = {
+                    showOptionsVideoDialog = false
                 }
             )
         }
@@ -385,7 +421,7 @@ fun TopBarMes(
                 modifier = Modifier
                     .width(65.dp)
                     .aspectRatio(1f),
-                isOnline = account.status == "online"
+                isOnline = account.activeStatus!="OFF" && account.status == "online"
             ) {}
             Column {
                 TextNameUser(account.nickName)

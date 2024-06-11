@@ -233,7 +233,7 @@ fun OneRowInSearch(
             modifier = Modifier
                 .width(55.dp)
                 .aspectRatio(1f),
-            isOnline = user.status == "online"
+            isOnline = user.activeStatus!="OFF" && user.status == "online"
         ) {
             openChat(user.uid)
         }

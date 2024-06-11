@@ -15,17 +15,20 @@ class StatusService : Service(), CoroutineScope {
     private var isServiceRunning = false
     private lateinit var job: Job
 
+    val count=0;
+
+
     private val database = FirebaseDatabase.getInstance().getReference("accounts")
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
 
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job
+        get() = Dispatchers.IO + job
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
     override fun onCreate() {
-        Log.d("StatusService", "Service created")
+        Log.d("StatusService$count", "Service created")
         super.onCreate()
         job = Job()
     }
@@ -33,17 +36,17 @@ class StatusService : Service(), CoroutineScope {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int)
     : Int
     {
-        Log.d("StatusService", "Service started")
+        Log.d("StatusService$count", "Service started")
         if (!isServiceRunning) {
             isServiceRunning = true
             startUpdatingStatus()
         }
         return START_STICKY
     }
-
     override fun onDestroy() {
+
         super.onDestroy()
-        Log.d("StatusService", "Service destroyed")
+        Log.d("StatusService$count", "Service destroyed")
         job.cancel()
         isServiceRunning = false
         updateStatusInFirebase(false)
@@ -52,10 +55,10 @@ class StatusService : Service(), CoroutineScope {
     private fun startUpdatingStatus() {
         launch {
             while (isServiceRunning) {
-                Log.d("StatusService", "Service updating")
+                Log.d("StatusService$count", "Service updating")
                 updateStatusInFirebase(true)
                 delay(60_000)
-                Log.d("UpdateStatus-Service","after 60s")
+                Log.d("UpdateStatus-Service$count","after 60s")
             }
         }
     }

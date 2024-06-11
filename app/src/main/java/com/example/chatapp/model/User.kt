@@ -9,6 +9,7 @@ data class ChatItem(
     val timestamp: Long?,
     val isFriend: Boolean? = false,
     val isOnline: Boolean? = false,
+    val activeStatus: String? = null
 )
 
 data class Account(

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
@@ -50,7 +51,7 @@ fun ImageMessage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(imageUrl)
             .size(coil.size.Size.ORIGINAL)
-            .build()
+            .build(),
     )
 
     Column(
@@ -85,19 +86,8 @@ fun ImageMessage(
                         .sizeIn(maxWidth = 250.dp)
                 )
             }
-
         }
 
     }
 }
 
-
-@Preview
-@Composable
-fun PreviewImageMessage() {
-    ImageMessage(
-        imageUrl = "https://your-image-url.com/image.jpg",
-        isMyImage = true,
-        {}
-    )
-}

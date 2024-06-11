@@ -73,6 +73,58 @@ fun OptionsImageDialog(
 
                     if(isMyImage){
                         ElevatedButton(
+                            onClick = onDownload,
+                            Modifier.fillMaxWidth().align(Alignment.Start))
+                        {
+                            Text("Download")
+                        }
+                        ElevatedButton(
+                            onClick = onDelete,
+                            Modifier.fillMaxWidth().align(Alignment.Start))
+                        {
+                            Text("Delete")
+                        }
+                    }else{
+                        ElevatedButton(
+                            onClick = onDownload,
+                            Modifier.fillMaxWidth().align(Alignment.Start))
+                        {
+                            Text("Download")
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+        )
+    }
+}
+
+@Composable
+fun OptionsVideoDialog(
+    isMyVideo: Boolean,
+    showDialog: Boolean,
+    onDownload: () -> Unit,
+    onDelete: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    if (showDialog) {
+        AlertDialog(
+            modifier = Modifier.padding(16.dp),
+            onDismissRequest = onDismiss,
+            title = {
+                Text("Choose Options")
+            },
+            text = {
+                Column(Modifier.fillMaxWidth()) {
+
+                    if(isMyVideo){
+                        ElevatedButton(
+                            onClick = onDownload,
+                            Modifier.fillMaxWidth().align(Alignment.Start))
+                        {
+                            Text("Download")
+                        }
+                        ElevatedButton(
                             onClick = onDelete,
                             Modifier.fillMaxWidth().align(Alignment.Start))
                         {
