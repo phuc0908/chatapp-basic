@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.components
+package com.example.chatapp.ui.components.NOT_USE
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height

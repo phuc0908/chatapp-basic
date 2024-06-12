@@ -1,4 +1,4 @@
-package com.example.chatapp.ui.components
+package com.example.chatapp.ui.components.NOT_USE
 
 import android.service.autofill.OnClickAction
 import androidx.compose.foundation.Image
