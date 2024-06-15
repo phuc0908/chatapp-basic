@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,6 +18,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.Downloader
 import com.example.chatapp.model.Account
+import com.example.chatapp.screens.NOT_USE.CallScreen
+import com.example.chatapp.screens.NOT_USE.ContactScreen
 import com.example.chatapp.ui.theme.ChatApp_DACS3Theme
 import com.example.chatapp.ui.animations.EnterAnimation
 import com.example.chatapp.viewmodel.CallViewModel
@@ -50,8 +53,9 @@ fun Main() {
 
 //    Navigation
     val navController = rememberNavController()
-    var themeOption by remember { mutableStateOf(ThemeOption.SYSTEM) }
-    var statusOption = statusViewModel.statusOption
+    var themeOption by remember { mutableStateOf(ThemeOption.LIGHT) }
+    val statusOption = statusViewModel.statusOption
+
     var currentAccount by remember { mutableStateOf<Account?>(null) }
     val currentUser = authViewModel.currentUser
 
@@ -111,17 +115,17 @@ fun Main() {
                                 navController.navigate(MessageScreenNavigation.createRoute(uid))
                             }
                         )
-                        LaunchedEffect(currentUser) {
-                            currentUser?.let { user ->
-                                accountViewModel.getAccount(user, context) { account ->
-                                    currentAccount = account
-                                }
+                    }
+                    LaunchedEffect(currentUser) {
+                        currentUser?.let { user ->
+                            accountViewModel.getAccount(user, context) { account ->
+                                currentAccount = account
                             }
                         }
-                        LaunchedEffect(currentAccount) {
-                            currentAccount?.let {
-                                viewModel.fetchAccountListWithLastMessages(it.uid)
-                            }
+                    }
+                    LaunchedEffect(currentAccount) {
+                        currentAccount?.let {
+                            viewModel.fetchAccountListWithLastMessages(it.uid)
                         }
                     }
                 }
@@ -131,7 +135,6 @@ fun Main() {
                 ){
                     val viewModel: MessageViewModel = remember { MessageViewModel(context) }
                     val uid = it.arguments?.getString("uidArg") ?: throw Exception("")
-
                     EnterAnimation {
                         if (currentUser != null) {
                             MessageScreen(
@@ -177,6 +180,16 @@ fun Main() {
                     }
                 }
 
+                composable(
+                    route = MediaScreenNavigation.route,
+                    arguments = MediaScreenNavigation.arguments()
+                ){
+                    val url = it.arguments?.getString("mediaUrlArg") ?: throw Exception("")
+                    EnterAnimation {
+                        MediaMessage(mediaUrl = url)
+                    }
+                }
+
                 composable(Destination.Call.route){
                     val viewModel: CallViewModel = remember { CallViewModel() }
                     EnterAnimation {
@@ -186,8 +199,7 @@ fun Main() {
                             openSearch = {
                                 navController.navigate(Destination.Search.route)
                             },
-
-                            )
+                        )
                     }
                 }
                 composable(Destination.Contact.route){
@@ -197,9 +209,9 @@ fun Main() {
                             popBackStack = { navController.popBackStack() },
                             navController = navController
                         )
-
                     }
                 }
+
 
                 composable(
                     route = Destination.Search.route,
@@ -273,17 +285,19 @@ fun Main() {
 
 sealed class Destination(val route: String){
     data object Splash: Destination("splash")
+    data object MediaMes: Destination("media_mes")
     data object Home: Destination("home_route")
     data object SignIn: Destination("sign_in")
     data object SignUp: Destination("sign_up")
-    data object Message: Destination("message_route")
     data object Setting: Destination("setting")
     data object DarkTheme: Destination("dark_theme")
     data object Contact: Destination("contact")
     data object Call: Destination("call")
     data object Search: Destination("search")
-    data object Info: Destination("info")
     data object AccountSetting: Destination("account_setting")
     data object EditName: Destination("edit_name")
     data object ActiveStatus: Destination("active_status")
+
+//    data object Info: Destination("info")
+//    data object Message: Destination("message_route")
 }

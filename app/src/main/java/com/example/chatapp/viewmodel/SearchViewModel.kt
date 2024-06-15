@@ -43,7 +43,7 @@ class SearchViewModel: ViewModel() {
                     Log.d("SearchViewModel", "Account snapshot: $account")
 
                     account?.let {
-                        if (it.nickName.lowercase(Locale.getDefault()).contains(query)) {
+                        if (it.uid!=curentId && it.nickName.lowercase(Locale.getDefault()).contains(query)) {
                             userList.add(it)
                             Log.d("NameSearch", it.nickName)
                         }
@@ -65,8 +65,10 @@ class SearchViewModel: ViewModel() {
                 for (accountSnapshot in snapshot.children) {
                     val account = accountSnapshot.getValue(Account::class.java)
                     account?.let {
-                        userList.add(it)
-                        Log.d("Account",account.uid)
+                        if (it.uid!=curentId) {
+                            userList.add(it)
+                            Log.d("Account",account.uid)
+                        }
                     }
                 }
                 _allAccount.value  = userList

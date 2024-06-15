@@ -1,5 +1,6 @@
 package com.example.chatapp.ui.components
 
+import android.view.KeyEvent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -49,7 +50,6 @@ fun CustomTextField(
             value.value = it
             onValueChange(it)
         },
-
         maxLines = maxLine,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,

@@ -1,5 +1,6 @@
 package com.example.chatapp.screens.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -69,6 +70,9 @@ fun DarkThemeScreen(
             Modifier.padding(innerPadding)
         ){
             Row (
+                Modifier.clickable {
+                    onThemeChange(ThemeOption.LIGHT)
+                },
                 verticalAlignment = Alignment.CenterVertically
             ){
                 RadioButton(
@@ -78,6 +82,9 @@ fun DarkThemeScreen(
                 Text(text = "Off")
             }
             Row (
+                Modifier.clickable {
+                    onThemeChange(ThemeOption.DARK)
+                },
                 verticalAlignment = Alignment.CenterVertically
             ){
                 RadioButton(
@@ -87,6 +94,9 @@ fun DarkThemeScreen(
                 Text(text = "On")
             }
             Row (
+                Modifier.clickable {
+                    onThemeChange(ThemeOption.SYSTEM)
+                },
                 verticalAlignment = Alignment.CenterVertically
             ){
                 RadioButton(

@@ -1,2 +1,2 @@
-package com.example.chatapp.screens.teams
+package com.example.chatapp.screens.NOT_USE.teams
 

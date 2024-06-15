@@ -4,9 +4,7 @@ import android.app.Activity
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,6 +14,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -32,8 +31,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +41,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -62,7 +60,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -76,7 +73,6 @@ import com.example.chatapp.ui.components.Message
 import com.example.chatapp.ui.components.RoundIconButton
 import com.example.chatapp.ui.components.CustomTextField
 import com.example.chatapp.ui.components.NotRoundIconButton
-import com.example.chatapp.ui.components.TextChat
 import com.example.chatapp.ui.components.TextNameUser
 import com.example.chatapp.ui.components.VideoMessage
 import com.fatherofapps.jnav.annotations.JNav
@@ -123,7 +119,7 @@ fun MessageScreen(
 
 
     val listState = rememberLazyListState()
-    LaunchedEffect(messages) {
+    LaunchedEffect(messages,Unit) {
         listState.animateScrollToItem(messages.size)
     }
 
@@ -138,6 +134,13 @@ fun MessageScreen(
     var showOptionsImageDialog by remember { mutableStateOf(false) }
     var showOptionsVideoDialog by remember { mutableStateOf(false) }
     var showConfirmDeleteDialog by remember { mutableStateOf(false) }
+
+    var heightBottomBar by remember { mutableStateOf(60.dp) }
+    var heightTf by remember { mutableStateOf(30.dp) }
+    var newlineCount by remember { mutableIntStateOf(1) }
+
+    val focusManager = LocalFocusManager.current
+
 
     Scaffold(
         topBar = {
@@ -162,21 +165,20 @@ fun MessageScreen(
             BottomAppBar(
                 containerColor = MaterialTheme.colorScheme.onTertiary,
                 contentColor = MaterialTheme.colorScheme.onSurface,
+                contentPadding = PaddingValues(0.dp),
                 modifier = Modifier
+                    .height(heightBottomBar)
                     .border(
                         border = BorderStroke(
-                            width = 0.1.dp, color = Color.Gray
+                            width = 0.1.dp, color = Color.LightGray
                         )
                     )
             ) {
-                val focusManager = LocalFocusManager.current
-
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 10.dp),
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.Bottom
                 ){
                     NotRoundIconButton(
                         imageResId = R.drawable.media,
@@ -189,35 +191,58 @@ fun MessageScreen(
                         }
                         mediaPickerLauncher.launch(intent)
                     }
-                    CustomTextField(
-                        value = text,
-                        modifier = Modifier
-                            .background(
-                                MaterialTheme.colorScheme.surface,
-                                RoundedCornerShape(percent = 20)
-                            )
-                            .padding(4.dp)
-                            .width(240.dp),
-                        fontSize = 14.sp,
-                        placeholderText = "Send message...",
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Text,
-                            imeAction = ImeAction.Next
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onNext = { focusManager.moveFocus(FocusDirection.Down) }
-                        ),
-                        maxLine = 4,
-                        onValueChange = {}
-                    )
-                    if(text.value!=""){
+
+                    Column {
+                        CustomTextField(
+                            value = text,
+                            modifier = Modifier
+                                .padding(top = 1.dp, bottom = 1.dp, start = 5.dp, end = 5.dp)
+                                .background(
+                                    MaterialTheme.colorScheme.surface,
+                                    RoundedCornerShape(percent = 45)
+                                )
+                                .height(heightTf)
+                                .width(
+                                    if (text.value.trim() != "")
+                                        305.dp
+                                    else
+                                        345.dp
+                                )
+                                ,
+                            fontSize = 14.sp,
+                            placeholderText = "Send message...",
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Default
+                            ),
+                            keyboardActions = KeyboardActions {
+                                focusManager.moveFocus(FocusDirection.Down)
+                            },
+                            maxLine = Int.MAX_VALUE,
+                            onValueChange = {newText ->
+                                val lines = newText.split("\n")
+                                    .filter { line -> line.isNotBlank() }
+
+                                newlineCount = lines.size
+                                if (newlineCount>0) {
+                                    heightTf = 32.dp + (25.dp * (newlineCount-1))
+                                    heightBottomBar = 60.dp + (25.dp * (newlineCount-1))
+                                }
+
+                            }
+                        )
+                        Spacer(modifier = Modifier.size(5.dp))
+                    }
+                    if(text.value.trim()!=""){
                         RoundIconButton(
                             imageResId = R.drawable.sendd,
                             imageVector = null,
                             modifier = Modifier.size(50.dp)
                         ) {
-                            viewModel.sendMessage(text.value,curentid, friendid, typeText)
+                            viewModel.sendMessage(text.value.trim(),curentid, friendid, typeText)
                             text.value = ""
+                            heightTf = 32.dp
+                            heightBottomBar = 60.dp
                         }
                     }else{
                         Spacer( Modifier.size(50.dp))
@@ -241,10 +266,6 @@ fun MessageScreen(
             }
         },
     ) { innerPadding ->
-//        LaunchedEffect(true) {
-//            viewModel.fetchMessage(curentid,friendid)
-//            listState.animateScrollToItem(messages.size)
-//        }
         LazyColumn(
             state = listState,
             modifier = Modifier
@@ -290,6 +311,9 @@ fun MessageScreen(
                         VideoMessage(
                             mediaUrl = mes.message,
                             isMyVideo = mes.idFrom == curentid,
+                            openMedia = {
+                              navController.navigate(MediaScreenNavigation.createRoute(mes.message))
+                            },
                             onLongPress = {
                                 selectedMessageId =
                                     if(mes.idFrom == curentid) {
@@ -312,7 +336,7 @@ fun MessageScreen(
         if (showOptionsMesDialog) {
             OptionsMesDialog(
                 isMyMessage = selectedUserIdByMes == curentid,
-                showDialog = showOptionsMesDialog,
+                showDialog = true,
                 onCopy = {
                     selectedMessageText?.let { text ->
                         clipboardManager.setText(AnnotatedString(text))
@@ -336,7 +360,7 @@ fun MessageScreen(
         if (showOptionsImageDialog) {
             OptionsImageDialog(
                 isMyImage = selectedUserIdByMes == curentid,
-                showDialog = showOptionsImageDialog,
+                showDialog = true,
                 onDownload = {
                     showOptionsImageDialog = false
                     downloader.downloadFile(selectedMessageText.toString())
@@ -358,7 +382,7 @@ fun MessageScreen(
         if (showOptionsVideoDialog) {
             OptionsVideoDialog(
                 isMyVideo = selectedUserIdByMes == curentid,
-                showDialog = showOptionsVideoDialog,
+                showDialog = true,
                 onDownload = {
                     showOptionsVideoDialog = false
                     downloader.downloadVideo(selectedMessageText.toString())
@@ -380,7 +404,7 @@ fun MessageScreen(
 
         if (showConfirmDeleteDialog) {
             ConfirmDeleteDialog(
-                showDialog = showConfirmDeleteDialog,
+                showDialog = true,
                 onConfirm = {
                     selectedMessageId?.let {
                         viewModel.deleteMessageFromFirebase(it)

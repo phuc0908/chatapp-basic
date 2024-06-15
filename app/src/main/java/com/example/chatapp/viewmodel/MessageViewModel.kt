@@ -77,14 +77,47 @@ class MessageViewModel(
             }
         })
     }
+    fun splitStringIntoSegments(text: String, segmentLength: Int): List<String> {
+        val segments = mutableListOf<String>()
+        var currentPosition = 0
+        val textLength = text.length
+
+        while (currentPosition < textLength) {
+            var endIndex = currentPosition + segmentLength
+            if (endIndex > textLength) {
+                endIndex = textLength
+            }
+            val segment = text.substring(currentPosition, endIndex)
+
+            segments.add(segment.trim())
+            currentPosition = endIndex
+        }
+
+        return segments
+    }
 
     fun sendMessage(messageText: String,currentUid:String, friendUid: String, type: Int) {
         val messageId = database.child("messages").push().key ?: return
+
+        val lines = messageText.split("\n")
+
+        val processedLines = mutableListOf<String>()
+
+        for (line in lines) {
+            val lineSegments = splitStringIntoSegments(line, 40)
+
+            val processedLine = lineSegments.joinToString("\n")
+            processedLines.add(processedLine)
+        }
+
+        val processedMessageText = processedLines.joinToString("\n")
+
+    Log.d("FIXTEXT", processedMessageText)
         val message = Message(
             id = messageId,
             idFrom = currentUid,
             idTo = friendUid,
-            message = messageText,
+            message = processedMessageText,
             type = type,
             timestamp = System.currentTimeMillis()
         )

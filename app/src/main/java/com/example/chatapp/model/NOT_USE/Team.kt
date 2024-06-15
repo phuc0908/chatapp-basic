@@ -1,4 +1,4 @@
-package com.example.chatapp.model
+package com.example.chatapp.model.NOT_USE
 
 data class Team (
     val id: String = "",

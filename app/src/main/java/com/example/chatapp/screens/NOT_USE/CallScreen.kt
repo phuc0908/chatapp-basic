@@ -1,7 +1,8 @@
-package com.example.chatapp.screens
+package com.example.chatapp.screens.NOT_USE
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -85,11 +86,12 @@ fun CallScreen(
         },
         bottomBar = {
             BottomAppBar(
+                modifier = Modifier.fillMaxWidth(),
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface,
+                contentPadding = PaddingValues(0.dp)
             ) {
-
-                BottomNavigation(1,navController)
+                BottomNavigation(1, navController)
             }
         },
 

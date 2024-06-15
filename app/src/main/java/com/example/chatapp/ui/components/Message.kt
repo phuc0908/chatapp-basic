@@ -1,8 +1,6 @@
 package com.example.chatapp.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,18 +10,30 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.chatapp.ui.theme.LightGreen1
+
+@Composable
+fun calculateBoxHeight(numberOfLines: Int): Dp {
+    val lineHeight = 20.sp.toDp()
+    val padding = 10.dp
+    val textHeight = lineHeight * numberOfLines
+    return textHeight + padding
+}
+@Composable
+fun TextUnit.toDp(): Dp {
+    return with(LocalDensity.current) { toDp() }
+}
 
 @Composable
 fun Message(
@@ -31,10 +41,8 @@ fun Message(
     isMyMessage: Boolean,
     onLongPress: ()-> Unit
 ) {
-    val messageLength = message.length
-    Log.d("Message.Length", messageLength.toString())
-    val boxHeight = if (messageLength <= 50) 50.dp else 65.dp
-
+    val line = message.lines().size
+    val boxHeight = calculateBoxHeight(line)
 
     Column(
         modifier = Modifier
@@ -51,7 +59,6 @@ fun Message(
                 else
                     Alignment.Start,
     ) {
-        // Display message
         val topStartRadius = if (isMyMessage) 8.dp else 0.dp
         val topEndRadius = if (!isMyMessage) 8.dp else 0.dp
         Box(
@@ -78,7 +85,7 @@ fun Message(
                     else
                     Color.LightGray
                 )
-                .padding(15.dp),
+                .padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp),
             contentAlignment =
                     if (isMyMessage)
                         Alignment.CenterEnd
@@ -94,12 +101,15 @@ fun Message(
                         else
                             Alignment.CenterStart
                     ),
+                lineHeight = 20.sp,
                 style = TextStyle(
+                    fontSize = 14.sp,
                     color =
                         if (isMyMessage)
                             Color.White
                         else
                             Color.Black
+                    ,
                 ))
         }
     }

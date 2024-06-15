@@ -50,7 +50,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.model.Account
-import com.example.chatapp.model.YourRecentSearch
 import com.example.chatapp.ui.components.AvatarIcon
 import com.example.chatapp.viewmodel.SearchViewModel
 import com.example.chatapp.ui.components.CustomTextField
@@ -126,9 +125,18 @@ fun SearchScreen(
                 .verticalScroll(rememberScrollState()),
 
             ){
-            if(data.isNotEmpty()){
-                Search(list = data, openChat)
-            }else{
+            if(text.value != ""){
+
+                if(data.isNotEmpty()){
+                    Search(list = data, openChat)
+                }else{
+                    Row (Modifier.fillMaxWidth().padding(10.dp))
+                    {
+                        Text(text = "No accounts found")
+                    }
+                }
+            }
+            else{
                 RecentSearch(list = null)
                 RecommendSearch(list = dataRecommend, openChat)
             }
@@ -225,7 +233,8 @@ fun OneRowInSearch(
                 onClick = {
                     openChat(user.uid)
                 }
-            ).padding(10.dp),
+            )
+            .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ){
         RecommendAvatarIcon(
