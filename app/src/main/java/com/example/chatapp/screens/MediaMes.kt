@@ -24,6 +24,8 @@ import io.sanghun.compose.video.VideoPlayer
 import io.sanghun.compose.video.controller.VideoPlayerControllerConfig
 import io.sanghun.compose.video.toRepeatMode
 import io.sanghun.compose.video.uri.VideoPlayerMediaItem
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 @JNav(
     name = "MediaScreenNavigation",
@@ -44,10 +46,13 @@ fun MediaMessage(
             .size(400.dp),
     ) {
         val repeatMode by remember { mutableStateOf(RepeatMode.NONE) }
+        val linkRoot = "https://firebasestorage.googleapis.com/v0/b/chatapp-4e975.appspot.com/o/messages%2F"
+        val url = linkRoot + URLDecoder.decode(mediaUrl, StandardCharsets.UTF_8.toString())
+        Log.d("DECODE",url)
 
         val samplePlayList = listOf(
             VideoPlayerMediaItem.NetworkMediaItem(
-                url = "$mediaUrl.mp4",
+                url = "$url.mp4",
                 mediaMetadata = MediaMetadata.Builder().build(),
                 mimeType = MimeTypes.VIDEO_MP4,
             )

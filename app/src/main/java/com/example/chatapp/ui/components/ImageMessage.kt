@@ -1,8 +1,10 @@
 package com.example.chatapp.ui.components
 
 import android.content.Context
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +42,7 @@ import coil.request.ImageRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ImageMessage(
     imageUrl: String,
@@ -64,14 +67,11 @@ fun ImageMessage(
                 .wrapContentSize()
                 .clip(RoundedCornerShape(8.dp))
                 .background(Color.LightGray)
-//                Long press
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onLongPress = {
-                            onLongPress()
-                        }
-                    )
-                }
+                .combinedClickable(
+                    onClick = {
+                    },
+                    onLongClick = onLongPress
+                )
                 .align(if (isMyImage) Alignment.End else Alignment.Start)
         ) {
 

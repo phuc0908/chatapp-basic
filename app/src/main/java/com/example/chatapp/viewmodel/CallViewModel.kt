@@ -11,13 +11,10 @@ class CallViewModel: ViewModel() {
     var calls by mutableStateOf<List<Call>?>(null)
         private set
     fun fetchMyCall() {
+        val imageUrl = "https://firebasestorage.googleapis.com/v0/b/chatapp-4e975.appspot.com/o/avatars%2FnewUser.png?alt=media&token=428ada2b-c505-4af7-9da7-370ea0086e56"
         val list = listOf(
-            Call(R.drawable.newuser, "Mai Thuong"),
-            Call(R.drawable.avatar_garena_2, "Tran Dang"),
-            Call(R.drawable.newuser, "Wong Da"),
-            Call(R.drawable.newuser, "Ton Lu"),
-            Call(R.drawable.avatar_garena_2, "Tao La Ai"),
-            Call(R.drawable.newuser, "Rang"),
+            Call(imageUrl, "Phuc Ís meeeee"),
+            Call(imageUrl, "?????????"),
         )
         calls = list
     }

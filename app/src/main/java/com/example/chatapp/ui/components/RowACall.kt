@@ -1,8 +1,10 @@
 package com.example.chatapp.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,6 +23,9 @@ fun RowACall(
     Row (
         Modifier
             .fillMaxWidth()
+            .clickable {
+
+            }
             .padding(5.dp)
             .height(80.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -30,11 +35,14 @@ fun RowACall(
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ){
-            RoundIconButton(
-                imageResId = call.avatar,
-                imageVector = null,
-                modifier = Modifier.size(60.dp),
-            ) {}
+            AvatarIcon(
+                imageUrl = call.avatar,
+                modifier = Modifier
+                    .size(50.dp)
+                    .aspectRatio(1f),
+                onClick = { },
+                isOnline = false
+            )
 
             Column(
                 Modifier

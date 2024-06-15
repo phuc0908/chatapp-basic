@@ -1,6 +1,8 @@
 package com.example.chatapp.viewmodel
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -116,6 +118,29 @@ class HomeViewModel : ViewModel()
             isOnline = isOnline,
             activeStatus = account.activeStatus
         )
+    }
+    fun deleteAllMessagesWithAFriend(context : Context, currentUserUid: String, friendUid: String) {
+        messagesDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (messageSnapshot in snapshot.children) {
+                    val message = messageSnapshot.getValue(Message::class.java)
+                    message?.let {
+                        if ((it.idFrom == currentUserUid && it.idTo == friendUid) ||
+                            (it.idFrom == friendUid && it.idTo == currentUserUid)
+                        ) {
+                            messageSnapshot.ref.removeValue()
+                        }
+                    }
+                }
+                Toast.makeText(
+                    context,
+                    "Deleted Conversation.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
     }
 }
 

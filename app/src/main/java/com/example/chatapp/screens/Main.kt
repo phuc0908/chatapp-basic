@@ -183,8 +183,8 @@ fun Main() {
                 composable(
                     route = MediaScreenNavigation.route,
                     arguments = MediaScreenNavigation.arguments()
-                ){
-                    val url = it.arguments?.getString("mediaUrlArg") ?: throw Exception("")
+                ){backStackEntry ->
+                    val url = MediaScreenNavigation.mediaUrl(backStackEntry)
                     EnterAnimation {
                         MediaMessage(mediaUrl = url)
                     }

@@ -6,8 +6,10 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.util.Log
 import android.widget.VideoView
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +38,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.example.chatapp.R
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun VideoMessage(
     mediaUrl: String,
@@ -54,16 +57,13 @@ fun VideoMessage(
                 .clip(RoundedCornerShape(8.dp))
                 .background(Color.LightGray)
 //                Long press
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onLongPress = {
-                            onLongPress()
-                        }
-                    )
-                }
-                .clickable {
-                    openMedia()
-                }
+                .combinedClickable(
+                    onClick = {
+                        openMedia()
+                    },
+                    onLongClick = onLongPress
+                )
+
                 .align(if (isMyVideo) Alignment.End else Alignment.Start)
         ) {
             VideoMesPlayer(
@@ -80,7 +80,6 @@ fun VideoMesPlayer(videoUri: Uri, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     var videoAspectRatio by remember { mutableFloatStateOf(2f / 2f) }
     var isPlaying by remember { mutableStateOf(true) }
-//    var isSoundEnabled by remember { mutableStateOf(true) }
     var isVideoPrepared by remember { mutableStateOf(false) }
 
     AndroidView(
@@ -132,48 +131,5 @@ fun VideoMesPlayer(videoUri: Uri, modifier: Modifier = Modifier) {
                },
            )
        }
-
-//        if (isSoundEnabled){
-//            RoundIconButton(
-//                R.drawable.pause_video,
-//                imageVector = null,
-//                modifier = Modifier
-//                    .fillMaxHeight()
-//                    .padding(top = 100.dp)
-//                    .size(43.dp)
-//                    .aspectRatio(1f),
-//                onClick = {
-//                    isSoundEnabled = !isSoundEnabled
-//                },
-//            )
-//        }else{
-//            RoundIconButton(
-//                R.drawable.start_video,
-//                imageVector = null,
-//                modifier = Modifier
-//                    .fillMaxHeight()
-//                    .padding(top = 100.dp)
-//                    .size(43.dp)
-//                    .aspectRatio(1f),
-//                onClick = {
-//                    isSoundEnabled = !isSoundEnabled
-//                },
-//            )
-//        }
     }
-}
-
-fun enableSound(sound: Int, mp: MediaPlayer, context: Context) {
-    val f = java.lang.Float.valueOf(sound.toFloat())
-    Log.e("checkingsounds", "&&&&&   $f")
-    mp.setVolume(f, f)
-    mp.isLooping = true
-    val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-    audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) //Max Volume 15
-    audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) //this will return current volume.
-    audioManager.setStreamVolume(
-        AudioManager.STREAM_MUSIC,
-        sound,
-        AudioManager.FLAG_PLAY_SOUND
-    )
 }

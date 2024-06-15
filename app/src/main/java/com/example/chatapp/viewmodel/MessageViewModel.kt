@@ -17,6 +17,8 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.storage.ktx.storage
 import java.util.UUID
 
@@ -77,6 +79,9 @@ class MessageViewModel(
             }
         })
     }
+
+
+
     fun splitStringIntoSegments(text: String, segmentLength: Int): List<String> {
         val segments = mutableListOf<String>()
         var currentPosition = 0
@@ -96,6 +101,20 @@ class MessageViewModel(
         return segments
     }
 
+    fun getUserFCMToken(userId: String) {
+        FirebaseDatabase.getInstance().getReference("accounts").child(userId)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val user = snapshot.getValue(Account::class.java)
+                    val fcmToken = user?.fcmToken ?: return
+//                    sendFCMNotification(fcmToken, "New Message", "You have received a new message")
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    println("Failed to read user data: ${error.message}")
+                }
+            })
+    }
+
     fun sendMessage(messageText: String,currentUid:String, friendUid: String, type: Int) {
         val messageId = database.child("messages").push().key ?: return
 
@@ -109,10 +128,8 @@ class MessageViewModel(
             val processedLine = lineSegments.joinToString("\n")
             processedLines.add(processedLine)
         }
-
         val processedMessageText = processedLines.joinToString("\n")
 
-    Log.d("FIXTEXT", processedMessageText)
         val message = Message(
             id = messageId,
             idFrom = currentUid,

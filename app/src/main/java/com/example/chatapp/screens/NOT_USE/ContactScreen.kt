@@ -1,5 +1,6 @@
 package com.example.chatapp.screens.NOT_USE
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +23,8 @@ import com.example.chatapp.screens.MediaScreenNavigation
 import com.example.chatapp.viewmodel.ContactViewModel
 import com.example.chatapp.ui.components.BottomNavigation
 import com.fatherofapps.jnav.annotations.JNav
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @JNav(
@@ -65,9 +68,12 @@ fun ContactScreen(
             Column(Modifier.padding(innerPadding)) {
                 Button(
                     onClick = {
+                        val mediaUrl = "0f77b62d-a4cc-4853-9019-7b30accbcdb0?alt=media&token=298d5e2a-f463-4275-aaca-c698a0c25878"
+                        val encodedUrl = URLEncoder.encode(mediaUrl, StandardCharsets.UTF_8.toString())
+                        Log.d("ENCODE",encodedUrl)
                         navController.navigate(
                             MediaScreenNavigation.createRoute(
-                                mediaUrl = "https://firebasestorage.googleapis.com/v0/b/chatapp-4e975.appspot.com/o/messages%2F0f77b62d-a4cc-4853-9019-7b30accbcdb0?alt=media&token=298d5e2a-f463-4275-aaca-c698a0c25878"
+                                mediaUrl = encodedUrl
                             )
                         )
                     }

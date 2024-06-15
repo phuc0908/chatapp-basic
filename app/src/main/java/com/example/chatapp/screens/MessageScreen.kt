@@ -5,6 +5,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,6 +14,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -28,22 +30,30 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,6 +76,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.Downloader
 import com.example.chatapp.R
 import com.example.chatapp.model.Account
+import com.example.chatapp.screens.showDialog.ConfirmDeleteDialog
+import com.example.chatapp.screens.showDialog.OptionsImageDialog
+import com.example.chatapp.screens.showDialog.OptionsMesDialog
+import com.example.chatapp.screens.showDialog.OptionsVideoDialog
 import com.example.chatapp.ui.components.AvatarIcon
 import com.example.chatapp.viewmodel.MessageViewModel
 import com.example.chatapp.ui.components.ImageMessage
@@ -77,6 +91,10 @@ import com.example.chatapp.ui.components.TextNameUser
 import com.example.chatapp.ui.components.VideoMessage
 import com.fatherofapps.jnav.annotations.JNav
 import com.fatherofapps.jnav.annotations.JNavArg
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.util.concurrent.TimeUnit
 
 
@@ -117,12 +135,11 @@ fun MessageScreen(
         }
     }
 
-
+    val coroutineScope = rememberCoroutineScope()
     val listState = rememberLazyListState()
-    LaunchedEffect(messages,Unit) {
+    LaunchedEffect(Unit) {
         listState.animateScrollToItem(messages.size)
     }
-
     LaunchedEffect(Unit) {
         viewModel.getFriend(friendid)
     }
@@ -178,7 +195,8 @@ fun MessageScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 10.dp),
-                    verticalAlignment = Alignment.Bottom
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ){
                     NotRoundIconButton(
                         imageResId = R.drawable.media,
@@ -191,7 +209,6 @@ fun MessageScreen(
                         }
                         mediaPickerLauncher.launch(intent)
                     }
-
                     Column {
                         CustomTextField(
                             value = text,
@@ -204,9 +221,9 @@ fun MessageScreen(
                                 .height(heightTf)
                                 .width(
                                     if (text.value.trim() != "")
-                                        305.dp
+                                        250.dp
                                     else
-                                        345.dp
+                                        310.dp
                                 )
                                 ,
                             fontSize = 14.sp,
@@ -244,6 +261,7 @@ fun MessageScreen(
                             heightTf = 32.dp
                             heightBottomBar = 60.dp
                         }
+
                     }else{
                         Spacer( Modifier.size(50.dp))
                     }
@@ -266,13 +284,13 @@ fun MessageScreen(
             }
         },
     ) { innerPadding ->
+
         LazyColumn(
             state = listState,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-
             items(messages) { mes ->
                 when (mes.type) {
                     typeText ->
@@ -312,8 +330,12 @@ fun MessageScreen(
                             mediaUrl = mes.message,
                             isMyVideo = mes.idFrom == curentid,
                             openMedia = {
-                              navController.navigate(MediaScreenNavigation.createRoute(mes.message))
-                            },
+                                Log.d("MES_SCREEN_LINK_MEDIA",mes.message)
+                                val linkRoot = "https://firebasestorage.googleapis.com/v0/b/chatapp-4e975.appspot.com/o/messages%2F"
+                                val subLink = mes.message.substringAfter(linkRoot)
+                                val encodedUrl = URLEncoder.encode(subLink, StandardCharsets.UTF_8.toString())
+                                navController.navigate(MediaScreenNavigation.createRoute(encodedUrl))
+                                },
                             onLongPress = {
                                 selectedMessageId =
                                     if(mes.idFrom == curentid) {
@@ -326,10 +348,28 @@ fun MessageScreen(
                                 showOptionsVideoDialog = true
                             }
                         )
-
                 }
             }
         }
+        if (listState.firstVisibleItemIndex + listState.layoutInfo.visibleItemsInfo.size < messages.size) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                ArrowButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            listState.animateScrollToItem(messages.size)
+                        }
+                    },
+                    modifier =
+                        Modifier.align(Alignment.BottomCenter)
+                                .padding(bottom = 40.dp)
+                )
+            }
+        }
+
 
         val clipboardManager = LocalClipboardManager.current
 
@@ -417,6 +457,19 @@ fun MessageScreen(
             )
         }
 
+    }
+}
+@Composable
+fun ArrowButton(onClick: () -> Unit, modifier:Modifier) {
+    SmallFloatingActionButton(
+        onClick = onClick,
+        shape = CircleShape,
+        modifier = modifier
+    ) {
+        Icon(Icons.Filled.ArrowDropDown,
+            modifier = Modifier.size(30.dp),
+            contentDescription = null
+        )
     }
 }
 

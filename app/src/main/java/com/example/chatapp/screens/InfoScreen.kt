@@ -215,7 +215,6 @@ fun TopProfile(
                 color = MaterialTheme.colorScheme.onTertiary
             )
             Spacer(modifier = Modifier.height(10.dp))
-
         }
         Row (
             Modifier
@@ -231,11 +230,9 @@ fun TopProfile(
                     .size(40.dp)
                     .background(Color.Gray)
                     .clickable {
-                        navController.navigate(MessageScreenNavigation.createRoute(account.uid))
+                        navController.popBackStack()
                     }
-            ) {
-
-            }
+            ) {}
             RoundIconButton(imageResId = R.drawable.call,
                 imageVector = null ,
                 colorTint = MaterialTheme.colorScheme.onTertiary,

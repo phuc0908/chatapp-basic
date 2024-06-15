@@ -14,6 +14,7 @@ data class ChatItem(
 
 data class Account(
     val uid: String = "",
+    val fcmToken : String = "",
     val username: String = "",
     val password: String = "123456",
     val nickName: String = "user_",
@@ -22,7 +23,7 @@ data class Account(
     val timestamp: Long? = 0L,
     val activeStatus: String? = null
 ){
-    constructor() :this("","","","","","",0L,null)
+    constructor() :this("","","","","","","",0L,null)
 }
 
 

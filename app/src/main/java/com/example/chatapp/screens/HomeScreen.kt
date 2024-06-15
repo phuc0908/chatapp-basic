@@ -1,10 +1,14 @@
 package com.example.chatapp.screens
 
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import com.example.chatapp.ui.theme.Green1
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -35,8 +39,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -46,10 +53,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.chatapp.R
 import com.example.chatapp.ui.components.BottomNavigation
 import com.example.chatapp.model.Account
 import com.example.chatapp.model.ChatItem
+import com.example.chatapp.screens.showDialog.ConfirmDeleteDialog
+import com.example.chatapp.screens.showDialog.ConfirmDeleteHomeDialog
+import com.example.chatapp.screens.showDialog.OptionsHomeDialog
 import com.example.chatapp.ui.components.AvatarIcon
 import com.example.chatapp.viewmodel.HomeViewModel
 import com.example.chatapp.ui.components.RoundIconButton
@@ -66,7 +75,9 @@ import kotlinx.coroutines.launch
     destination = "home_destination",
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class,
+    ExperimentalFoundationApi::class
+)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
@@ -80,6 +91,11 @@ fun HomeScreen(
     val coroutineScope = rememberCoroutineScope()
     val chatItems by viewModel.chatItemList
 
+    var showOptionsHomeDialog by remember { mutableStateOf(false) }
+    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
+    var idFriend by remember { mutableStateOf("") }
+
+    val context = LocalContext.current
 
 
     BackHandler {
@@ -150,12 +166,13 @@ fun HomeScreen(
                                 isOnline = false
                             )
                         }else{
-                            RoundIconButton(imageResId = R.drawable.newuser,
-                                imageVector = null,
+                            AvatarIcon(
+                                imageUrl = "https://firebasestorage.googleapis.com/v0/b/chatapp-4e975.appspot.com/o/avatars%2FnewUser.png?alt=media&token=428ada2b-c505-4af7-9da7-370ea0086e56",
                                 modifier = Modifier
                                     .size(50.dp)
                                     .aspectRatio(1f),
-                                onClick = openMyInfo
+                                onClick = openMyInfo,
+                                isOnline = false
                             )
                         }
                     }
@@ -184,72 +201,101 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState()),
         ) {
+            ListOfStatusFriend(openChat, chatItems)
+// ====================== LIST CHAT ITEMS ==========================================
+            Column (
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding()
+            ){
+                chatItems.forEach {friend->
+                    Row (modifier = Modifier
+                        .fillMaxWidth()
+                        .combinedClickable(
+                            onClick = {
+                                openChat(friend.id)
+                            },
+                            onLongClick = {
+                                idFriend = friend.id
+                                showOptionsHomeDialog = true
+                            },
+                        )
+                        .padding(start = 15.dp, end = 15.dp)
+                        .height(75.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                    //      Avatar
+                        AvatarIcon(
+                            imageUrl = friend.avatar,
+                            modifier = Modifier
+                                .width(65.dp)
+                                .aspectRatio(1f),
+                            isOnline = friend.isOnline == true && friend.activeStatus == "ON"
+                        ) {}
 
-                ListOfStatusFriend(openChat, chatItems)
-                ListMyChat(openChat, chatItems)
+                    //      Other
+                        Column (
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.Center
+                        ){
+                            Row (
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ){
+                                TextNameUser(friend.name)
+                                TimeAgoChat(friend.timestamp)
+                            }
+                            Row (
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(end = 50.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ){
+                                TextChat(friend.lastMessage)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-}
 
-
-
-@Composable
-fun OneChatFriend(
-    openChat: (String) -> Unit,
-    uid: String,
-    avatar: String = "",
-    name: String,
-    lastMessage: String,
-    lastTimeMessage: Long?,
-    isOnline: Boolean?
-) {
-    Row (modifier = Modifier
-        .fillMaxWidth()
-        .clickable(
-            onClick = {
-                openChat(uid)
+    if (showOptionsHomeDialog) {
+        OptionsHomeDialog(
+            showDialog = true,
+            onSave = {
+                showOptionsHomeDialog = false
+            },
+            onDelete = {
+                showOptionsHomeDialog = false
+                showConfirmDeleteDialog = true
+            },
+            onDismiss = {
+                showOptionsHomeDialog = false
+            },
+        )
+    }
+    if (showConfirmDeleteDialog) {
+        ConfirmDeleteHomeDialog(
+            showDialog = true,
+            onConfirm = {
+                if (currentAccount != null) {
+                        viewModel.deleteAllMessagesWithAFriend(context, currentAccount.uid, idFriend)
+                }
+                showConfirmDeleteDialog = false
+            },
+            onDismiss = {
+                showConfirmDeleteDialog = false
             }
         )
-        .padding(start = 15.dp, end = 15.dp)
-        .height(75.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ){
-//      Avatar
-        AvatarIcon(
-            imageUrl = avatar,
-            modifier = Modifier
-                .width(65.dp)
-                .aspectRatio(1f),
-            isOnline = isOnline == true
-        ) {}
-
-//      Other
-        Column (
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center
-        ){
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ){
-                TextNameUser(name)
-                TimeAgoChat(lastTimeMessage)
-            }
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 50.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ){
-                TextChat(lastMessage)
-            }
-        }
     }
 }
+
+
 
 @Composable
 fun TimeAgoChat(
@@ -261,32 +307,6 @@ fun TimeAgoChat(
             fontWeight = FontWeight.W300
         ),
         maxLines = 1)
-}
-
-@Composable
-fun ListMyChat(
-    openChat:(String)-> Unit,
-    friends: List<ChatItem>,
-) {
-    Column (
-        modifier = Modifier
-            .fillMaxSize()
-            .padding()
-    ){
-        friends.forEach {friend->
-            OneChatFriend(
-                openChat = {
-                    openChat(friend.id)
-               },
-                uid = friend.id,
-                avatar = friend.avatar,
-                name = friend.name,
-                lastMessage = friend.lastMessage,
-                lastTimeMessage = friend.timestamp,
-                isOnline =  friend.activeStatus!="OFF" && friend.isOnline == true
-            )
-        }
-    }
 }
 
 fun parseTimestampToString(timestamp:Long?):String{
