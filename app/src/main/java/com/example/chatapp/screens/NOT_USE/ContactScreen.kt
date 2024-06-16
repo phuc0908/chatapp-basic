@@ -66,21 +66,7 @@ fun ContactScreen(
 
         ) { innerPadding ->
             Column(Modifier.padding(innerPadding)) {
-                Button(
-                    onClick = {
-                        val mediaUrl = "0f77b62d-a4cc-4853-9019-7b30accbcdb0?alt=media&token=298d5e2a-f463-4275-aaca-c698a0c25878"
-                        val encodedUrl = URLEncoder.encode(mediaUrl, StandardCharsets.UTF_8.toString())
-                        Log.d("ENCODE",encodedUrl)
-                        navController.navigate(
-                            MediaScreenNavigation.createRoute(
-                                mediaUrl = encodedUrl
-                            )
-                        )
-                    }
-                )
-                {
-                   Text(text = "Button")
-                }
+                Text(text = "Nothing")
             }
         }
 }
