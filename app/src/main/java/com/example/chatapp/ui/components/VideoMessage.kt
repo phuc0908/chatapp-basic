@@ -1,16 +1,11 @@
 package com.example.chatapp.ui.components
 
 import android.content.Context
-import android.media.AudioManager
-import android.media.MediaPlayer
 import android.net.Uri
-import android.util.Log
 import android.widget.VideoView
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -31,8 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.chatapp.R
@@ -44,7 +37,8 @@ fun VideoMessage(
     mediaUrl: String,
     isMyVideo: Boolean,
     openMedia:()-> Unit,
-    onLongPress: ()-> Unit
+    onLongPress: ()-> Unit,
+    context: Context
 ) {
     Column(
         modifier = Modifier
@@ -68,7 +62,8 @@ fun VideoMessage(
         ) {
             VideoMesPlayer(
                 videoUri = Uri.parse(mediaUrl),
-                modifier = Modifier.sizeIn(maxWidth = 200.dp)
+                modifier = Modifier.sizeIn(maxWidth = 200.dp),
+                context = context
             )
         }
 
@@ -76,11 +71,11 @@ fun VideoMessage(
 }
 
 @Composable
-fun VideoMesPlayer(videoUri: Uri, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
+fun VideoMesPlayer(videoUri: Uri, modifier: Modifier = Modifier, context: Context) {
     var videoAspectRatio by remember { mutableFloatStateOf(2f / 2f) }
     var isPlaying by remember { mutableStateOf(true) }
     var isVideoPrepared by remember { mutableStateOf(false) }
+    val videoView = remember { VideoView(context) }
 
     AndroidView(
         modifier = modifier
@@ -88,16 +83,15 @@ fun VideoMesPlayer(videoUri: Uri, modifier: Modifier = Modifier) {
                 .aspectRatio(videoAspectRatio)
             ),
         factory = {
-            VideoView(context).apply {
+            videoView.apply {
                 setVideoURI(videoUri)
                 setOnPreparedListener { mp ->
                     isVideoPrepared = true
                     videoAspectRatio = mp.videoWidth.toFloat() / mp.videoHeight
-                    mp.setVolume(0.5f, 0.5f)
                 }
             }
         },
-        update = {videoView->
+        update = {
             if (isPlaying) {
                 videoView.start()
             } else {

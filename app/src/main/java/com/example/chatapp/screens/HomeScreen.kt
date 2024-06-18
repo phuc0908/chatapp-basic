@@ -263,7 +263,6 @@ fun HomeScreen(
             }
         }
     }
-
     if (showOptionsHomeDialog) {
         OptionsHomeDialog(
             showDialog = true,

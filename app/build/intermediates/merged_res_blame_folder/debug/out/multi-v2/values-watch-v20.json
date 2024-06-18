@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.chatapp-mergeDebugResources-63:/values-watch-v20/values-watch-v20.xml",
+            "outputFile": "com.example.chatapp-mergeDebugResources-71:/values-watch-v20/values-watch-v20.xml",
             "map": [
                 {
                     "source": "C:\\Users\\MSI PC\\.gradle\\caches\\transforms-3\\5d8bff2ff805eb06b4670bde3510ef18\\transformed\\play-services-auth-20.7.0\\res\\values-watch-v20\\values.xml",

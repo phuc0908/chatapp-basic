@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">ChatApp</string>
     <string name="your_web_client_id">317369759483-cjka71u4p7b5v21cev48bdbqavhab1lj.apps.googleusercontent.com</string>
-
+    <string name="channel_name">My Notification Channel</string>
 </resources>

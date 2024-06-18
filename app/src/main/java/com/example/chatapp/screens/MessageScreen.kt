@@ -137,9 +137,13 @@ fun MessageScreen(
 
     val coroutineScope = rememberCoroutineScope()
     val listState = rememberLazyListState()
-    LaunchedEffect(Unit) {
+    var isArrowListState by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit,isArrowListState) {
+        isArrowListState = false
         listState.animateScrollToItem(messages.size)
     }
+
     LaunchedEffect(Unit) {
         viewModel.getFriend(friendid)
     }
@@ -157,7 +161,6 @@ fun MessageScreen(
     var newlineCount by remember { mutableIntStateOf(1) }
 
     val focusManager = LocalFocusManager.current
-
 
     Scaffold(
         topBar = {
@@ -250,7 +253,7 @@ fun MessageScreen(
                         )
                         Spacer(modifier = Modifier.size(5.dp))
                     }
-                    if(text.value.trim()!=""){
+                    if(text.value.trim() !=""){
                         RoundIconButton(
                             imageResId = R.drawable.sendd,
                             imageVector = null,
@@ -260,8 +263,8 @@ fun MessageScreen(
                             text.value = ""
                             heightTf = 32.dp
                             heightBottomBar = 60.dp
+                            isArrowListState = true
                         }
-
                     }else{
                         Spacer( Modifier.size(50.dp))
                     }
@@ -346,7 +349,8 @@ fun MessageScreen(
                                 selectedMessageText = mes.message
                                 selectedUserIdByMes = mes.idFrom
                                 showOptionsVideoDialog = true
-                            }
+                            },
+                            context
                         )
                 }
             }

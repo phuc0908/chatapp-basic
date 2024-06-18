@@ -62,7 +62,6 @@ class StatusService : Service(), CoroutineScope {
             }
         }
     }
-
     private fun updateStatusInFirebase(isConnected: Boolean) {
         val status = if (isConnected) "online" else "offline"
         val timestamp = System.currentTimeMillis()

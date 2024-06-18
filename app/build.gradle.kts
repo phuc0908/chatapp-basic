@@ -55,6 +55,7 @@ dependencies {
 
 implementation("com.google.firebase:firebase-auth:23.0.0")
     implementation("com.google.firebase:firebase-database:21.0.0")
+    implementation("com.google.firebase:firebase-messaging:24.0.0")
     //    plugins {
 //        id("com.android.application")
 //        id("org.jetbrains.kotlin.android")
@@ -150,6 +151,16 @@ implementation("com.google.firebase:firebase-auth:23.0.0")
         implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
         implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
+//        Video Mes
+        implementation ("com.google.android.exoplayer:exoplayer:2.19.1")
+
+        implementation("io.sanghun:compose-video:1.2.0")
+        implementation("androidx.media3:media3-exoplayer:1.3.1") // [Required] androidx.media3 ExoPlayer dependency
+        implementation("androidx.media3:media3-session:1.3.1") // [Required] MediaSession Extension dependency
+        implementation("androidx.media3:media3-ui:1.3.1") // [Required] Base Player UI
+
+        implementation("androidx.media3:media3-exoplayer-dash:1.3.1") // [Optional] If your media item is DASH
+        implementation("androidx.media3:media3-exoplayer-hls:1.3.1") // [Optional] If your media item is HLS (m3u8..)
 
     }
 }

@@ -12,6 +12,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseAuth
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import com.example.chatapp.NotificationViewModel
 import com.example.chatapp.StatusService
 import com.example.chatapp.model.Account
 import com.example.chatapp.screens.Destination
@@ -118,6 +119,7 @@ class AuthViewModel(val context: Context)  : ViewModel(){
                     val user = task.result?.user
 
                     updateCurrentUser(user)
+                    NotificationViewModel().getFCMTokenAndUpdate()
 
                     startStatusService()
 //                    Push firebase

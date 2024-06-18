@@ -66,8 +66,6 @@ class HomeViewModel : ViewModel()
                         }
                     }
                 }
-                Log.d("AccountSize2",accounts.size.toString())
-                Log.d("AccountSize2",accounts.size.toString())
                 val chatItems = mutableListOf<ChatItem>()
                 for (account in accounts) {
                     val key = if (account.uid < currentUserUid) {

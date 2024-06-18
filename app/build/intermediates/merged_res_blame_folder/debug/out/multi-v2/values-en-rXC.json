@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.chatapp-mergeDebugResources-63:/values-en-rXC/values-en-rXC.xml",
+            "outputFile": "com.example.chatapp-mergeDebugResources-71:/values-en-rXC/values-en-rXC.xml",
             "map": [
                 {
                     "source": "C:\\Users\\MSI PC\\.gradle\\caches\\transforms-3\\bc1bf911107c07d5493d698955977a42\\transformed\\browser-1.4.0\\res\\values-en-rXC\\values-en-rXC.xml",

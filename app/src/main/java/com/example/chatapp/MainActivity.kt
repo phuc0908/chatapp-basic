@@ -2,6 +2,7 @@ package com.example.chatapp
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -20,7 +21,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.messaging.FirebaseMessaging
 
 class MainActivity : ComponentActivity() {
@@ -33,13 +36,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         requestNotificationPermission()
-        getFCMTokenAndUpdate()
-        createNotificationChannel()
-        getNotification()
-
+        NotificationViewModel().getFCMTokenAndUpdate()
 
         if(currentUserId!=null){
             startService(Intent(this, StatusService::class.java))
+            createNotificationChannel()
+            getNotification()
         }
         setContent {
             Main()
@@ -51,10 +53,18 @@ class MainActivity : ComponentActivity() {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 val message = snapshot.getValue(Message::class.java)!!
                 if (message.idTo == currentUserId) {
-                    createNotificationChannel()
-                    showNotification("New Message", message.message)
-                }else {
-                    Log.d("Notification", "Message from current user or message is null")
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - message.timestamp <= 5000) {
+                        getNickname(message.idFrom){
+                            createNotificationChannel()
+                            if (it != null) {
+                                showNotification(it, message.message, message.idFrom)
+                            }
+                        }
+
+                    }
+                } else {
+                    Log.d("Notification", "Message from current user, message is null, or timestamp is null")
                 }
             }
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
@@ -98,21 +108,28 @@ class MainActivity : ComponentActivity() {
             val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
                 description = descriptionText
             }
-            // Register the channel with the system.
             val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
 
-    fun showNotification(title: String, message: String) {
+    fun showNotification(title: String, message: String, idFrom: String) {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent: PendingIntent = PendingIntent
+            .getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.logo)
             .setContentTitle(title)
             .setContentText(message)
             .setStyle(NotificationCompat.BigTextStyle()
-                .bigText("Much longer text that cannot fit one line..."))
+                .bigText(message))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
 
         val notification = builder.build()
 
@@ -128,31 +145,24 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun getFCMTokenAndUpdate() {
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val token = task.result
-                if (token != null) {
-                    updateFCMTokenInDatabase(token)
+    fun getNickname(id: String, callback: (String?) -> Unit) {
+        val database = FirebaseDatabase.getInstance().reference
+        val nicknameRef = database.child("accounts").child(id).child("nickName")
+        nicknameRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val nickname = snapshot.getValue(String::class.java)
+                if (nickname != null) {
+                    Log.d("NICK_NAME",nickname)
+                }else{
+                    Log.d("NICK_NAME","NULLL")
                 }
-            } else {
-                task.exception?.printStackTrace()
+                callback(nickname)
             }
-        }
-    }
-    private fun updateFCMTokenInDatabase(token: String) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        if (userId != null) {
-            val databaseReference = FirebaseDatabase.getInstance()
-                .getReference("accounts").child(userId)
-            databaseReference.child("fcmToken").setValue(token)
-                .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.d("Update FCM token", token)
-                } else {
-                    task.exception?.printStackTrace()
-                }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback(null)
             }
-        }
+        })
     }
+
 }

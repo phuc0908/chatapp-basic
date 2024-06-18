@@ -17,7 +17,7 @@ class SearchViewModel: ViewModel() {
     private val database: DatabaseReference = FirebaseDatabase.getInstance().reference
     private val dataAccount: DatabaseReference = database.child("accounts")
 
-    private val curentId = FirebaseAuth.getInstance().currentUser?.uid
+    private val currentId = FirebaseAuth.getInstance().currentUser?.uid
 
     private val _users = mutableStateOf<List<Account>>(emptyList())
     val users: State<List<Account>> = _users
@@ -43,7 +43,7 @@ class SearchViewModel: ViewModel() {
                     Log.d("SearchViewModel", "Account snapshot: $account")
 
                     account?.let {
-                        if (it.uid!=curentId && it.nickName.lowercase(Locale.getDefault()).contains(query)) {
+                        if (it.uid!=currentId && it.nickName.lowercase(Locale.getDefault()).contains(query)) {
                             userList.add(it)
                             Log.d("NameSearch", it.nickName)
                         }
@@ -65,7 +65,7 @@ class SearchViewModel: ViewModel() {
                 for (accountSnapshot in snapshot.children) {
                     val account = accountSnapshot.getValue(Account::class.java)
                     account?.let {
-                        if (it.uid!=curentId) {
+                        if (it.uid!=currentId) {
                             userList.add(it)
                             Log.d("Account",account.uid)
                         }

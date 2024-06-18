@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.chatapp-mergeDebugResources-63:/values-as/values-as.xml",
+            "outputFile": "com.example.chatapp-mergeDebugResources-71:/values-as/values-as.xml",
             "map": [
                 {
                     "source": "C:\\Users\\MSI PC\\.gradle\\caches\\transforms-3\\3a6e058a2594cb1ea6dccdbb25afcd0b\\transformed\\core-1.13.1\\res\\values-as\\values-as.xml",
